@@ -1,19 +1,21 @@
-add_library(meta INTERFACE
+set(name meta)
+set(libname ${PROJECT_NAME}_${name})
+add_library(${libname} INTERFACE
             ${PROJECT_SOURCE_DIR}/include/ctl/meta/type_traits.hpp)
-add_library(${PROJECT_NAME}::meta ALIAS meta)
+add_library(${PROJECT_NAME}::${name} ALIAS ${libname})
 target_include_directories(
-  meta INTERFACE $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-                 $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
-target_compile_features(meta INTERFACE cxx_std_20)
+  ${libname} INTERFACE $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+                       $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+target_compile_features(${libname} INTERFACE cxx_std_20)
 
 install(
-  TARGETS meta
+  TARGETS ${libname}
   EXPORT ${PROJECT_NAME}_targets
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
-set_property(GLOBAL APPEND PROPERTY CTL_COMPONENTS meta)
+set_property(GLOBAL APPEND PROPERTY CTL_COMPONENTS ${name})
 
-install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/ctl/meta
-        DESTINATION include_meta/ctl)
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/ctl/${name}
+        DESTINATION include_${name}/ctl)
