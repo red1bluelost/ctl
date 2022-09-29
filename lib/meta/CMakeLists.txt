@@ -1,5 +1,6 @@
 add_library(meta INTERFACE
             ${PROJECT_SOURCE_DIR}/include/ctl/meta/type_traits.hpp)
+add_library(${PROJECT_NAME}::meta ALIAS meta)
 target_include_directories(
   meta INTERFACE $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
                  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)

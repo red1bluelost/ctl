@@ -3,7 +3,7 @@ project(
   ctl
   VERSION 0.0.0
   DESCRIPTION "The Clown Template Library for C++ utilities"
-  HOMEPAGE_URL "http://github.com/red1bluelost/TODO")
+  HOMEPAGE_URL "http://github.com/red1bluelost/ctl")
 
 # Global variable for all components
 set_property(GLOBAL PROPERTY CTL_COMPONENTS)
