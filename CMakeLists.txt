@@ -15,7 +15,7 @@ include(GNUInstallDirs)
 
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file(
-  "CTLConfigVersion.cmake"
+  "${PROJECT_NAME}ConfigVersion.cmake"
   VERSION ${PROJECT_VERSION}
   COMPATIBILITY SameMajorVersion)
 
@@ -25,6 +25,15 @@ configure_package_config_file(
   INSTALL_DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake)
 
 add_subdirectory(lib)
+
+install(
+  EXPORT ${PROJECT_NAME}_targets
+  FILE ${PROJECT_NAME}Targets.cmake
+  DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake)
+
+install(FILES "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+              "${PROJECT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+        DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake)
 
 get_property(CTL_COMPONENTS GLOBAL PROPERTY CTL_COMPONENTS)
 message(STATUS "All components === ${CTL_COMPONENTS}")
