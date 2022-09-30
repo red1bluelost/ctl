@@ -1,0 +1,3 @@
+add_executable(ctl_meta_test type_traits_test.cpp)
+target_link_libraries(ctl_meta_test PRIVATE ctl_meta gtest_main)
+gtest_discover_tests(ctl_meta_test)

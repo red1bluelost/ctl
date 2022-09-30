@@ -26,6 +26,9 @@ configure_package_config_file(
 
 add_subdirectory(lib)
 
+enable_testing()
+add_subdirectory(unittests)
+
 install(
   EXPORT ${PROJECT_NAME}_targets
   FILE ${PROJECT_NAME}Targets.cmake

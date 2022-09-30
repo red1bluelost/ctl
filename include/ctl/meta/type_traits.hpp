@@ -15,11 +15,11 @@
 
 namespace ctl {
 
-template<typename Unknown, typename Type>
-struct enable_same : std::enable_if<std::is_same_v<Unknown, Type>, Type> {};
+template<typename Unknown, typename Type, typename Return = void>
+struct enable_same : std::enable_if<std::is_same_v<Unknown, Type>, Return> {};
 
-template<typename Unknown, typename Type>
-using enable_same_t = typename enable_same<Unknown, Type>::type;
+template<typename Unknown, typename Type, typename Return = void>
+using enable_same_t = typename enable_same<Unknown, Type, Return>::type;
 
 } // namespace ctl
 
