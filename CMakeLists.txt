@@ -11,6 +11,8 @@ set_property(GLOBAL PROPERTY CTL_COMPONENTS)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+list(INSERT CMAKE_MODULE_PATH 0 "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
+
 include(GNUInstallDirs)
 
 include(CMakePackageConfigHelpers)
