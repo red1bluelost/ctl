@@ -1,3 +1,13 @@
+//===- type_traits_test.hpp - Tests for type traits -------------*- C++ -*-===//
+//
+// TODO: License
+//
+//===----------------------------------------------------------------------===//
+///
+/// \file
+/// Tests for 'ctl/meta/type_traits.hpp'.
+///
+//===----------------------------------------------------------------------===//
 #include "ctl/meta/type_traits.hpp"
 
 #include <gtest/gtest.h>
