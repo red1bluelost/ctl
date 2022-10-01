@@ -1,0 +1,3 @@
+add_executable(ctl_adt_test optional_test.cpp)
+target_link_libraries(ctl_adt_test PRIVATE ctl_adt gtest_main)
+gtest_discover_tests(ctl_adt_test)
