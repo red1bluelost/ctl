@@ -1,0 +1,62 @@
+//===- ctl/object/bitmask_enum.def - Bitmask for enum types -----*- C++ -*-===//
+//
+// TODO: License
+//
+//===----------------------------------------------------------------------===//
+///
+/// \file
+/// Define file to add all bitmask functions to an enum type.
+///
+/// \example
+/// \code{.cpp}
+/// enum class Flags { None = 0, First = 0x1, Second = 0x2, All = 0x3 }
+/// #define CTL_BITMASK_ENUM Flags
+/// #include <ctl/object/bitmask_enum.def>
+/// \endcode
+///
+//===----------------------------------------------------------------------===//
+
+// Purposely doo not include the header guard since this could be reused.
+
+// Checks for defines and includes that are required.
+#if !defined(CTL_BITMASK_ENUM)
+# error "Must define CTL_BITMASK_ENUM to use this define file."
+#endif
+
+static_assert(
+    std::is_enum<CTL_BITMASK_ENUM>::value,
+    "CTL_BITMASK_ENUM must be an enum type."
+);
+
+#define CTL_DEFINE_BINARY_OPERATOR(_op_)                                       \
+ constexpr auto operator _op_(                                                 \
+     CTL_BITMASK_ENUM _x, CTL_BITMASK_ENUM _y                                  \
+ ) noexcept -> CTL_BITMASK_ENUM {                                              \
+  using _utype = typename std::underlying_type<CTL_BITMASK_ENUM>::type;        \
+  return static_cast<CTL_BITMASK_ENUM>(static_cast<_utype>(_x                  \
+  ) _op_ /* NOLINT(bugprone-macro-parentheses) */ static_cast<_utype>(_y));    \
+ }
+
+#define CTL_DEFINE_COMPOUND_ASSIGNMENT_OPERATOR(_op_)                          \
+ constexpr auto operator _op_##=(                                              \
+     CTL_BITMASK_ENUM& _x, CTL_BITMASK_ENUM _y                                 \
+ ) noexcept -> CTL_BITMASK_ENUM& { /* NOLINT(bugprone-macro-parentheses) */    \
+  return _x = _x _op_ /* NOLINT(bugprone-macro-parentheses) */ _y;             \
+ }
+
+CTL_DEFINE_BINARY_OPERATOR(&)
+CTL_DEFINE_BINARY_OPERATOR(|)
+CTL_DEFINE_BINARY_OPERATOR(^)
+
+CTL_DEFINE_COMPOUND_ASSIGNMENT_OPERATOR(&)
+CTL_DEFINE_COMPOUND_ASSIGNMENT_OPERATOR(|)
+CTL_DEFINE_COMPOUND_ASSIGNMENT_OPERATOR(^)
+
+constexpr auto operator~(CTL_BITMASK_ENUM _x) noexcept -> CTL_BITMASK_ENUM {
+  using _utype = typename std::underlying_type<CTL_BITMASK_ENUM>::type;
+  return static_cast<CTL_BITMASK_ENUM>(~static_cast<_utype>(_x));
+}
+
+#undef CTL_DEFINE_COMPOUND_ASSIGNMENT_OPERATOR
+#undef CTL_DEFINE_BINARY_OPERATOR
+#undef CTL_BITMASK_ENUM

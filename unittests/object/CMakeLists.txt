@@ -1,0 +1,3 @@
+add_executable(ctl_object_test bitmask_enum_test.cpp)
+target_link_libraries(ctl_object_test PRIVATE ctl_object gtest_main)
+gtest_discover_tests(ctl_object_test)

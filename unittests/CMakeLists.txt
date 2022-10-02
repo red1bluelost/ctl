@@ -13,3 +13,4 @@ set_property(DIRECTORY ${googletest_SOURCE_DIR} PROPERTY EXCLUDE_FROM_ALL YES)
 
 add_subdirectory(adt)
 add_subdirectory(meta)
+add_subdirectory(object)
