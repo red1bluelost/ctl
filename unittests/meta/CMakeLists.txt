@@ -1,3 +1,1 @@
-add_executable(ctl_meta_test type_traits_test.cpp special_members.cpp)
-target_link_libraries(ctl_meta_test PRIVATE ctl_meta gtest_main)
-gtest_discover_tests(ctl_meta_test)
+ctl_add_test(meta TEST_FILES type_traits_test.cpp special_members.cpp)
