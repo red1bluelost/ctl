@@ -1,16 +1,20 @@
 include_guard()
 
 function (${PROJECT_NAME}_add_component name)
-  cmake_parse_arguments(ARG "" "INTERFACE_HEADER_FILES" "" ${ARGN})
+  cmake_parse_arguments(ARG "" "" "INTERFACE_HEADER_FILES" ${ARGN})
+
   set(libname ${PROJECT_NAME}_${name})
   foreach (header ${ARG_INTERFACE_HEADER_FILES})
-    add_library(${libname} INTERFACE
-                ${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/${name}/${header})
+    list(APPEND INTERFACE_HEADERS_ABS_PATH
+         ${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/${name}/${header})
   endforeach ()
+  add_library(${libname} INTERFACE ${INTERFACE_HEADERS_ABS_PATH})
   add_library(${PROJECT_NAME}::${name} ALIAS ${libname})
+
   target_include_directories(
     ${libname} INTERFACE $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
                          $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+
   target_compile_features(${libname} INTERFACE cxx_std_20)
 
   install(
