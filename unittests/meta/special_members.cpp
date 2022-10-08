@@ -387,4 +387,29 @@ TEST(special_members_test, only_move_members) {
   }
 }
 
+template<bool disable>
+struct disable_class_tester;
+template<>
+struct disable_class_tester<true> : ctl::disable_class<> {};
+template<>
+struct disable_class_tester<false> {};
+
+TEST(special_members_test, disable_class) {
+  using disabled = disable_class_tester<true>;
+  static_assert(!std::is_default_constructible_v<disabled>);
+  static_assert(!std::is_copy_constructible_v<disabled>);
+  static_assert(!std::is_move_constructible_v<disabled>);
+  static_assert(!std::is_copy_assignable_v<disabled>);
+  static_assert(!std::is_move_assignable_v<disabled>);
+  static_assert(!std::is_destructible_v<disabled>);
+
+  using enabled = disable_class_tester<false>;
+  static_assert(std::is_default_constructible_v<enabled>);
+  static_assert(std::is_copy_constructible_v<enabled>);
+  static_assert(std::is_move_constructible_v<enabled>);
+  static_assert(std::is_copy_assignable_v<enabled>);
+  static_assert(std::is_move_assignable_v<enabled>);
+  static_assert(std::is_destructible_v<enabled>);
+}
+
 } // namespace

@@ -174,6 +174,25 @@ template<typename tag = void>
 struct only_move_members
     : private with_copy_move<false, true, false, true, tag> {};
 
+/// \brief A meta type that can be inherited from to disable a given class,
+/// typically in use during template specializations.
+///
+/// Example usage:
+/// \code
+/// template<typename T, bool = IsReversible<T>>
+/// struct Reverser : ctl::disable_class {};
+///
+/// template<typename T>
+/// struct Reverser<T, true> { T reverse(T); };
+/// \endcode
+///
+/// \tparam tag A tag which can make the specialization unique.
+template<typename tag = void>
+struct disable_class : with_copy_move<false, false, false, false, tag> {
+  disable_class()  = delete;
+  ~disable_class() = delete;
+};
+
 } // namespace ctl
 
 #endif // CTL_META_SPECIAL_MEMBERS_HPP
