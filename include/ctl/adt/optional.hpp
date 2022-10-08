@@ -13,6 +13,7 @@
 #ifndef CTL_ADT_OPTIONAL_HPP
 #define CTL_ADT_OPTIONAL_HPP
 
+#include <exception>
 #include <optional>
 
 namespace ctl {
@@ -27,6 +28,17 @@ struct nullopt_t {
 
 /// \brief Object that can be used when constructing empty optionals.
 inline constexpr nullopt_t nullopt{nullopt_t::construction::tag};
+
+/// \brief Exception for any misuse of the optional class
+class bad_optional_access : public std::exception {
+ public:
+  explicit bad_optional_access() noexcept  = default;
+  ~bad_optional_access() noexcept override = default;
+
+  const char* what() const noexcept override {
+    return "ctl :: bad optional access";
+  }
+};
 
 } // namespace ctl
 

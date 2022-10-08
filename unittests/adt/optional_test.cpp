@@ -36,4 +36,26 @@ TEST(optional_test, nullopt) {
   (void)moved;
 }
 
+TEST(optional_test, bad_optional_access) {
+  static_assert(std::is_base_of_v<std::exception, ctl::bad_optional_access>);
+
+  try {
+    throw ctl::bad_optional_access();
+  } catch (const std::exception& e) {
+    ASSERT_EQ(e.what(), "ctl :: bad optional access");
+  }
+
+  {
+    // Quirk of copy constructor
+    struct child : ctl::bad_optional_access {
+      ~child() noexcept override = default;
+      const char* what() const noexcept override { return "this was derived"; }
+    };
+    ctl::bad_optional_access parent = child{};
+    ASSERT_EQ(parent.what(), "ctl :: bad optional access");
+    parent = child{};
+    ASSERT_EQ(parent.what(), "ctl :: bad optional access");
+  }
+}
+
 } // namespace
