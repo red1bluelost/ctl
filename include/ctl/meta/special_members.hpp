@@ -166,6 +166,14 @@ struct with_copy_move<false, false, false, false, tag> {
   constexpr with_copy_move& operator=(with_copy_move&&) noexcept      = delete;
 };
 
+/// \brief A meta type that only has move constructors and assignment enabled,
+/// no copy. This can be inherited from to easily disable copying.
+///
+/// \tparam tag A tag which can make the specialization unique.
+template<typename tag = void>
+struct only_move_members
+    : private with_copy_move<false, true, false, true, tag> {};
+
 } // namespace ctl
 
 #endif // CTL_META_SPECIAL_MEMBERS_HPP

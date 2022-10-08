@@ -353,4 +353,38 @@ TEST(special_members_test, with_copy_move__none) {
   }
 }
 
+TEST(special_members_test, only_move_members) {
+  {
+    using T = ctl::only_move_members<>;
+    static_assert(std::is_default_constructible_v<T>);
+    static_assert(!std::is_copy_constructible_v<T>);
+    static_assert(std::is_move_constructible_v<T>);
+    static_assert(!std::is_copy_assignable_v<T>);
+    static_assert(std::is_move_assignable_v<T>);
+    static_assert(std::is_destructible_v<T>);
+  }
+  {
+    class T : private ctl::only_move_members<T> {
+     public:
+      int num;
+    };
+    static_assert(std::is_default_constructible_v<T>);
+    static_assert(!std::is_copy_constructible_v<T>);
+    static_assert(std::is_move_constructible_v<T>);
+    static_assert(!std::is_copy_assignable_v<T>);
+    static_assert(std::is_move_assignable_v<T>);
+    static_assert(std::is_destructible_v<T>);
+
+    T t{};
+    t.num = 1;
+    ASSERT_EQ(t.num, 1);
+    // T copy_con = t; error
+    T moved_con = std::move(t);
+    ASSERT_EQ(moved_con.num, 1);
+    // t = moved_con; error
+    t = std::move(moved_con);
+    ASSERT_EQ(t.num, 1);
+  }
+}
+
 } // namespace
