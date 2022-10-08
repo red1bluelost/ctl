@@ -33,4 +33,13 @@ TEST(type_traits_test, enable_not_same) {
   static_assert(std::is_same_v<ctl::enable_not_same_t<double, char>, void>);
 }
 
+TEST(type_traits_test, enable_same_decay) {
+  static_assert(has_type<ctl::enable_same_decay<int, const int&>>);
+  static_assert(has_type<ctl::enable_same_decay<bool&&, const bool, long>>);
+  static_assert(!has_type<ctl::enable_same_decay<const int, float&>>);
+  static_assert(!has_type<ctl::enable_same_decay<unsigned, const bool, int>>);
+  ASSERT_EQ((ctl::enable_same_decay_t<int&&, const int, long>{2}), long{2});
+  static_assert(std::is_same_v<ctl::enable_same_decay_t<int&&, int&&>, void>);
+}
+
 } // namespace
