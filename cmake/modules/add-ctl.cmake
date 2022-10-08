@@ -24,5 +24,5 @@ function (ctl_add_component name)
   set_property(GLOBAL APPEND PROPERTY CTL_COMPONENTS ${name})
 
   install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/ctl/${name}
-          DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}_${name}/ctl)
+          DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/ctl)
 endfunction ()
