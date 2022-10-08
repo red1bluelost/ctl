@@ -34,9 +34,17 @@ namespace ctl {
 template<typename T, typename U, typename R = void>
 struct enable_same : std::enable_if<std::is_same_v<T, U>, R> {};
 
-/// Alias template for \c enable_same.
+/// \brief Alias template for \c enable_same.
 template<typename T, typename U, typename R = void>
 using enable_same_t = typename enable_same<T, U, R>::type;
+
+/// \brief Negative of enable same.
+template<typename T, typename U, typename R = void>
+struct enable_not_same : std::enable_if<!std::is_same_v<T, U>, R> {};
+
+/// \brief Alias template for \c enable_not_same.
+template<typename T, typename U, typename R = void>
+using enable_not_same_t = typename enable_not_same<T, U, R>::type;
 
 } // namespace ctl
 

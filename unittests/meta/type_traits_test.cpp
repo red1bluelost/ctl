@@ -23,4 +23,14 @@ TEST(type_traits_test, enable_same) {
   ASSERT_EQ((ctl::enable_same_t<double, double, long>{2}), long{2});
   static_assert(std::is_same_v<ctl::enable_same_t<double, double>, void>);
 }
+
+TEST(type_traits_test, enable_not_same) {
+  static_assert(!has_type<ctl::enable_not_same<int, int>>);
+  static_assert(!has_type<ctl::enable_not_same<bool, bool, long long>>);
+  static_assert(has_type<ctl::enable_not_same<int, float>>);
+  static_assert(has_type<ctl::enable_not_same<unsigned, bool, int>>);
+  ASSERT_EQ((ctl::enable_not_same_t<double, float, long>{2}), long{2});
+  static_assert(std::is_same_v<ctl::enable_not_same_t<double, char>, void>);
+}
+
 } // namespace
