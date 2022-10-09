@@ -50,6 +50,13 @@ class bad_optional_access : public std::exception {
   }
 };
 
+//===----------------------------------------------------------------------===//
+// Optional type that represents a value or nothing.
+//===----------------------------------------------------------------------===//
+
+template<typename T>
+class optional {};
+
 CTL_END_NAMESPACE
 
 #endif // CTL_ADT_OPTIONAL_HPP
