@@ -20,6 +20,10 @@
 
 CTL_BEGIN_NAMESPACE
 
+//===----------------------------------------------------------------------===//
+// Null type for optional to allow easy construction and clearing.
+//===----------------------------------------------------------------------===//
+
 /// \brief Literal type which can be used for constructing empty optionals.
 struct nullopt_t {
   /// \brief Arbitrary enum used for constructing \c nullopt_t.
@@ -30,6 +34,10 @@ struct nullopt_t {
 
 /// \brief Object that can be used when constructing empty optionals.
 inline constexpr nullopt_t nullopt{nullopt_t::construction::tag};
+
+//===----------------------------------------------------------------------===//
+// Exceptions for misuse of optionals.
+//===----------------------------------------------------------------------===//
 
 /// \brief Exception for any misuse of the optional class
 class bad_optional_access : public std::exception {

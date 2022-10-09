@@ -16,6 +16,11 @@
 
 CTL_BEGIN_NAMESPACE
 
+//===----------------------------------------------------------------------===//
+// Template types with enabled and disabled special members. Can be inherited
+// from to disable a class's special members.
+//===----------------------------------------------------------------------===//
+
 /// \brief A meta template that can be used for disabling certain special member
 /// functions. This will typically be used for generic types that conditionally
 /// allow special members based on the template type.
