@@ -13,10 +13,12 @@
 #ifndef CTL_ADT_OPTIONAL_HPP
 #define CTL_ADT_OPTIONAL_HPP
 
+#include "ctl/config.h"
+
 #include <exception>
 #include <optional>
 
-namespace ctl {
+CTL_BEGIN_NAMESPACE
 
 /// \brief Literal type which can be used for constructing empty optionals.
 struct nullopt_t {
@@ -40,6 +42,6 @@ class bad_optional_access : public std::exception {
   }
 };
 
-} // namespace ctl
+CTL_END_NAMESPACE
 
 #endif // CTL_ADT_OPTIONAL_HPP

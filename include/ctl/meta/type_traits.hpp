@@ -12,9 +12,11 @@
 #ifndef CTL_META_TYPE_TRAITS_HPP
 #define CTL_META_TYPE_TRAITS_HPP
 
+#include "ctl/config.h"
+
 #include <type_traits>
 
-namespace ctl {
+CTL_BEGIN_NAMESPACE
 
 //===----------------------------------------------------------------------===//
 // Combinations for \c std::enable_if and type_trait predicates.
@@ -62,6 +64,6 @@ struct enable_same_decay : enable_same<std::decay_t<T>, std::decay_t<U>, R> {};
 template<typename T, typename U, typename R = void>
 using enable_same_decay_t = typename enable_same_decay<T, U, R>::type;
 
-} // namespace ctl
+CTL_END_NAMESPACE
 
 #endif // CTL_META_TYPE_TRAITS_HPP

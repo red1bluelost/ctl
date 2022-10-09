@@ -26,6 +26,8 @@ configure_package_config_file(
   "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
   INSTALL_DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake)
 
+include(config-header)
+
 add_subdirectory(lib)
 
 enable_testing()

@@ -12,7 +12,9 @@
 #ifndef CTL_META_SPECIAL_MEMBERS_HPP
 #define CTL_META_SPECIAL_MEMBERS_HPP
 
-namespace ctl {
+#include "ctl/config.h"
+
+CTL_BEGIN_NAMESPACE
 
 /// \brief A meta template that can be used for disabling certain special member
 /// functions. This will typically be used for generic types that conditionally
@@ -193,6 +195,6 @@ struct disable_class : with_copy_move<false, false, false, false, tag> {
   ~disable_class() = delete;
 };
 
-} // namespace ctl
+CTL_END_NAMESPACE
 
 #endif // CTL_META_SPECIAL_MEMBERS_HPP

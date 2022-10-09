@@ -1,0 +1,8 @@
+
+#define @PROJECT_NAME_UPPER@_BEGIN_NAMESPACE                                   \
+    namespace @PROJECT_NAME@ {                                                 \
+    inline namespace v@VERSION_MAJOR@ {
+
+#define @PROJECT_NAME_UPPER@_END_NAMESPACE                                     \
+    }                                                                          \
+    }
