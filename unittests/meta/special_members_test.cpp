@@ -1,4 +1,4 @@
-//===- special_members.cpp - Tests for special members ----------*- C++ -*-===//
+//===- special_members_test.cpp - Tests for special members -----*- C++ -*-===//
 //
 // TODO: License
 //
