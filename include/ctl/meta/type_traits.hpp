@@ -25,18 +25,24 @@ CTL_BEGIN_NAMESPACE
 /// \brief True iff both types are arithmetic and they have the same signedness.
 /// Both types must be unsigned or both must be signed.
 ///
-/// \tparam T One of two types to compare signedness
-/// \tparam U Second of two types to compare signedness
-template<typename L, typename R>
+/// At least two types must be provided.
+///
+/// \tparam F First type to compare signedness
+/// \tparam S Second type to compare signedness
+/// \tparam T Optional other types to compare signedness
+template<typename F, typename S, typename... T>
 struct is_signedness_same
     : std::conjunction<
-          std::is_arithmetic<L>,
-          std::is_arithmetic<R>,
-          std::bool_constant<std::is_signed_v<L> == std::is_signed_v<R>>> {};
+          std::is_arithmetic<F>,
+          std::is_arithmetic<S>,
+          std::is_arithmetic<T>...,
+          std::bool_constant<std::is_signed_v<F> == std::is_signed_v<S>>,
+          std::bool_constant<std::is_signed_v<F> == std::is_signed_v<T>>...> {};
 
 /// \brief Alias template for \c is_signedness_same.
-template<typename L, typename R>
-inline constexpr bool is_signedness_same_v = is_signedness_same<L, R>::value;
+template<typename F, typename S, typename... T>
+inline constexpr bool is_signedness_same_v =
+    is_signedness_same<F, S, T...>::value;
 
 //===----------------------------------------------------------------------===//
 // Combinations for \c std::enable_if and type_trait predicates.

@@ -24,8 +24,8 @@ template<typename T> concept has_type = requires { typename T::type; };
 //===----------------------------------------------------------------------===//
 
 TEST(type_traits_test, signedness_same) {
-  static_assert(ctl::is_signedness_same<int, long>::value);
-  ASSERT_TRUE((ctl::is_signedness_same<int, long>::value));
+  static_assert(ctl::is_signedness_same<int, long, long long>::value);
+  ASSERT_TRUE((ctl::is_signedness_same<int, long, long long>::value));
   static_assert(ctl::is_signedness_same<float, std::ptrdiff_t>::value);
   ASSERT_TRUE((ctl::is_signedness_same<float, std::ptrdiff_t>::value));
   static_assert(ctl::is_signedness_same_v<unsigned, unsigned char>);
@@ -37,8 +37,8 @@ TEST(type_traits_test, signedness_same) {
   ASSERT_FALSE((ctl::is_signedness_same<int, unsigned>::value));
   static_assert(!ctl::is_signedness_same<char, unsigned>::value);
   ASSERT_FALSE((ctl::is_signedness_same<char, unsigned>::value));
-  static_assert(!ctl::is_signedness_same_v<double, std::size_t>);
-  ASSERT_FALSE((ctl::is_signedness_same_v<double, std::size_t>));
+  static_assert(!ctl::is_signedness_same_v<double, std::size_t, int>);
+  ASSERT_FALSE((ctl::is_signedness_same_v<double, std::size_t, int>));
   static_assert(!ctl::is_signedness_same_v<unsigned short, short>);
   ASSERT_FALSE((ctl::is_signedness_same_v<unsigned short, short>));
 
@@ -49,8 +49,8 @@ TEST(type_traits_test, signedness_same) {
   ASSERT_FALSE((ctl::is_signedness_same<Tester, unsigned>::value));
   static_assert(!ctl::is_signedness_same_v<double, int[3]>);
   ASSERT_FALSE((ctl::is_signedness_same_v<double, int[3]>));
-  static_assert(!ctl::is_signedness_same_v<float*, char>);
-  ASSERT_FALSE((ctl::is_signedness_same_v<float*, char>));
+  static_assert(!ctl::is_signedness_same_v<float*, char, volatile void>);
+  ASSERT_FALSE((ctl::is_signedness_same_v<float*, char, volatile void>));
   static_assert(!ctl::is_signedness_same_v<long&, const char**>);
   ASSERT_FALSE((ctl::is_signedness_same_v<long&, const char**>));
 }
