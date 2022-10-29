@@ -92,11 +92,13 @@ TEST(type_traits_test, is_signedness_same) {
   CAR_ASSERT((ctl::is_signedness_same_v<unsigned, unsigned char>));
   CAR_ASSERT((ctl::is_signedness_same_v<long long, long long>));
   CAR_ASSERT((ctl::is_signedness_same_v<long long int>));
+  CAR_ASSERT((ctl::is_signedness_same_v<bool, unsigned>));
 
   CAR_ASSERT((!ctl::is_signedness_same<int, unsigned>::value));
   CAR_ASSERT((!ctl::is_signedness_same<char, unsigned>::value));
   CAR_ASSERT((!ctl::is_signedness_same_v<double, std::size_t, int>));
   CAR_ASSERT((!ctl::is_signedness_same_v<unsigned short, short>));
+  CAR_ASSERT((!ctl::is_signedness_same_v<bool, int>));
 
   struct Tester {};
   CAR_ASSERT((!ctl::is_signedness_same<int, void>::value));
@@ -105,6 +107,50 @@ TEST(type_traits_test, is_signedness_same) {
   CAR_ASSERT((!ctl::is_signedness_same_v<float*, char, volatile void>));
   CAR_ASSERT((!ctl::is_signedness_same_v<long&, const char**>));
   CAR_ASSERT((!ctl::is_signedness_same_v<Tester>));
+}
+
+TEST(type_traits_test, is_arithmetic_same) {
+  CAR_ASSERT((ctl::is_arithmetic_same<>::value));
+  CAR_ASSERT((ctl::is_arithmetic_same_v<>));
+  CAR_ASSERT((ctl::is_arithmetic_same<int>::value));
+  CAR_ASSERT((ctl::is_arithmetic_same_v<long>));
+  CAR_ASSERT((ctl::is_arithmetic_same<long double>::value));
+  CAR_ASSERT((ctl::is_arithmetic_same_v<float>));
+  CAR_ASSERT((!ctl::is_arithmetic_same_v<std::string>));
+
+  CAR_ASSERT((ctl::is_arithmetic_same<
+              unsigned char,
+              short,
+              unsigned int,
+              char,
+              unsigned long long,
+              long>::value));
+  CAR_ASSERT((ctl::is_arithmetic_same_v<
+              bool,
+              char,
+              short,
+              int,
+              long,
+              long long,
+              wchar_t>));
+  CAR_ASSERT((ctl::is_arithmetic_same_v<
+              unsigned char,
+              unsigned short,
+              unsigned int,
+              unsigned long,
+              unsigned long long,
+              char8_t,
+              char16_t,
+              char32_t>));
+  CAR_ASSERT((ctl::is_arithmetic_same<float, double, long double>::value));
+
+  CAR_ASSERT((!ctl::is_arithmetic_same<float, int>::value));
+  CAR_ASSERT((!ctl::is_arithmetic_same_v<double, unsigned long>));
+  CAR_ASSERT((!ctl::is_arithmetic_same_v<double, long, int, float>));
+
+  CAR_ASSERT((!ctl::is_arithmetic_same_v<std::string, std::vector<int>>));
+  CAR_ASSERT((!ctl::is_arithmetic_same_v<std::string_view, int>));
+  CAR_ASSERT((!ctl::is_arithmetic_same_v<bool, std::array<double, 3>, float>));
 }
 
 //===----------------------------------------------------------------------===//

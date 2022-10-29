@@ -97,8 +97,10 @@ inline constexpr bool is_sizeof_ne_v = is_sizeof_ne<LHS, RHS>::value;
 // Meta functions for numerics.
 //===----------------------------------------------------------------------===//
 
-/// \brief True iff both types are arithmetic and they have the same signedness.
+/// \brief True iff all types are arithmetic and they have the same signedness.
 /// Both types must be unsigned or both must be signed.
+///
+/// If any type is not arithmetic then this is false.
 ///
 /// \tparam F First type to compare signedness
 /// \tparam T Optional other types to compare signedness
@@ -112,6 +114,23 @@ struct is_signedness_same
 /// \brief Alias template for \c is_signedness_same.
 template<typename F, typename... T>
 inline constexpr bool is_signedness_same_v = is_signedness_same<F, T...>::value;
+
+/// \brief True iff all types are the same arithmetic type class. When true, the
+/// types are either all floating point or all integral types.
+///
+/// If any type is not arithmetic then this is false. If no types are provided
+/// then this is true.
+///
+/// \tparam T Types to compare if all are same arithmetic type
+template<typename... T>
+struct is_arithmetic_same
+    : std::disjunction<
+          std::conjunction<std::is_integral<T>...>,
+          std::conjunction<std::is_floating_point<T>...>> {};
+
+/// \brief Alias template for \c is_arithmetic_same.
+template<typename... T>
+inline constexpr bool is_arithmetic_same_v = is_arithmetic_same<T...>::value;
 
 //===----------------------------------------------------------------------===//
 // Combinations for \c std::enable_if and type_trait predicates.
