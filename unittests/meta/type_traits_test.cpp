@@ -20,6 +20,82 @@ namespace {
 template<typename T> concept has_type = requires { typename T::type; };
 
 //===----------------------------------------------------------------------===//
+// Tests for meta functions on any type.
+//===----------------------------------------------------------------------===//
+
+TEST(type_traits_test, is_sizeof_lt) {
+  static_assert(ctl::is_sizeof_lt<int32_t, int64_t>::value);
+  ASSERT_TRUE((ctl::is_sizeof_lt<int32_t, int64_t>::value));
+  static_assert(ctl::is_sizeof_lt_v<char, std::string>);
+  ASSERT_TRUE((ctl::is_sizeof_lt_v<char, std::string>));
+
+  static_assert(!ctl::is_sizeof_lt<int16_t, int16_t>::value);
+  ASSERT_TRUE((!ctl::is_sizeof_lt<int16_t, int16_t>::value));
+  static_assert(!ctl::is_sizeof_lt_v<double, short>);
+  ASSERT_TRUE((!ctl::is_sizeof_lt_v<double, short>));
+}
+
+TEST(type_traits_test, is_sizeof_le) {
+  static_assert(ctl::is_sizeof_le<int32_t, int32_t>::value);
+  ASSERT_TRUE((ctl::is_sizeof_le<int32_t, int32_t>::value));
+  static_assert(ctl::is_sizeof_le_v<char, std::string>);
+  ASSERT_TRUE((ctl::is_sizeof_le_v<char, std::string>));
+
+  static_assert(!ctl::is_sizeof_le<int64_t, int16_t>::value);
+  ASSERT_TRUE((!ctl::is_sizeof_le<int64_t, int16_t>::value));
+  static_assert(!ctl::is_sizeof_le_v<double, short>);
+  ASSERT_TRUE((!ctl::is_sizeof_le_v<double, short>));
+}
+
+TEST(type_traits_test, is_sizeof_gt) {
+  static_assert(ctl::is_sizeof_gt<int64_t, int32_t>::value);
+  ASSERT_TRUE((ctl::is_sizeof_gt<int64_t, int32_t>::value));
+  static_assert(ctl::is_sizeof_gt_v<std::string, char>);
+  ASSERT_TRUE((ctl::is_sizeof_gt_v<std::string, char>));
+
+  static_assert(!ctl::is_sizeof_gt<int16_t, int16_t>::value);
+  ASSERT_TRUE((!ctl::is_sizeof_gt<int16_t, int16_t>::value));
+  static_assert(!ctl::is_sizeof_gt_v<short, double>);
+  ASSERT_TRUE((!ctl::is_sizeof_gt_v<short, double>));
+}
+
+TEST(type_traits_test, is_sizeof_ge) {
+  static_assert(ctl::is_sizeof_ge<int32_t, int32_t>::value);
+  ASSERT_TRUE((ctl::is_sizeof_ge<int32_t, int32_t>::value));
+  static_assert(ctl::is_sizeof_ge_v<std::string, char>);
+  ASSERT_TRUE((ctl::is_sizeof_ge_v<std::string, char>));
+
+  static_assert(!ctl::is_sizeof_ge<int16_t, int64_t>::value);
+  ASSERT_TRUE((!ctl::is_sizeof_ge<int16_t, int64_t>::value));
+  static_assert(!ctl::is_sizeof_ge_v<short, double>);
+  ASSERT_TRUE((!ctl::is_sizeof_ge_v<short, double>));
+}
+
+TEST(type_traits_test, is_sizeof_eq) {
+  static_assert(ctl::is_sizeof_eq<int16_t, int16_t>::value);
+  ASSERT_TRUE((ctl::is_sizeof_eq<int16_t, int16_t>::value));
+  static_assert(ctl::is_sizeof_eq_v<int32_t, float>);
+  ASSERT_TRUE((ctl::is_sizeof_eq_v<int32_t, float>));
+
+  static_assert(!ctl::is_sizeof_eq<int64_t, int32_t>::value);
+  ASSERT_TRUE((!ctl::is_sizeof_eq<int64_t, int32_t>::value));
+  static_assert(!ctl::is_sizeof_eq_v<short, double>);
+  ASSERT_TRUE((!ctl::is_sizeof_eq_v<short, double>));
+}
+
+TEST(type_traits_test, is_sizeof_ne) {
+  static_assert(ctl::is_sizeof_ne<int16_t, int64_t>::value);
+  ASSERT_TRUE((ctl::is_sizeof_ne<int16_t, int64_t>::value));
+  static_assert(ctl::is_sizeof_ne_v<std::string, char>);
+  ASSERT_TRUE((ctl::is_sizeof_ne_v<std::string, char>));
+
+  static_assert(!ctl::is_sizeof_ne<int32_t, int32_t>::value);
+  ASSERT_TRUE((!ctl::is_sizeof_ne<int32_t, int32_t>::value));
+  static_assert(!ctl::is_sizeof_ne_v<int64_t, double>);
+  ASSERT_TRUE((!ctl::is_sizeof_ne_v<int64_t, double>));
+}
+
+//===----------------------------------------------------------------------===//
 // Tests for numerics based meta functions.
 //===----------------------------------------------------------------------===//
 

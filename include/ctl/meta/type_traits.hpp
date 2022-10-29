@@ -19,6 +19,81 @@
 CTL_BEGIN_NAMESPACE
 
 //===----------------------------------------------------------------------===//
+// Meta functions for any types.
+//===----------------------------------------------------------------------===//
+
+/// \brief Compares sizes of types if left is less than right.
+///
+/// Convenient for when a meta struct is needed to avoid using \c
+/// std::bool_constant directly.
+///
+/// Example usage:
+/// \code
+/// template<typename L, typename R>
+/// requires std::conjunction<
+///     ctl::is_sizeof_lt<L, R>,
+///     std::negation<std::is_same<L, R>>
+/// >
+/// void multiply_convert(L l, R r);
+/// \endcode
+template<typename LHS, typename RHS>
+struct is_sizeof_lt : std::bool_constant<(sizeof(LHS) < sizeof(RHS))> {};
+
+/// \brief Alias template for \c is_sizeof_lt.
+template<typename LHS, typename RHS>
+inline constexpr bool is_sizeof_lt_v = is_sizeof_lt<LHS, RHS>::value;
+
+/// \brief Compares sizes of types if left is less than or equal to right.
+///
+/// Same reasons for usage as \c is_sizeof_lt.
+template<typename LHS, typename RHS>
+struct is_sizeof_le : std::bool_constant<(sizeof(LHS) <= sizeof(RHS))> {};
+
+/// \brief Alias template for \c is_sizeof_le.
+template<typename LHS, typename RHS>
+inline constexpr bool is_sizeof_le_v = is_sizeof_le<LHS, RHS>::value;
+
+/// \brief Compares sizes of types if left is greater than right.
+///
+/// Same reasons for usage as \c is_sizeof_lt.
+template<typename LHS, typename RHS>
+struct is_sizeof_gt : std::bool_constant<(sizeof(LHS) > sizeof(RHS))> {};
+
+/// \brief Alias template for \c is_sizeof_gt.
+template<typename LHS, typename RHS>
+inline constexpr bool is_sizeof_gt_v = is_sizeof_gt<LHS, RHS>::value;
+
+/// \brief Compares sizes of types if left is greater than or equal to right.
+///
+/// Same reasons for usage as \c is_sizeof_lt.
+template<typename LHS, typename RHS>
+struct is_sizeof_ge : std::bool_constant<(sizeof(LHS) >= sizeof(RHS))> {};
+
+/// \brief Alias template for \c is_sizeof_ge.
+template<typename LHS, typename RHS>
+inline constexpr bool is_sizeof_ge_v = is_sizeof_ge<LHS, RHS>::value;
+
+/// \brief Compares sizes of types if left is equal to right.
+///
+/// Same reasons for usage as \c is_sizeof_lt.
+template<typename LHS, typename RHS>
+struct is_sizeof_eq : std::bool_constant<(sizeof(LHS) == sizeof(RHS))> {};
+
+/// \brief Alias template for \c is_sizeof_eq.
+template<typename LHS, typename RHS>
+inline constexpr bool is_sizeof_eq_v = is_sizeof_eq<LHS, RHS>::value;
+
+/// \brief Compares sizes of types if left is not equal to right.
+///
+/// Same reasons for usage as \c is_sizeof_lt.
+template<typename LHS, typename RHS>
+struct is_sizeof_ne : std::bool_constant<(sizeof(LHS) != sizeof(RHS))> {};
+
+/// \brief Alias template for \c is_sizeof_ne.
+template<typename LHS, typename RHS>
+inline constexpr bool is_sizeof_ne_v = is_sizeof_ne<LHS, RHS>::value;
+
+//===----------------------------------------------------------------------===//
 // Meta functions for numerics.
 //===----------------------------------------------------------------------===//
 
