@@ -100,24 +100,18 @@ inline constexpr bool is_sizeof_ne_v = is_sizeof_ne<LHS, RHS>::value;
 /// \brief True iff both types are arithmetic and they have the same signedness.
 /// Both types must be unsigned or both must be signed.
 ///
-/// At least two types must be provided.
-///
 /// \tparam F First type to compare signedness
-/// \tparam S Second type to compare signedness
 /// \tparam T Optional other types to compare signedness
-template<typename F, typename S, typename... T>
+template<typename F, typename... T>
 struct is_signedness_same
     : std::conjunction<
           std::is_arithmetic<F>,
-          std::is_arithmetic<S>,
           std::is_arithmetic<T>...,
-          std::bool_constant<std::is_signed_v<F> == std::is_signed_v<S>>,
           std::bool_constant<std::is_signed_v<F> == std::is_signed_v<T>>...> {};
 
 /// \brief Alias template for \c is_signedness_same.
-template<typename F, typename S, typename... T>
-inline constexpr bool is_signedness_same_v =
-    is_signedness_same<F, S, T...>::value;
+template<typename F, typename... T>
+inline constexpr bool is_signedness_same_v = is_signedness_same<F, T...>::value;
 
 //===----------------------------------------------------------------------===//
 // Combinations for \c std::enable_if and type_trait predicates.

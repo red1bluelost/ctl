@@ -85,11 +85,13 @@ TEST(type_traits_test, is_sizeof_ne) {
 // Tests for numerics based meta functions.
 //===----------------------------------------------------------------------===//
 
-TEST(type_traits_test, signedness_same) {
+TEST(type_traits_test, is_signedness_same) {
   CAR_ASSERT((ctl::is_signedness_same<int, long, long long>::value));
   CAR_ASSERT((ctl::is_signedness_same<float, std::ptrdiff_t>::value));
+  CAR_ASSERT((ctl::is_signedness_same<unsigned>::value));
   CAR_ASSERT((ctl::is_signedness_same_v<unsigned, unsigned char>));
   CAR_ASSERT((ctl::is_signedness_same_v<long long, long long>));
+  CAR_ASSERT((ctl::is_signedness_same_v<long long int>));
 
   CAR_ASSERT((!ctl::is_signedness_same<int, unsigned>::value));
   CAR_ASSERT((!ctl::is_signedness_same<char, unsigned>::value));
@@ -102,6 +104,7 @@ TEST(type_traits_test, signedness_same) {
   CAR_ASSERT((!ctl::is_signedness_same_v<double, int[3]>));
   CAR_ASSERT((!ctl::is_signedness_same_v<float*, char, volatile void>));
   CAR_ASSERT((!ctl::is_signedness_same_v<long&, const char**>));
+  CAR_ASSERT((!ctl::is_signedness_same_v<Tester>));
 }
 
 //===----------------------------------------------------------------------===//
