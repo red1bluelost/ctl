@@ -132,6 +132,36 @@ struct is_arithmetic_same
 template<typename... T>
 inline constexpr bool is_arithmetic_same_v = is_arithmetic_same<T...>::value;
 
+/// \brief True iff the From type can be converted to the To type without the
+/// actual number value changing.
+///
+/// This is done through a heuristic that the destination is either bigger to
+/// fit the value or the destination is the same type.
+///
+/// TODO: some integral conversions to float might be lossless.
+///
+/// \tparam From The input type that would be converted
+/// \tparam To The output type that is converted to
+template<typename From, typename To>
+struct is_lossless_convertible
+    : std::conjunction<
+          std::is_convertible<From, To>,
+          is_arithmetic_same<From, To>,
+          std::disjunction<
+              // TODO: determine if integral values can fit inside floats
+              std::conjunction<
+                  is_signedness_same<From, To>,
+                  is_sizeof_le<From, To>>,
+              std::conjunction<
+                  std::is_unsigned<From>,
+                  std::is_signed<To>,
+                  is_sizeof_lt<From, To>>>> {};
+
+/// \brief Alias template for \c is_lossless_convertible.
+template<typename From, typename To>
+inline constexpr auto is_lossless_convertible_v =
+    is_lossless_convertible<From, To>::value;
+
 //===----------------------------------------------------------------------===//
 // Combinations for \c std::enable_if and type_trait predicates.
 //===----------------------------------------------------------------------===//

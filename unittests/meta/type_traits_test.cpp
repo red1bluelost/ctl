@@ -95,18 +95,18 @@ TEST(type_traits_test, is_signedness_same) {
   CAR_ASSERT((ctl::is_signedness_same_v<bool, unsigned>));
 
   CAR_ASSERT((!ctl::is_signedness_same<int, unsigned>::value));
-  CAR_ASSERT((!ctl::is_signedness_same<char, unsigned>::value));
+  CAR_ASSERT((!ctl::is_signedness_same<signed char, unsigned>::value));
   CAR_ASSERT((!ctl::is_signedness_same_v<double, std::size_t, int>));
   CAR_ASSERT((!ctl::is_signedness_same_v<unsigned short, short>));
   CAR_ASSERT((!ctl::is_signedness_same_v<bool, int>));
 
-  struct Tester {};
+  struct tester {};
   CAR_ASSERT((!ctl::is_signedness_same<int, void>::value));
-  CAR_ASSERT((!ctl::is_signedness_same<Tester, unsigned>::value));
+  CAR_ASSERT((!ctl::is_signedness_same<tester, unsigned>::value));
   CAR_ASSERT((!ctl::is_signedness_same_v<double, int[3]>));
-  CAR_ASSERT((!ctl::is_signedness_same_v<float*, char, volatile void>));
+  CAR_ASSERT((!ctl::is_signedness_same_v<float*, signed char, volatile void>));
   CAR_ASSERT((!ctl::is_signedness_same_v<long&, const char**>));
-  CAR_ASSERT((!ctl::is_signedness_same_v<Tester>));
+  CAR_ASSERT((!ctl::is_signedness_same_v<tester>));
 }
 
 TEST(type_traits_test, is_arithmetic_same) {
@@ -151,6 +151,147 @@ TEST(type_traits_test, is_arithmetic_same) {
   CAR_ASSERT((!ctl::is_arithmetic_same_v<std::string, std::vector<int>>));
   CAR_ASSERT((!ctl::is_arithmetic_same_v<std::string_view, int>));
   CAR_ASSERT((!ctl::is_arithmetic_same_v<bool, std::array<double, 3>, float>));
+}
+
+TEST(type_traits_is_lossless_convertible_test, floating_point) {
+  CAR_ASSERT((ctl::is_lossless_convertible<long double, long double>::value));
+  CAR_ASSERT((ctl::is_lossless_convertible<double, long double>::value));
+  CAR_ASSERT((ctl::is_lossless_convertible<float, long double>::value));
+  CAR_ASSERT((ctl::is_lossless_convertible_v<double, double>));
+  CAR_ASSERT((ctl::is_lossless_convertible_v<float, double>));
+  CAR_ASSERT((ctl::is_lossless_convertible_v<float, float>));
+
+  CAR_ASSERT((!ctl::is_lossless_convertible<long double, double>::value));
+  CAR_ASSERT((!ctl::is_lossless_convertible<long double, float>::value));
+  CAR_ASSERT((!ctl::is_lossless_convertible_v<double, float>));
+
+  CAR_ASSERT((ctl::is_lossless_convertible<const double, long double>::value));
+  CAR_ASSERT((ctl::is_lossless_convertible<float, const long double>::value));
+  CAR_ASSERT((ctl::is_lossless_convertible<volatile double, double>::value));
+  CAR_ASSERT((ctl::is_lossless_convertible_v<float, volatile double>));
+  CAR_ASSERT((ctl::is_lossless_convertible_v<const float, volatile float>));
+  CAR_ASSERT((ctl::is_lossless_convertible_v<const volatile float, float>));
+}
+
+TEST(type_traits_is_lossless_convertible_test, signed_integral) {
+  CAR_ASSERT((ctl::is_lossless_convertible<int64_t, int64_t>::value));
+  CAR_ASSERT((ctl::is_lossless_convertible<int32_t, int64_t>::value));
+  CAR_ASSERT((ctl::is_lossless_convertible<int16_t, int64_t>::value));
+  CAR_ASSERT((ctl::is_lossless_convertible<int8_t, int64_t>::value));
+  CAR_ASSERT((ctl::is_lossless_convertible<int32_t, int32_t>::value));
+  CAR_ASSERT((ctl::is_lossless_convertible_v<int16_t, int32_t>));
+  CAR_ASSERT((ctl::is_lossless_convertible_v<int8_t, int32_t>));
+  CAR_ASSERT((ctl::is_lossless_convertible_v<int16_t, int16_t>));
+  CAR_ASSERT((ctl::is_lossless_convertible_v<int8_t, int16_t>));
+  CAR_ASSERT((ctl::is_lossless_convertible_v<int8_t, int8_t>));
+
+  CAR_ASSERT((!ctl::is_lossless_convertible<int64_t, int32_t>::value));
+  CAR_ASSERT((!ctl::is_lossless_convertible<int64_t, int16_t>::value));
+  CAR_ASSERT((!ctl::is_lossless_convertible<int32_t, int16_t>::value));
+  CAR_ASSERT((!ctl::is_lossless_convertible_v<int64_t, int8_t>));
+  CAR_ASSERT((!ctl::is_lossless_convertible_v<int32_t, int8_t>));
+  CAR_ASSERT((!ctl::is_lossless_convertible_v<int16_t, int8_t>));
+
+  CAR_ASSERT((ctl::is_lossless_convertible<const int16_t, int64_t>::value));
+  CAR_ASSERT((ctl::is_lossless_convertible<int8_t, const int64_t>::value));
+  CAR_ASSERT((ctl::is_lossless_convertible<volatile int32_t, int32_t>::value));
+  CAR_ASSERT((ctl::is_lossless_convertible_v<int16_t, volatile int32_t>));
+  CAR_ASSERT((ctl::is_lossless_convertible_v<const volatile int8_t, int32_t>));
+  CAR_ASSERT((ctl::is_lossless_convertible_v<const int16_t, volatile int16_t>));
+}
+
+TEST(type_traits_is_lossless_convertible_test, unsigned_integral) {
+  CAR_ASSERT((ctl::is_lossless_convertible<uint64_t, uint64_t>::value));
+  CAR_ASSERT((ctl::is_lossless_convertible<uint32_t, uint64_t>::value));
+  CAR_ASSERT((ctl::is_lossless_convertible<uint16_t, uint64_t>::value));
+  CAR_ASSERT((ctl::is_lossless_convertible<uint8_t, uint64_t>::value));
+  CAR_ASSERT((ctl::is_lossless_convertible<uint32_t, uint32_t>::value));
+  CAR_ASSERT((ctl::is_lossless_convertible_v<uint16_t, uint32_t>));
+  CAR_ASSERT((ctl::is_lossless_convertible_v<uint8_t, uint32_t>));
+  CAR_ASSERT((ctl::is_lossless_convertible_v<uint16_t, uint16_t>));
+  CAR_ASSERT((ctl::is_lossless_convertible_v<uint8_t, uint16_t>));
+  CAR_ASSERT((ctl::is_lossless_convertible_v<uint8_t, uint8_t>));
+
+  CAR_ASSERT((!ctl::is_lossless_convertible<uint64_t, uint32_t>::value));
+  CAR_ASSERT((!ctl::is_lossless_convertible<uint64_t, uint16_t>::value));
+  CAR_ASSERT((!ctl::is_lossless_convertible<uint32_t, uint16_t>::value));
+  CAR_ASSERT((!ctl::is_lossless_convertible_v<uint64_t, uint8_t>));
+  CAR_ASSERT((!ctl::is_lossless_convertible_v<uint32_t, uint8_t>));
+  CAR_ASSERT((!ctl::is_lossless_convertible_v<uint16_t, uint8_t>));
+
+  CAR_ASSERT((ctl::is_lossless_convertible<const uint16_t, uint64_t>::value));
+  CAR_ASSERT((ctl::is_lossless_convertible<uint8_t, const uint64_t>::value));
+  CAR_ASSERT((ctl::is_lossless_convertible<volatile uint32_t, uint32_t>::value)
+  );
+  CAR_ASSERT((ctl::is_lossless_convertible_v<uint16_t, volatile uint32_t>));
+  CAR_ASSERT((ctl::is_lossless_convertible_v<const volatile uint8_t, uint32_t>)
+  );
+  CAR_ASSERT((ctl::is_lossless_convertible_v<const uint16_t, volatile uint16_t>)
+  );
+}
+
+TEST(type_traits_is_lossless_convertible_test, signedness_mixed) {
+  CAR_ASSERT((ctl::is_lossless_convertible<uint32_t, int64_t>::value));
+  CAR_ASSERT((ctl::is_lossless_convertible<uint16_t, int64_t>::value));
+  CAR_ASSERT((ctl::is_lossless_convertible<uint8_t, int64_t>::value));
+  CAR_ASSERT((ctl::is_lossless_convertible_v<uint16_t, int32_t>));
+  CAR_ASSERT((ctl::is_lossless_convertible_v<uint8_t, int32_t>));
+  CAR_ASSERT((ctl::is_lossless_convertible_v<uint8_t, int16_t>));
+
+  CAR_ASSERT((!ctl::is_lossless_convertible<uint64_t, int64_t>::value));
+  CAR_ASSERT((!ctl::is_lossless_convertible<uint64_t, int32_t>::value));
+  CAR_ASSERT((!ctl::is_lossless_convertible<uint32_t, int32_t>::value));
+  CAR_ASSERT((!ctl::is_lossless_convertible<uint64_t, int16_t>::value));
+  CAR_ASSERT((!ctl::is_lossless_convertible<uint32_t, int16_t>::value));
+  CAR_ASSERT((!ctl::is_lossless_convertible_v<uint16_t, int16_t>));
+  CAR_ASSERT((!ctl::is_lossless_convertible_v<uint64_t, int8_t>));
+  CAR_ASSERT((!ctl::is_lossless_convertible_v<uint32_t, int8_t>));
+  CAR_ASSERT((!ctl::is_lossless_convertible_v<uint16_t, int8_t>));
+  CAR_ASSERT((!ctl::is_lossless_convertible_v<uint8_t, int8_t>));
+
+  CAR_ASSERT((!ctl::is_lossless_convertible<int64_t, uint64_t>::value));
+  CAR_ASSERT((!ctl::is_lossless_convertible<int32_t, uint64_t>::value));
+  CAR_ASSERT((!ctl::is_lossless_convertible<int16_t, uint64_t>::value));
+  CAR_ASSERT((!ctl::is_lossless_convertible<int8_t, uint64_t>::value));
+  CAR_ASSERT((!ctl::is_lossless_convertible<int64_t, uint32_t>::value));
+  CAR_ASSERT((!ctl::is_lossless_convertible<int32_t, uint32_t>::value));
+  CAR_ASSERT((!ctl::is_lossless_convertible_v<int16_t, uint32_t>));
+  CAR_ASSERT((!ctl::is_lossless_convertible_v<int8_t, uint32_t>));
+  CAR_ASSERT((!ctl::is_lossless_convertible<int64_t, uint16_t>::value));
+  CAR_ASSERT((!ctl::is_lossless_convertible<int32_t, uint16_t>::value));
+  CAR_ASSERT((!ctl::is_lossless_convertible_v<int16_t, uint16_t>));
+  CAR_ASSERT((!ctl::is_lossless_convertible_v<int8_t, uint16_t>));
+  CAR_ASSERT((!ctl::is_lossless_convertible_v<int64_t, uint8_t>));
+  CAR_ASSERT((!ctl::is_lossless_convertible_v<int32_t, uint8_t>));
+  CAR_ASSERT((!ctl::is_lossless_convertible_v<int16_t, uint8_t>));
+  CAR_ASSERT((!ctl::is_lossless_convertible_v<int8_t, uint8_t>));
+}
+
+TEST(type_traits_is_lossless_convertible_test, arithmetic_mixed) {
+  // TODO: determine if integral values can fit inside floats
+
+  CAR_ASSERT((!ctl::is_lossless_convertible<float, int>::value));
+  CAR_ASSERT((!ctl::is_lossless_convertible<double, unsigned>::value));
+  CAR_ASSERT((!ctl::is_lossless_convertible_v<int, float>));
+  CAR_ASSERT((!ctl::is_lossless_convertible_v<unsigned, long double>));
+}
+
+TEST(type_traits_is_lossless_convertible_test, non_arithmetic) {
+  struct s_int {
+    int i;
+    s_int(int i) : i(i) {}
+  };
+  CAR_ASSERT((std::is_convertible_v<int, s_int>));
+
+  CAR_ASSERT((!ctl::is_lossless_convertible<int, s_int>::value));
+  CAR_ASSERT((!ctl::is_lossless_convertible_v<s_int, int>));
+
+  CAR_ASSERT((!ctl::is_lossless_convertible_v<float, std::string>));
+  CAR_ASSERT((!ctl::is_lossless_convertible_v<int, std::string>));
+  CAR_ASSERT((!ctl::is_lossless_convertible_v<char, std::string>));
+
+  CAR_ASSERT((!ctl::is_lossless_convertible_v<std::array<long, 1>, long>));
+  CAR_ASSERT((!ctl::is_lossless_convertible_v<long, std::array<long, 1>>));
 }
 
 //===----------------------------------------------------------------------===//
