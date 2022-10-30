@@ -268,12 +268,37 @@ TEST(type_traits_is_lossless_convertible_test, signedness_mixed) {
 }
 
 TEST(type_traits_is_lossless_convertible_test, arithmetic_mixed) {
-  // TODO: determine if integral values can fit inside floats
+  CAR_ASSERT((ctl::is_lossless_convertible_v<uint64_t, long double>));
+  CAR_ASSERT((ctl::is_lossless_convertible_v<int64_t, long double>));
+  CAR_ASSERT((ctl::is_lossless_convertible_v<uint32_t, long double>));
+  CAR_ASSERT((ctl::is_lossless_convertible_v<int32_t, long double>));
+  CAR_ASSERT((ctl::is_lossless_convertible_v<uint16_t, long double>));
+  CAR_ASSERT((ctl::is_lossless_convertible_v<int16_t, long double>));
+  CAR_ASSERT((ctl::is_lossless_convertible_v<uint8_t, long double>));
+  CAR_ASSERT((ctl::is_lossless_convertible_v<int8_t, long double>));
+
+  CAR_ASSERT((!ctl::is_lossless_convertible_v<uint64_t, double>));
+  CAR_ASSERT((!ctl::is_lossless_convertible_v<int64_t, double>));
+  CAR_ASSERT((ctl::is_lossless_convertible_v<uint32_t, double>));
+  CAR_ASSERT((ctl::is_lossless_convertible_v<int32_t, double>));
+  CAR_ASSERT((ctl::is_lossless_convertible_v<uint16_t, double>));
+  CAR_ASSERT((ctl::is_lossless_convertible_v<int16_t, double>));
+  CAR_ASSERT((ctl::is_lossless_convertible_v<uint8_t, double>));
+  CAR_ASSERT((ctl::is_lossless_convertible_v<int8_t, double>));
+
+  CAR_ASSERT((!ctl::is_lossless_convertible_v<uint64_t, float>));
+  CAR_ASSERT((!ctl::is_lossless_convertible_v<int64_t, float>));
+  CAR_ASSERT((!ctl::is_lossless_convertible_v<uint32_t, float>));
+  CAR_ASSERT((!ctl::is_lossless_convertible_v<int32_t, float>));
+  CAR_ASSERT((ctl::is_lossless_convertible_v<uint16_t, float>));
+  CAR_ASSERT((ctl::is_lossless_convertible_v<int16_t, float>));
+  CAR_ASSERT((ctl::is_lossless_convertible_v<uint8_t, float>));
+  CAR_ASSERT((ctl::is_lossless_convertible_v<int8_t, float>));
 
   CAR_ASSERT((!ctl::is_lossless_convertible<float, int>::value));
+  CAR_ASSERT((!ctl::is_lossless_convertible<float, long long>::value));
   CAR_ASSERT((!ctl::is_lossless_convertible<double, unsigned>::value));
-  CAR_ASSERT((!ctl::is_lossless_convertible_v<int, float>));
-  CAR_ASSERT((!ctl::is_lossless_convertible_v<unsigned, long double>));
+  CAR_ASSERT((!ctl::is_lossless_convertible<long double, char>::value));
 }
 
 TEST(type_traits_is_lossless_convertible_test, non_arithmetic) {

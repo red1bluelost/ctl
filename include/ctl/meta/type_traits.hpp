@@ -14,6 +14,7 @@
 
 #include "ctl/config.h"
 
+#include <limits>
 #include <type_traits>
 
 CTL_BEGIN_NAMESPACE
@@ -132,13 +133,51 @@ struct is_arithmetic_same
 template<typename... T>
 inline constexpr bool is_arithmetic_same_v = is_arithmetic_same<T...>::value;
 
+namespace detail {
+
+/// \brief Helper for \c is_lossless_convertible that checks when the types are
+/// both integral or both floating point.
+///
+/// If the signedness match then this is simply a check of the size being able
+/// to fit the type.
+///
+/// If the From is unsigned and To is signed then it checks that the size fits
+/// the extra bit.
+template<typename From, typename To, bool = is_arithmetic_same_v<From, To>>
+struct ilc_helper
+    : std::disjunction<
+          std::
+              conjunction<is_signedness_same<From, To>, is_sizeof_le<From, To>>,
+          std::conjunction<
+              std::is_unsigned<From>,
+              std::is_signed<To>,
+              is_sizeof_lt<From, To>>> {};
+
+/// \brief Helper for \c is_lossless_convertible that checks when the types are
+/// one floating point and one integral.
+///
+/// The only case possible is an integral to float. The float must have enough
+/// digits to fit the integral type.
+template<typename From, typename To>
+struct ilc_helper<From, To, false>
+    : std::conjunction<
+          std::is_integral<From>,
+          std::is_floating_point<To>,
+          std::bool_constant<
+              (std::numeric_limits<From>::digits
+               <= std::numeric_limits<To>::digits)>> {};
+
+} // namespace detail
+
 /// \brief True iff the From type can be converted to the To type without the
 /// actual number value changing.
 ///
 /// This is done through a heuristic that the destination is either bigger to
 /// fit the value or the destination is the same type.
 ///
-/// TODO: some integral conversions to float might be lossless.
+/// For the case where an integral is being converted to a floating point value.
+/// It checks that all the digits of the integral can fit into the digits of the
+/// float.
 ///
 /// \tparam From The input type that would be converted
 /// \tparam To The output type that is converted to
@@ -146,16 +185,7 @@ template<typename From, typename To>
 struct is_lossless_convertible
     : std::conjunction<
           std::is_convertible<From, To>,
-          is_arithmetic_same<From, To>,
-          std::disjunction<
-              // TODO: determine if integral values can fit inside floats
-              std::conjunction<
-                  is_signedness_same<From, To>,
-                  is_sizeof_le<From, To>>,
-              std::conjunction<
-                  std::is_unsigned<From>,
-                  std::is_signed<To>,
-                  is_sizeof_lt<From, To>>>> {};
+          detail::ilc_helper<From, To>> {};
 
 /// \brief Alias template for \c is_lossless_convertible.
 template<typename From, typename To>
