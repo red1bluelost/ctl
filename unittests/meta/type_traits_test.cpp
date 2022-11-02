@@ -24,10 +24,10 @@ template<typename T> concept has_type = requires { typename T::type; };
 ///
 /// \param _expr_ The expression to assert on. Should be convertable to bool.
 #define CAR_ASSERT(_expr_)                                                     \
- do {                                                                          \
-  static_assert(_expr_);                                                       \
-  ASSERT_TRUE(_expr_);                                                         \
- } while (false)
+  do {                                                                         \
+    static_assert(_expr_);                                                     \
+    ASSERT_TRUE(_expr_);                                                       \
+  } while (false)
 
 //===----------------------------------------------------------------------===//
 // Tests for meta functions on any type.

@@ -46,7 +46,7 @@ BraceWrapping:
   SplitEmptyFunction:    false
   SplitEmptyRecord:      false
   SplitEmptyNamespace:   false
-BreakBeforeBinaryOperators:                NonAssignment
+BreakBeforeBinaryOperators:                None
 BreakBeforeConceptDeclarations:            Allowed
 BreakBeforeBraces:                         Attach
 BreakBeforeInheritanceComma:               false
@@ -128,7 +128,7 @@ PenaltyExcessCharacter:                    1000000
 PenaltyReturnTypeOnItsOwnLine:             60
 PenaltyIndentedWhitespace:                 0
 PointerAlignment:                          Left
-PPIndentWidth:                             1
+PPIndentWidth:                             2
 RawStringFormats:
   - Language:           Cpp
     Delimiters:

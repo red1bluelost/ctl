@@ -164,8 +164,8 @@ struct ilc_helper<From, To, false>
           std::is_integral<From>,
           std::is_floating_point<To>,
           std::bool_constant<
-              (std::numeric_limits<From>::digits
-               <= std::numeric_limits<To>::digits)>> {};
+              (std::numeric_limits<From>::digits <=
+               std::numeric_limits<To>::digits)>> {};
 
 } // namespace detail
 

@@ -20,7 +20,7 @@
 
 // Checks for defines and includes that are required.
 #if !defined(CTL_BITMASK_ENUM)
-# error "Must define CTL_BITMASK_ENUM to use this define file."
+#  error "Must define CTL_BITMASK_ENUM to use this define file."
 #endif
 
 static_assert(
@@ -29,28 +29,28 @@ static_assert(
 );
 
 #if defined(__has_cpp_attribute)
-# if __has_cpp_attribute(nodiscard)
-#  define CTL_BME_NODISCARD [[nodiscard]]
-# else
-#  define CTL_BME_NODISCARD
-# endif
+#  if __has_cpp_attribute(nodiscard)
+#    define CTL_BME_NODISCARD [[nodiscard]]
+#  else
+#    define CTL_BME_NODISCARD
+#  endif
 #endif
 
 #define CTL_DEFINE_BINARY_OPERATOR(_op_)                                       \
- CTL_BME_NODISCARD constexpr auto operator _op_(                               \
-     CTL_BITMASK_ENUM _x, CTL_BITMASK_ENUM _y                                  \
- ) noexcept -> CTL_BITMASK_ENUM {                                              \
-  using _utype = typename std::underlying_type<CTL_BITMASK_ENUM>::type;        \
-  return static_cast<CTL_BITMASK_ENUM>(static_cast<_utype>(_x                  \
-  ) _op_ /* NOLINT(bugprone-macro-parentheses) */ static_cast<_utype>(_y));    \
- }
+  CTL_BME_NODISCARD constexpr auto operator _op_(                              \
+      CTL_BITMASK_ENUM _x, CTL_BITMASK_ENUM _y                                 \
+  ) noexcept -> CTL_BITMASK_ENUM {                                             \
+    using _utype = typename std::underlying_type<CTL_BITMASK_ENUM>::type;      \
+    return static_cast<CTL_BITMASK_ENUM>(static_cast<_utype>(_x                \
+    ) _op_ /* NOLINT(bugprone-macro-parentheses) */ static_cast<_utype>(_y));  \
+  }
 
 #define CTL_DEFINE_COMPOUND_ASSIGNMENT_OPERATOR(_op_)                          \
- constexpr auto operator _op_##=(                                              \
-     CTL_BITMASK_ENUM& _x, CTL_BITMASK_ENUM _y                                 \
- ) noexcept -> CTL_BITMASK_ENUM& { /* NOLINT(bugprone-macro-parentheses) */    \
-  return _x = _x _op_ /* NOLINT(bugprone-macro-parentheses) */ _y;             \
- }
+  constexpr auto operator _op_##=(                                             \
+      CTL_BITMASK_ENUM& _x, CTL_BITMASK_ENUM _y                                \
+  ) noexcept -> CTL_BITMASK_ENUM& { /* NOLINT(bugprone-macro-parentheses) */   \
+    return _x = _x _op_ /* NOLINT(bugprone-macro-parentheses) */ _y;           \
+  }
 
 CTL_DEFINE_BINARY_OPERATOR(&)
 CTL_DEFINE_BINARY_OPERATOR(|)
