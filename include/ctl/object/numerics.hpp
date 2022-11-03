@@ -100,24 +100,6 @@ struct llc_impl<To, From, false> {
     );
     return static_cast<To>(f);
   }
-  static constexpr To internal(
-      bool /*same_sign*/,
-      bool /*same_sign*/,
-      std::false_type /*integral_from*/,
-      std::false_type /*integral_to*/,
-      From f
-  ) {
-    static_assert(
-        ::ctl::is_sizeof_gt_v<From, To>,
-        "sizeof(From) should be larger than sizeof(To)"
-    );
-    TEMP_ASSERT(
-        (f >= From{std::numeric_limits<To>::min()} &&
-         f <= From{std::numeric_limits<To>::max()}),
-        "integral input is out of range of integral output type"
-    );
-    return static_cast<To>(f);
-  }
 
   /// \brief Handles case of signed to unsigned integral. Checks that the value
   /// is within the output range.
@@ -129,8 +111,9 @@ struct llc_impl<To, From, false> {
       From f
   ) {
     TEMP_ASSERT(
-        (f >= 0 && (::ctl::is_sizeof_le_v<From, To> ||
-                    f <= static_cast<From>(std::numeric_limits<To>::max()))),
+        (f >= static_cast<From>(std::numeric_limits<To>::min()) &&
+         (::ctl::is_sizeof_le_v<From, To> ||
+          f <= static_cast<From>(std::numeric_limits<To>::max()))),
         "signed integral out of range of unsigned integral"
     );
     return static_cast<To>(f);
@@ -156,9 +139,31 @@ struct llc_impl<To, From, false> {
     return static_cast<To>(f);
   }
 
+  /// \brief Handles case of signed to signed or unsigned to unsigned integral
+  /// conversion. Checks that the input value is in the range of the output
+  /// value.
+  static constexpr To internal(
+      bool /*same_sign*/,
+      bool /*same_sign*/,
+      std::false_type /*integral_from*/,
+      std::false_type /*integral_to*/,
+      From f
+  ) {
+    static_assert(
+        ::ctl::is_sizeof_gt_v<From, To>,
+        "sizeof(From) should be larger than sizeof(To)"
+    );
+    TEMP_ASSERT(
+        (f >= From{std::numeric_limits<To>::min()} &&
+         f <= From{std::numeric_limits<To>::max()}),
+        "integral input is out of range of integral output type"
+    );
+    return static_cast<To>(f);
+  }
+
   /// \brief Entry point that dispatches to helpers based on signedness and
   /// float or integral type of input and output.
-  static To apply(From f) {
+  static constexpr To apply(From f) {
     return internal(
         ::std::is_signed<From>{},
         ::std::is_signed<To>{},

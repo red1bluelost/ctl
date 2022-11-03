@@ -18,8 +18,26 @@
 
 namespace {
 
+//===----------------------------------------------------------------------===//
+// Utilities for these tests.
+//===----------------------------------------------------------------------===//
+
+/// \brief Global constant for the number of times to repeat random based tests.
 static constexpr int test_repeats = 100;
 
+//===----------------------------------------------------------------------===//
+// Utilities for conversion tests.
+//===----------------------------------------------------------------------===//
+
+/// \brief Checks \c ctl::lossless_cast at compile time.
+#define STATIC_CHECK_CONV(_type1_, _type2_, _expr_)                            \
+  do {                                                                         \
+    constexpr _type1_ input  = static_cast<_type1_>(_expr_);                   \
+    constexpr _type2_ output = ctl::lossless_cast<_type2_>(input);             \
+    static_assert(output == input);                                            \
+  } while (false)
+
+/// \brief Checks \c ctl::lossless_cast at runtime time.
 #define CHECK_CONV(_type1_, _type2_, _expr_)                                   \
   do {                                                                         \
     _type1_ input  = static_cast<_type1_>(_expr_);                             \
@@ -27,6 +45,14 @@ static constexpr int test_repeats = 100;
     ASSERT_EQ(output, input);                                                  \
   } while (false)
 
+/// \brief Checks \c ctl::lossless_cast at compile and runtime time.
+#define SAR_CHECK_CONV(_type1_, _type2_, _expr_)                               \
+  do {                                                                         \
+    STATIC_CHECK_CONV(_type1_, _type2_, _expr_);                               \
+    CHECK_CONV(_type1_, _type2_, _expr_);                                      \
+  } while (false)
+
+/// \brief Checks \c ctl::lossless_cast at runtime time where input is NaN.
 #define CHECK_CONV_NAN(_type1_, _type2_, _expr_)                               \
   do {                                                                         \
     _type1_ input  = static_cast<_type1_>(_expr_);                             \
@@ -34,6 +60,7 @@ static constexpr int test_repeats = 100;
     ASSERT_THAT(output, ::testing::IsNan());                                   \
   } while (false)
 
+/// \brief Checks \c ctl::lossless_cast at compile time to ensure a throw.
 template<typename T1, typename T2>
 void check_failure(auto val) {
   T1 input = val;
@@ -48,8 +75,8 @@ TEST(numerics_lossless_cast_test, never_loss_integral) {
   do {                                                                         \
     static_assert(ctl::is_lossless_convertible_v<_type1_, _type2_>);           \
                                                                                \
-    CHECK_CONV(_type1_, _type2_, std::numeric_limits<_type1_>::min());         \
-    CHECK_CONV(_type1_, _type2_, std::numeric_limits<_type1_>::max());         \
+    SAR_CHECK_CONV(_type1_, _type2_, std::numeric_limits<_type1_>::min());     \
+    SAR_CHECK_CONV(_type1_, _type2_, std::numeric_limits<_type1_>::max());     \
                                                                                \
     std::uniform_int_distribution<_type1_> dist;                               \
     for (int i = 0; i < test_repeats; ++i)                                     \
@@ -101,12 +128,16 @@ TEST(numerics_lossless_cast_test, never_loss_floating_point) {
   do {                                                                         \
     static_assert(ctl::is_lossless_convertible_v<_type1_, _type2_>);           \
                                                                                \
-    CHECK_CONV(_type1_, _type2_, std::numeric_limits<_type1_>::epsilon());     \
-    CHECK_CONV(_type1_, _type2_, std::numeric_limits<_type1_>::min());         \
-    CHECK_CONV(_type1_, _type2_, std::numeric_limits<_type1_>::denorm_min());  \
-    CHECK_CONV(_type1_, _type2_, std::numeric_limits<_type1_>::lowest());      \
-    CHECK_CONV(_type1_, _type2_, std::numeric_limits<_type1_>::max());         \
-    CHECK_CONV(_type1_, _type2_, std::numeric_limits<_type1_>::infinity());    \
+    SAR_CHECK_CONV(_type1_, _type2_, std::numeric_limits<_type1_>::epsilon()); \
+    SAR_CHECK_CONV(_type1_, _type2_, std::numeric_limits<_type1_>::min());     \
+    SAR_CHECK_CONV(                                                            \
+        _type1_, _type2_, std::numeric_limits<_type1_>::denorm_min()           \
+    );                                                                         \
+    SAR_CHECK_CONV(_type1_, _type2_, std::numeric_limits<_type1_>::lowest());  \
+    SAR_CHECK_CONV(_type1_, _type2_, std::numeric_limits<_type1_>::max());     \
+    SAR_CHECK_CONV(                                                            \
+        _type1_, _type2_, std::numeric_limits<_type1_>::infinity()             \
+    );                                                                         \
                                                                                \
     CHECK_CONV_NAN(                                                            \
         _type1_, _type2_, std::numeric_limits<_type1_>::quiet_NaN()            \
@@ -142,8 +173,8 @@ TEST(numerics_lossless_cast_test, never_loss_integral_to_float) {
   do {                                                                         \
     static_assert(ctl::is_lossless_convertible_v<_type1_, _type2_>);           \
                                                                                \
-    CHECK_CONV(_type1_, _type2_, std::numeric_limits<_type1_>::min());         \
-    CHECK_CONV(_type1_, _type2_, std::numeric_limits<_type1_>::max());         \
+    SAR_CHECK_CONV(_type1_, _type2_, std::numeric_limits<_type1_>::min());     \
+    SAR_CHECK_CONV(_type1_, _type2_, std::numeric_limits<_type1_>::max());     \
                                                                                \
     for (int i = 0; i < test_repeats; ++i) {                                   \
       CHECK_CONV(                                                              \
@@ -203,8 +234,8 @@ TEST(numerics_lossless_cast_test, maybe_loss_integral) {
         static_cast<uint64_t>(std::numeric_limits<_type1_>::max()),            \
         static_cast<uint64_t>(std::numeric_limits<_type2_>::max())             \
     );                                                                         \
-    CHECK_CONV(_type1_, _type2_, low);                                         \
-    CHECK_CONV(_type1_, _type2_, high);                                        \
+    SAR_CHECK_CONV(_type1_, _type2_, low);                                     \
+    SAR_CHECK_CONV(_type1_, _type2_, high);                                    \
                                                                                \
     std::uniform_int_distribution<_type1_> dist(low, high);                    \
     for (int i = 0; i < test_repeats; ++i)                                     \
@@ -268,12 +299,16 @@ TEST(numerics_lossless_cast_test, maybe_loss_floating_point) {
   do {                                                                         \
     static_assert(!ctl::is_lossless_convertible_v<_type1_, _type2_>);          \
                                                                                \
-    CHECK_CONV(_type1_, _type2_, std::numeric_limits<_type2_>::epsilon());     \
-    CHECK_CONV(_type1_, _type2_, std::numeric_limits<_type2_>::min());         \
-    CHECK_CONV(_type1_, _type2_, std::numeric_limits<_type2_>::denorm_min());  \
-    CHECK_CONV(_type1_, _type2_, std::numeric_limits<_type2_>::lowest());      \
-    CHECK_CONV(_type1_, _type2_, std::numeric_limits<_type2_>::max());         \
-    CHECK_CONV(_type1_, _type2_, std::numeric_limits<_type2_>::infinity());    \
+    SAR_CHECK_CONV(_type1_, _type2_, std::numeric_limits<_type2_>::epsilon()); \
+    SAR_CHECK_CONV(_type1_, _type2_, std::numeric_limits<_type2_>::min());     \
+    SAR_CHECK_CONV(                                                            \
+        _type1_, _type2_, std::numeric_limits<_type2_>::denorm_min()           \
+    );                                                                         \
+    SAR_CHECK_CONV(_type1_, _type2_, std::numeric_limits<_type2_>::lowest());  \
+    SAR_CHECK_CONV(_type1_, _type2_, std::numeric_limits<_type2_>::max());     \
+    SAR_CHECK_CONV(                                                            \
+        _type1_, _type2_, std::numeric_limits<_type2_>::infinity()             \
+    );                                                                         \
                                                                                \
     CHECK_CONV_NAN(                                                            \
         _type1_, _type2_, std::numeric_limits<_type2_>::quiet_NaN()            \
@@ -318,8 +353,8 @@ TEST(numerics_lossless_cast_test, maybe_loss_integral_to_float) {
         )                                                                      \
     );                                                                         \
                                                                                \
-    CHECK_CONV(_type1_, _type2_, low);                                         \
-    CHECK_CONV(_type1_, _type2_, high);                                        \
+    SAR_CHECK_CONV(_type1_, _type2_, low);                                     \
+    SAR_CHECK_CONV(_type1_, _type2_, high);                                    \
                                                                                \
     std::uniform_int_distribution<_type1_> dist(low, high);                    \
     for (int i = 0; i < test_repeats; ++i)                                     \
@@ -341,6 +376,8 @@ TEST(numerics_lossless_cast_test, maybe_loss_float_to_integral) {
 #define CHECK_NOLOSS(_type1_, _type2_)                                         \
   do {                                                                         \
     static_assert(!ctl::is_lossless_convertible_v<_type1_, _type2_>);          \
+                                                                               \
+    SAR_CHECK_CONV(_type1_, _type2_, 0);                                       \
                                                                                \
     constexpr int64_t low = std::is_signed_v<_type2_> ? -test_repeats : 0;     \
     for (_type1_ f = static_cast<_type1_>(low);                                \
