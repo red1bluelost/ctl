@@ -20,6 +20,56 @@
 CTL_BEGIN_NAMESPACE
 
 //===----------------------------------------------------------------------===//
+// Meta functions for meta functions.
+//===----------------------------------------------------------------------===//
+namespace meta {
+
+/// \brief True iff the predicate applied to each type is true for all of the
+/// instantiations. Short circuits on the first value that is false.
+///
+/// Example usage:
+/// \code
+/// template<typename... MemberTypes>
+/// requires ctl::meta::all_v<std::is_integral, MemberTypes...>
+/// struct IntVisitor { ... };
+/// \endcode
+///
+/// \tparam Pred The meta function predicate to apply
+/// \tparam T Every type to be tested by the predicate
+template<template<typename> class Pred, typename... T>
+struct all : std::conjunction<Pred<T>...> {};
+
+/// \brief Alias template for \c meta::all.
+template<template<typename> class Pred, typename... T>
+inline constexpr bool all_v = all<Pred, T...>::value;
+
+/// \brief True iff the predicate applied to each type is true for none of the
+/// instantiations. Short circuits on the first value that is true.
+///
+/// \tparam Pred The meta function predicate to apply
+/// \tparam T Every type to be tested by the predicate
+template<template<typename> class Pred, typename... T>
+struct none : std::conjunction<std::negation<Pred<T>>...> {};
+
+/// \brief Alias template for \c meta::none.
+template<template<typename> class Pred, typename... T>
+inline constexpr bool none_v = none<Pred, T...>::value;
+
+/// \brief True iff the predicate applied to each type is true for at least of
+/// the instantiations. Short circuits on the first value that is true.
+///
+/// \tparam Pred The meta function predicate to apply
+/// \tparam T Every type to be tested by the predicate
+template<template<typename> class Pred, typename... T>
+struct any : std::disjunction<Pred<T>...> {};
+
+/// \brief Alias template for \c meta::any.
+template<template<typename> class Pred, typename... T>
+inline constexpr bool any_v = any<Pred, T...>::value;
+
+} // namespace meta
+
+//===----------------------------------------------------------------------===//
 // Meta functions for any types.
 //===----------------------------------------------------------------------===//
 

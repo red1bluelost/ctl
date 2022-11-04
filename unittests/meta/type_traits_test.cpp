@@ -30,6 +30,46 @@ template<typename T> concept has_type = requires { typename T::type; };
   } while (false)
 
 //===----------------------------------------------------------------------===//
+// Tests for meta functions on meta functions.
+//===----------------------------------------------------------------------===//
+
+TEST(type_traits_test, meta_all) {
+  SAR_ASSERT(ctl::meta::all<std::is_integral, int, char, long>::value);
+  SAR_ASSERT(ctl::meta::all<std::is_floating_point, double>::value);
+  SAR_ASSERT(ctl::meta::all_v<std::is_signed, int, short, long, long long>);
+  SAR_ASSERT(ctl::meta::all_v<std::is_abstract>);
+
+  SAR_ASSERT(!ctl::meta::all<std::is_array, long[3], int*, const int[]>::value);
+  SAR_ASSERT(!ctl::meta::all<std::is_class, std::string, double>::value);
+  SAR_ASSERT(!ctl::meta::all_v<std::is_empty, int>);
+  SAR_ASSERT(!ctl::meta::all_v<std::is_function, int, int (*)()>);
+}
+
+TEST(type_traits_test, meta_none) {
+  SAR_ASSERT(ctl::meta::none<std::is_integral, float, std::string>::value);
+  SAR_ASSERT(ctl::meta::none<std::is_signed, float*, double (*[3])()>::value);
+  SAR_ASSERT(ctl::meta::none_v<std::is_const>);
+  SAR_ASSERT(ctl::meta::none_v<std::is_volatile, float*, const char*, int()>);
+
+  SAR_ASSERT(!ctl::meta::none<std::is_floating_point, float, long>::value);
+  SAR_ASSERT(!ctl::meta::none<std::is_signed, float*, int, char>::value);
+  SAR_ASSERT(!ctl::meta::none_v<std::is_const, const int>);
+  SAR_ASSERT(!ctl::meta::none_v<std::is_enum, std::byte, std::string>);
+}
+
+TEST(type_traits_test, meta_any) {
+  SAR_ASSERT(ctl::meta::any<std::is_integral, int, char, long>::value);
+  SAR_ASSERT(ctl::meta::any<std::is_floating_point, float, long>::value);
+  SAR_ASSERT(ctl::meta::any_v<std::is_const, const int>);
+  SAR_ASSERT(ctl::meta::any_v<std::is_signed, int, float, long, long long>);
+
+  SAR_ASSERT(!ctl::meta::any<std::is_integral, float, std::string>::value);
+  SAR_ASSERT(!ctl::meta::any<std::is_signed, float*, double (*[3])()>::value);
+  SAR_ASSERT(!ctl::meta::any_v<std::is_volatile, float*, const char*, int()>);
+  SAR_ASSERT(!ctl::meta::any_v<std::is_abstract>);
+}
+
+//===----------------------------------------------------------------------===//
 // Tests for meta functions on any type.
 //===----------------------------------------------------------------------===//
 
