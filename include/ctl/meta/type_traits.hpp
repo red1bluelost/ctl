@@ -176,8 +176,8 @@ inline constexpr bool is_signedness_same_v = is_signedness_same<F, T...>::value;
 template<typename... T>
 struct is_arithmetic_same
     : std::disjunction<
-          std::conjunction<std::is_integral<T>...>,
-          std::conjunction<std::is_floating_point<T>...>> {};
+          ctl::meta::all<std::is_integral, T...>,
+          ctl::meta::all<std::is_floating_point, T...>> {};
 
 /// \brief Alias template for \c is_arithmetic_same.
 template<typename... T>
