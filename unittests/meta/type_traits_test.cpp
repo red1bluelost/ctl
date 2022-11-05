@@ -69,6 +69,42 @@ TEST(type_traits_test, meta_any) {
   SAR_ASSERT(!ctl::meta::any_v<std::is_abstract>);
 }
 
+TEST(type_traits_test, meta_same) {
+  SAR_ASSERT(ctl::meta::same<>::value);
+  SAR_ASSERT(ctl::meta::same<
+             std::true_type,
+             std::is_signed<int>,
+             std::is_floating_point<float>>::value);
+  SAR_ASSERT(ctl::meta::same_v<long double>);
+  SAR_ASSERT(ctl::meta::same_v<
+             std::false_type,
+             std::is_class<int>,
+             std::is_const<double>>);
+  SAR_ASSERT(ctl::meta::same_v<
+             std::integral_constant<int, 3>,
+             std::integral_constant<int, 2 + 1>,
+             std::integral_constant<int, 7 - 4>,
+             std::integral_constant<int, 9 / 3>>);
+
+  SAR_ASSERT(!ctl::meta::same<
+             std::is_signed<int>,
+             std::is_signed<unsigned>,
+             std::is_signed<long>>::value);
+  SAR_ASSERT(!ctl::meta::same<
+             std::integral_constant<char, 'a'>,
+             std::integral_constant<char, 'b'>>::value);
+  SAR_ASSERT(!ctl::meta::same_v<
+             std::is_scalar<int>,
+             std::is_const<const long long>,
+             std::is_volatile<long>,
+             std::is_default_constructible<double>>);
+  SAR_ASSERT(!ctl::meta::same_v<
+             std::integral_constant<int, 3>,
+             std::integral_constant<int, 2>,
+             std::integral_constant<int, 7>,
+             std::integral_constant<int, 9 / 3>>);
+}
+
 //===----------------------------------------------------------------------===//
 // Tests for meta functions on any type.
 //===----------------------------------------------------------------------===//

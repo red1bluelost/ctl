@@ -67,6 +67,31 @@ struct any : std::disjunction<Pred<T>...> {};
 template<template<typename> class Pred, typename... T>
 inline constexpr bool any_v = any<Pred, T...>::value;
 
+/// \brief True iff each value of the meta type is the same via equality
+/// comparison.
+///
+/// For the case of zero or one types this is true. A quirk in the
+/// implementation of one type case, the type provided does not need to have a
+/// value member.
+///
+/// Example usage:
+/// \code
+/// template<typename... MemberTypes>
+/// requires ctl::meta::same_v<std::is_signed<MemberTypes>...>
+/// struct IntegralPromoter { ... };
+/// \endcode
+///
+/// \tparam ... All meta types to compare for sameness
+template<typename...>
+struct same : std::true_type {};
+template<typename F, typename... T>
+struct same<F, T...>
+    : std::conjunction<std::bool_constant<F::value == T::value>...> {};
+
+/// \brief Alias template for \c meta::same.
+template<typename... T>
+inline constexpr bool same_v = same<T...>::value;
+
 } // namespace meta
 
 //===----------------------------------------------------------------------===//
