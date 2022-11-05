@@ -162,6 +162,9 @@ TEST(type_traits_test, is_sizeof_ne) {
 //===----------------------------------------------------------------------===//
 
 TEST(type_traits_test, is_signedness_same) {
+  SAR_ASSERT(ctl::is_signedness_same<>::value);
+  SAR_ASSERT(ctl::is_signedness_same<unsigned>::value);
+
   SAR_ASSERT(ctl::is_signedness_same<int, long, long long>::value);
   SAR_ASSERT(ctl::is_signedness_same<float, std::ptrdiff_t>::value);
   SAR_ASSERT(ctl::is_signedness_same<unsigned>::value);
@@ -177,6 +180,7 @@ TEST(type_traits_test, is_signedness_same) {
   SAR_ASSERT(!ctl::is_signedness_same_v<bool, int>);
 
   struct tester {};
+  SAR_ASSERT(!ctl::is_signedness_same<tester>::value);
   SAR_ASSERT(!ctl::is_signedness_same<int, void>::value);
   SAR_ASSERT(!ctl::is_signedness_same<tester, unsigned>::value);
   SAR_ASSERT(!ctl::is_signedness_same_v<double, int[3]>);
@@ -225,6 +229,7 @@ TEST(type_traits_test, is_arithmetic_same) {
   SAR_ASSERT(!ctl::is_arithmetic_same_v<double, long, int, float>);
 
   SAR_ASSERT(!ctl::is_arithmetic_same_v<std::string, std::vector<int>>);
+  SAR_ASSERT(!ctl::is_arithmetic_same_v<std::string_view>);
   SAR_ASSERT(!ctl::is_arithmetic_same_v<std::string_view, int>);
   SAR_ASSERT(!ctl::is_arithmetic_same_v<bool, std::array<double, 3>, float>);
 }
