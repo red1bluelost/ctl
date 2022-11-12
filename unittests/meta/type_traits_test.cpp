@@ -135,6 +135,52 @@ TEST(type_traits_test, meta_apply_if) {
   SAR_ASSERT(std::is_same_v<
              ctl::meta::apply_if_t<false, std::decay, const float&>,
              const float&>);
+
+  // Not intended use case
+  SAR_ASSERT(std::is_base_of_v<
+             std::unique_ptr<int>,
+             ctl::meta::apply_if<true, std::unique_ptr, int>>);
+  SAR_ASSERT(std::is_same_v<
+             ctl::meta::apply_if_t<false, std::unique_ptr, int>,
+             int>);
+}
+
+TEST(type_traits_test, meta_wrap_if) {
+  SAR_ASSERT(std::is_same_v<
+             ctl::meta::wrap_if<true, std::unique_ptr, int>::type,
+             std::unique_ptr<int>>);
+  SAR_ASSERT(std::is_same_v<
+             ctl::meta::wrap_if<false, std::unique_ptr, int>::type,
+             int>);
+
+  SAR_ASSERT(std::is_same_v<
+             ctl::meta::wrap_if<true, std::vector, double>::type,
+             std::vector<double>>);
+  SAR_ASSERT(std::is_same_v<
+             ctl::meta::wrap_if<false, std::vector, double>::type,
+             double>);
+
+  SAR_ASSERT(std::is_same_v<
+             ctl::meta::wrap_if_t<true, std::optional, std::string_view>,
+             std::optional<std::string_view>>);
+  SAR_ASSERT(std::is_same_v<
+             ctl::meta::wrap_if_t<false, std::optional, std::string_view>,
+             std::string_view>);
+
+  SAR_ASSERT(std::is_same_v<
+             ctl::meta::wrap_if_t<true, std::variant, std::string>,
+             std::variant<std::string>>);
+  SAR_ASSERT(std::is_same_v<
+             ctl::meta::wrap_if_t<false, std::variant, std::string>,
+             std::string>);
+
+  // Not intended use case
+  SAR_ASSERT(std::is_same_v<
+             ctl::meta::wrap_if_t<true, std::add_const, int>,
+             std::add_const<int>>);
+  SAR_ASSERT(std::is_same_v<
+             ctl::meta::wrap_if_t<false, std::add_const, int>,
+             int>);
 }
 
 //===----------------------------------------------------------------------===//

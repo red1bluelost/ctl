@@ -108,21 +108,51 @@ inline constexpr bool same_v = same<T...>::value;
 /// };
 /// \endcode
 ///
+/// \warning Behavior might be unexpected if the application of MFunctor does
+/// not have a type alias named \c type. For situation where this would be the
+/// case, such as \c std::unique_ptr or other abstract data types, you likely
+/// want to use \c meta::wrap_if.
+///
 /// \tparam condition Whether or not to apply the meta functor
-/// \tparam MFunctor The meta function that may be applied
+/// \tparam MFunctor A type modifying meta function
 /// \tparam T The type to pass to the meta functor or just assign to type
-template<bool /*condition*/, template<typename> class MFunctor, typename T>
-struct apply_if {
-  using type = T;
-};
-
-/// \brief the true case that inherits from the meta function application.
-template<template<typename> class MFunctor, typename T>
-struct apply_if<true, MFunctor, T> : MFunctor<T> {};
+template<bool condition, template<typename> class MFunctor, typename T>
+struct apply_if
+    : std::conditional<condition, MFunctor<T>, std::type_identity<T>>::type {};
 
 /// \brief Alias template for \c meta::apply_if.
 template<bool condition, template<typename> class MFunctor, typename T>
 using apply_if_t = typename apply_if<condition, MFunctor, T>::type;
+
+/// \brief Instantiates the templated abstract data type if the condition is
+/// true and assigns to the \c type alias. Otherwise, it assigns \c T directly
+/// to \c type alias.
+///
+/// Useful when selecting a variable type based on a templated parameter.
+///
+/// Example usage:
+/// \code
+/// template<typename T, bool make_val_unique>
+/// struct MaybeUnique {
+///   ctl::meta::wrap_if_t<make_val_unique, std::unique_ptr, T> value;
+/// };
+/// \endcode
+///
+/// \warning Behavior might be unexpected if Wrapper is actually a meta function
+/// that is only meant to supply a type alias. In cases where you want to use
+/// meta functions like \c std::add_const, you probably want to use \c
+/// meta::apply_if.
+///
+/// \tparam condition Whether or not to apply the wrapping abstract data type
+/// \tparam Wrapper A templated abstract data type that is instantiated with a
+/// single type
+/// \tparam T The type to either pass through or instantiate the wrapper with
+template<bool condition, template<typename> class Wrapper, typename T>
+struct wrap_if : std::conditional<condition, Wrapper<T>, T> {};
+
+/// \brief Alias template for \c meta::wrap_if.
+template<bool condition, template<typename> class Wrapper, typename T>
+using wrap_if_t = typename wrap_if<condition, Wrapper, T>::type;
 
 } // namespace meta
 
