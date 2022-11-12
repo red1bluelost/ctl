@@ -92,6 +92,38 @@ struct same<F, T...>
 template<typename... T>
 inline constexpr bool same_v = same<T...>::value;
 
+/// \brief Applies a given meta function if the bool condition is true and
+/// inherits its type alias. Otherwise, the type passed in is used as the type
+/// alias.
+///
+/// Useful when applying qualifiers to types based on a templated condition.
+///
+/// Example usage:
+/// \code
+/// template<typename T, bool make_const>
+/// struct RefPair {
+///   using value_type = ctl::meta::apply_if_t<make_const, std::add_const, T>;
+///   value_type& first;
+///   value_type& second;
+/// };
+/// \endcode
+///
+/// \tparam condition Whether or not to apply the meta functor
+/// \tparam MFunctor The meta function that may be applied
+/// \tparam T The type to pass to the meta functor or just assign to type
+template<bool /*condition*/, template<typename> class MFunctor, typename T>
+struct apply_if {
+  using type = T;
+};
+
+/// \brief the true case that inherits from the meta function application.
+template<template<typename> class MFunctor, typename T>
+struct apply_if<true, MFunctor, T> : MFunctor<T> {};
+
+/// \brief Alias template for \c meta::apply_if.
+template<bool condition, template<typename> class MFunctor, typename T>
+using apply_if_t = typename apply_if<condition, MFunctor, T>::type;
+
 } // namespace meta
 
 //===----------------------------------------------------------------------===//

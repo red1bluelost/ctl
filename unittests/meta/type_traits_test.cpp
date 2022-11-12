@@ -19,10 +19,12 @@ namespace {
 
 template<typename T> concept has_type = requires { typename T::type; };
 
+// TODO: move into utility header file for tests
+
 /// \brief Asserts at both compile time and runtime. Useful for seeing the tests
 /// when running GoogleTest but also prevents compilation is incorrect.
 ///
-/// \param _expr_ The expression to assert on. Should be convertable to bool.
+/// \param ... The expression to assert on. Should be convertable to bool.
 #define SAR_ASSERT(...)                                                        \
   do {                                                                         \
     static_assert(__VA_ARGS__);                                                \
@@ -103,6 +105,36 @@ TEST(type_traits_test, meta_same) {
              std::integral_constant<int, 2>,
              std::integral_constant<int, 7>,
              std::integral_constant<int, 9 / 3>>);
+}
+
+TEST(type_traits_test, meta_apply_if) {
+  SAR_ASSERT(std::is_same_v<
+             ctl::meta::apply_if<true, std::add_const, int>::type,
+             const int>);
+  SAR_ASSERT(std::is_same_v<
+             ctl::meta::apply_if<false, std::add_const, int>::type,
+             int>);
+
+  SAR_ASSERT(std::is_same_v<
+             ctl::meta::apply_if<true, std::make_signed, int>::type,
+             int>);
+  SAR_ASSERT(std::is_same_v<
+             ctl::meta::apply_if<false, std::make_signed, int>::type,
+             int>);
+
+  SAR_ASSERT(std::is_same_v<
+             ctl::meta::apply_if_t<true, std::make_unsigned, int>,
+             unsigned int>);
+  SAR_ASSERT(std::is_same_v<
+             ctl::meta::apply_if_t<false, std::make_unsigned, int>,
+             int>);
+
+  SAR_ASSERT(std::is_same_v<
+             ctl::meta::apply_if_t<true, std::decay, const float&>,
+             float>);
+  SAR_ASSERT(std::is_same_v<
+             ctl::meta::apply_if_t<false, std::decay, const float&>,
+             const float&>);
 }
 
 //===----------------------------------------------------------------------===//
