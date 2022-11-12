@@ -1,4 +1,4 @@
-//===- bit_test.cpp - TODO: description -------------------------*- C++ -*-===//
+//===- bit_test.cpp - Tests for the bit utilities ---------------*- C++ -*-===//
 //
 // TODO: License
 //
