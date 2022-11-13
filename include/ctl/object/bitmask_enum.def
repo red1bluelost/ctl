@@ -20,53 +20,76 @@
 
 // Checks for defines and includes that are required.
 #if !defined(CTL_BITMASK_ENUM)
-#  error "Must define CTL_BITMASK_ENUM to use this define file."
-#endif
+#  error "Must define CTL_BITMASK_ENUM to use this definition file."
+#else
 
 static_assert(
     std::is_enum<CTL_BITMASK_ENUM>::value,
     "CTL_BITMASK_ENUM must be an enum type."
 );
 
-#if defined(__has_cpp_attribute)
-#  if __has_cpp_attribute(nodiscard)
-#    define CTL_BME_NODISCARD [[nodiscard]]
+#  if defined(__has_cpp_attribute)
+#    if __has_cpp_attribute(nodiscard)
+#      define CTL_BME_NODISCARD [[nodiscard]]
+#    else
+#      define CTL_BME_NODISCARD
+#    endif
 #  else
 #    define CTL_BME_NODISCARD
 #  endif
-#endif
 
-#define CTL_DEFINE_BINARY_OPERATOR(_op_)                                       \
-  CTL_BME_NODISCARD constexpr auto operator _op_(                              \
-      CTL_BITMASK_ENUM _x, CTL_BITMASK_ENUM _y                                 \
-  ) noexcept -> CTL_BITMASK_ENUM {                                             \
-    using _utype = typename std::underlying_type<CTL_BITMASK_ENUM>::type;      \
-    return static_cast<CTL_BITMASK_ENUM>(static_cast<_utype>(_x                \
-    ) _op_ /* NOLINT(bugprone-macro-parentheses) */ static_cast<_utype>(_y));  \
-  }
+#  if defined(__cpp_lib_transformation_trait_aliases) || __cplusplus >= 201304L
+#    define CTL_BME_UNDERLYING std::underlying_type_t<CTL_BITMASK_ENUM>
+#  else
+#    define CTL_BME_UNDERLYING                                                 \
+      typename std::underlying_type<CTL_BITMASK_ENUM>::type
+#  endif
 
-#define CTL_DEFINE_COMPOUND_ASSIGNMENT_OPERATOR(_op_)                          \
-  constexpr auto operator _op_##=(                                             \
-      CTL_BITMASK_ENUM& _x, CTL_BITMASK_ENUM _y                                \
-  ) noexcept -> CTL_BITMASK_ENUM& { /* NOLINT(bugprone-macro-parentheses) */   \
-    return _x = _x _op_ /* NOLINT(bugprone-macro-parentheses) */ _y;           \
-  }
-
-CTL_DEFINE_BINARY_OPERATOR(&)
-CTL_DEFINE_BINARY_OPERATOR(|)
-CTL_DEFINE_BINARY_OPERATOR(^)
-
-CTL_DEFINE_COMPOUND_ASSIGNMENT_OPERATOR(&)
-CTL_DEFINE_COMPOUND_ASSIGNMENT_OPERATOR(|)
-CTL_DEFINE_COMPOUND_ASSIGNMENT_OPERATOR(^)
-
+// Unary bitwise operators
 CTL_BME_NODISCARD constexpr auto operator~(CTL_BITMASK_ENUM _x) noexcept
     -> CTL_BITMASK_ENUM {
-  using _utype = typename std::underlying_type<CTL_BITMASK_ENUM>::type;
-  return static_cast<CTL_BITMASK_ENUM>(~static_cast<_utype>(_x));
+  return static_cast<CTL_BITMASK_ENUM>(~static_cast<CTL_BME_UNDERLYING>(_x));
 }
 
-#undef CTL_DEFINE_COMPOUND_ASSIGNMENT_OPERATOR
-#undef CTL_DEFINE_BINARY_OPERATOR
-#undef CTL_BME_NODISCARD
-#undef CTL_BITMASK_ENUM
+// Binary bitwise operators
+CTL_BME_NODISCARD constexpr auto
+operator&(CTL_BITMASK_ENUM _x, CTL_BITMASK_ENUM _y) noexcept
+    -> CTL_BITMASK_ENUM {
+  return static_cast<CTL_BITMASK_ENUM>(
+      static_cast<CTL_BME_UNDERLYING>(_x) & static_cast<CTL_BME_UNDERLYING>(_y)
+  );
+}
+CTL_BME_NODISCARD constexpr auto
+operator|(CTL_BITMASK_ENUM _x, CTL_BITMASK_ENUM _y) noexcept
+    -> CTL_BITMASK_ENUM {
+  return static_cast<CTL_BITMASK_ENUM>(
+      static_cast<CTL_BME_UNDERLYING>(_x) | static_cast<CTL_BME_UNDERLYING>(_y)
+  );
+}
+CTL_BME_NODISCARD constexpr auto
+operator^(CTL_BITMASK_ENUM _x, CTL_BITMASK_ENUM _y) noexcept
+    -> CTL_BITMASK_ENUM {
+  return static_cast<CTL_BITMASK_ENUM>(
+      static_cast<CTL_BME_UNDERLYING>(_x) ^ static_cast<CTL_BME_UNDERLYING>(_y)
+  );
+}
+
+// Compound assignment bitwise operators
+constexpr auto operator&=(CTL_BITMASK_ENUM& _x, CTL_BITMASK_ENUM _y) noexcept
+    -> CTL_BITMASK_ENUM& {
+  return _x = _x & _y;
+}
+constexpr auto operator|=(CTL_BITMASK_ENUM& _x, CTL_BITMASK_ENUM _y) noexcept
+    -> CTL_BITMASK_ENUM& {
+  return _x = _x | _y;
+}
+constexpr auto operator^=(CTL_BITMASK_ENUM& _x, CTL_BITMASK_ENUM _y) noexcept
+    -> CTL_BITMASK_ENUM& {
+  return _x = _x ^ _y;
+}
+
+#  undef CTL_BME_UNDERLYING
+#  undef CTL_BME_NODISCARD
+#  undef CTL_BITMASK_ENUM
+
+#endif
