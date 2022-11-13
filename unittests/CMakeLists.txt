@@ -13,6 +13,7 @@ set_property(DIRECTORY ${googletest_SOURCE_DIR} PROPERTY EXCLUDE_FROM_ALL YES)
 
 include(add-ctl-test)
 
+add_subdirectory(core) # Intentionally first
 add_subdirectory(adt)
 add_subdirectory(meta)
 add_subdirectory(object)
