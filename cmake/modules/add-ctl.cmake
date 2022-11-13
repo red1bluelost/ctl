@@ -1,18 +1,22 @@
 include_guard()
 
+# TODO: add a bunch of comments to better document this
 function (${PROJECT_NAME}_add_component name)
   string(TOUPPER ${PROJECT_NAME} PN_UP)
 
   cmake_parse_arguments(
     ARG "" "" "INTERFACE_HEADER_FILES;${PN_UP}_INTERFACE_DEPENDENCIES" ${ARGN})
 
-  set(libname ${PROJECT_NAME}_${name})
+  string(REPLACE "/" "_" name_underscore ${name})
+  set(libname ${PROJECT_NAME}_${name_underscore})
   foreach (header ${ARG_INTERFACE_HEADER_FILES})
     list(APPEND INTERFACE_HEADERS_ABS_PATH
          ${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/${name}/${header})
   endforeach ()
   add_library(${libname} INTERFACE ${INTERFACE_HEADERS_ABS_PATH})
-  add_library(${PROJECT_NAME}::${name} ALIAS ${libname})
+
+  string(REPLACE "/" "::" name_colon ${name})
+  add_library(${PROJECT_NAME}::${name_colon} ALIAS ${libname})
 
   target_include_directories(
     ${libname} INTERFACE $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
@@ -35,8 +39,8 @@ function (${PROJECT_NAME}_add_component name)
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
-  set_property(GLOBAL APPEND PROPERTY ${PN_UP}_COMPONENTS ${name})
+  set_property(GLOBAL APPEND PROPERTY ${PN_UP}_COMPONENTS ${name_underscore})
 
-  install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/${name}
-          DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
+  install(FILES ${INTERFACE_HEADERS_ABS_PATH}
+          DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/${name})
 endfunction ()

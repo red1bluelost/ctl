@@ -3,8 +3,10 @@ include_guard()
 function (${PROJECT_NAME}_add_test name)
   cmake_parse_arguments(ARG "" "" "TEST_FILES" ${ARGN})
 
-  add_executable(${PROJECT_NAME}_${name}_test ${ARG_TEST_FILES})
-  target_link_libraries(${PROJECT_NAME}_${name}_test
-                        PRIVATE ${PROJECT_NAME}_${name} gtest_main)
-  gtest_discover_tests(${PROJECT_NAME}_${name}_test)
+  string(REPLACE "/" "_" name_underscore ${name})
+  set(test_target_name ${PROJECT_NAME}_${name_underscore}_test)
+  add_executable(${test_target_name} ${ARG_TEST_FILES})
+  target_link_libraries(${test_target_name}
+                        PRIVATE ${PROJECT_NAME}_${name_underscore} gtest_main)
+  gtest_discover_tests(${test_target_name})
 endfunction ()
