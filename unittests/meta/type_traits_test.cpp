@@ -460,7 +460,7 @@ TEST(type_traits_is_lossless_convertible_test, arithmetic_mixed) {
 TEST(type_traits_is_lossless_convertible_test, non_arithmetic) {
   struct s_int {
     int i;
-    s_int(int i) : i(i) {}
+    s_int(int i_) : i(i_) {}
   };
   SAR_ASSERT(std::is_convertible_v<int, s_int>);
 

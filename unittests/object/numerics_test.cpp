@@ -63,7 +63,7 @@ static constexpr int test_repeats = 100;
 /// \brief Checks \c ctl::lossless_cast at compile time to ensure a throw.
 template<typename T1, typename T2>
 void check_failure(auto val) {
-  T1 input = val;
+  T1 input = static_cast<T1>(val);
   ASSERT_THROW((void)ctl::lossless_cast<T2>(input), std::range_error);
 }
 
@@ -380,9 +380,10 @@ TEST(numerics_lossless_cast_test, maybe_loss_float_to_integral) {
     SAR_CHECK_CONV(_type1_, _type2_, 0);                                       \
                                                                                \
     constexpr int64_t low = std::is_signed_v<_type2_> ? -test_repeats : 0;     \
-    for (_type1_ f = static_cast<_type1_>(low);                                \
-         f < static_cast<_type1_>(low + test_repeats * 2);                     \
-         f += (_type1_){1.0})                                                  \
+    using type1_alias     = _type1_;                                           \
+    for (type1_alias f = static_cast<type1_alias>(low);                        \
+         f < static_cast<type1_alias>(low + test_repeats * 2);                 \
+         f += type1_alias{1.0})                                                \
       CHECK_CONV(_type1_, _type2_, f);                                         \
   } while (false)
 
@@ -587,9 +588,11 @@ TEST(numerics_lossless_cast_test, maybe_loss_float_to_integral_fail) {
     static_assert(!ctl::is_lossless_convertible_v<_type1_, _type2_>);          \
                                                                                \
     constexpr int64_t low = std::is_signed_v<_type2_> ? -test_repeats : 0;     \
-    for (_type1_ f = static_cast<_type1_>(low) + (_type1_){0.5};               \
-         f < static_cast<_type1_>(low + test_repeats * 2) + (_type1_){0.5};    \
-         f += (_type1_){1.0})                                                  \
+    using type1_alias     = _type1_;                                           \
+    for (type1_alias f = static_cast<type1_alias>(low) + type1_alias{0.5};     \
+         f <                                                                   \
+         static_cast<type1_alias>(low + test_repeats * 2) + type1_alias{0.5};  \
+         f += type1_alias{1.0})                                                \
       check_failure<_type1_, _type2_>(f);                                      \
   } while (false)
 
