@@ -160,6 +160,21 @@ using wrap_if_t = typename wrap_if<condition, Wrapper, T>::type;
 // Meta functions for any types.
 //===----------------------------------------------------------------------===//
 
+namespace detail {
+template<typename T, typename = void>
+struct has_type_impl : std::false_type {};
+
+template<typename T>
+struct has_type_impl<T, std::void_t<typename T::type>> : std::true_type {};
+
+} // namespace detail
+
+template<typename T>
+struct has_type : detail::has_type_impl<T> {};
+
+template<typename T>
+inline constexpr bool has_type_v = has_type<T>::value;
+
 /// \brief Compares sizes of types if left is less than right.
 ///
 /// Convenient for when a meta struct is needed to avoid using \c
@@ -168,7 +183,7 @@ using wrap_if_t = typename wrap_if<condition, Wrapper, T>::type;
 /// Example usage:
 /// \code
 /// template<typename L, typename R>
-/// requires std::conjunction<
+/// requires std::conjunction_v<
 ///     ctl::is_sizeof_lt<L, R>,
 ///     std::negation<std::is_same<L, R>>
 /// >

@@ -14,10 +14,32 @@
 
 namespace {
 //===----------------------------------------------------------------------===//
-// Utilities for these tests.
+// Testing has_type first since it is used to verify the other tests.
 //===----------------------------------------------------------------------===//
 
-template<typename T> concept has_type = requires { typename T::type; };
+struct wrong_type {
+  static constexpr bool type = 0;
+};
+TEST(type_traits_test, has_type) {
+  static_assert(!ctl::has_type<void>::value);
+  static_assert(!ctl::has_type<bool>::value);
+  static_assert(!ctl::has_type<int>::value);
+  static_assert(!ctl::has_type<double>::value);
+
+  struct no_type {};
+  struct yes_type {
+    using type = int;
+  };
+  static_assert(!ctl::has_type_v<no_type>);
+  static_assert(ctl::has_type_v<yes_type>);
+  static_assert(!ctl::has_type_v<wrong_type>);
+
+  static_assert(!ctl::has_type<std::enable_if<false>>::value);
+  static_assert(ctl::has_type<std::enable_if<true>>::value);
+  static_assert(ctl::has_type_v<std::add_const<int>>);
+  static_assert(ctl::has_type_v<std::add_cv<int>>);
+  static_assert(ctl::has_type_v<std::remove_all_extents<int>>);
+}
 
 //===----------------------------------------------------------------------===//
 // Tests for meta functions on meta functions.
@@ -480,30 +502,32 @@ TEST(type_traits_is_lossless_convertible_test, non_arithmetic) {
 //===----------------------------------------------------------------------===//
 
 TEST(type_traits_test, enable_same) {
-  static_assert(has_type<ctl::enable_same<int, int>>);
-  static_assert(has_type<ctl::enable_same<bool, bool, long long>>);
-  static_assert(!has_type<ctl::enable_same<int, float>>);
-  static_assert(!has_type<ctl::enable_same<unsigned, bool, int>>);
+  static_assert(ctl::has_type_v<ctl::enable_same<int, int>>);
+  static_assert(ctl::has_type_v<ctl::enable_same<bool, bool, long long>>);
+  static_assert(!ctl::has_type_v<ctl::enable_same<int, float>>);
+  static_assert(!ctl::has_type_v<ctl::enable_same<unsigned, bool, int>>);
 
   static_assert(std::is_same_v<ctl::enable_same_t<double, double>, void>);
   ASSERT_EQ((ctl::enable_same_t<double, double, long>{2}), long{2});
 }
 
 TEST(type_traits_test, enable_not_same) {
-  static_assert(!has_type<ctl::enable_not_same<int, int>>);
-  static_assert(!has_type<ctl::enable_not_same<bool, bool, long long>>);
-  static_assert(has_type<ctl::enable_not_same<int, float>>);
-  static_assert(has_type<ctl::enable_not_same<unsigned, bool, int>>);
+  static_assert(!ctl::has_type_v<ctl::enable_not_same<int, int>>);
+  static_assert(!ctl::has_type_v<ctl::enable_not_same<bool, bool, long long>>);
+  static_assert(ctl::has_type_v<ctl::enable_not_same<int, float>>);
+  static_assert(ctl::has_type_v<ctl::enable_not_same<unsigned, bool, int>>);
 
   static_assert(std::is_same_v<ctl::enable_not_same_t<double, char>, void>);
   ASSERT_EQ((ctl::enable_not_same_t<double, float, long>{2}), long{2});
 }
 
 TEST(type_traits_test, enable_same_decay) {
-  static_assert(has_type<ctl::enable_same_decay<int, const int&>>);
-  static_assert(has_type<ctl::enable_same_decay<bool&&, const bool, long>>);
-  static_assert(!has_type<ctl::enable_same_decay<const int, float&>>);
-  static_assert(!has_type<ctl::enable_same_decay<unsigned, const bool, int>>);
+  static_assert(ctl::has_type_v<ctl::enable_same_decay<int, const int&>>);
+  static_assert(ctl::has_type_v<
+                ctl::enable_same_decay<bool&&, const bool, long>>);
+  static_assert(!ctl::has_type_v<ctl::enable_same_decay<const int, float&>>);
+  static_assert(!ctl::has_type_v<
+                ctl::enable_same_decay<unsigned, const bool, int>>);
 
   static_assert(std::is_same_v<ctl::enable_same_decay_t<int&&, int&&>, void>);
   ASSERT_EQ((ctl::enable_same_decay_t<int&&, const int, long>{2}), long{2});
