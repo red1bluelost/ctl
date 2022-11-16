@@ -19,168 +19,162 @@ namespace {
 
 template<typename T> concept has_type = requires { typename T::type; };
 
-// TODO: move into utility header file for tests
-
-/// \brief Asserts at both compile time and runtime. Useful for seeing the tests
-/// when running GoogleTest but also prevents compilation is incorrect.
-///
-/// \param ... The expression to assert on. Should be convertable to bool.
-#define SAR_ASSERT(...)                                                        \
-  do {                                                                         \
-    static_assert(__VA_ARGS__);                                                \
-    ASSERT_TRUE((__VA_ARGS__));                                                \
-  } while (false)
-
 //===----------------------------------------------------------------------===//
 // Tests for meta functions on meta functions.
 //===----------------------------------------------------------------------===//
 
 TEST(type_traits_test, meta_all) {
-  SAR_ASSERT(ctl::meta::all<std::is_integral, int, char, long>::value);
-  SAR_ASSERT(ctl::meta::all<std::is_floating_point, double>::value);
-  SAR_ASSERT(ctl::meta::all_v<std::is_signed, int, short, long, long long>);
-  SAR_ASSERT(ctl::meta::all_v<std::is_abstract>);
+  static_assert(ctl::meta::all<std::is_integral, int, char, long>::value);
+  static_assert(ctl::meta::all<std::is_floating_point, double>::value);
+  static_assert(ctl::meta::all_v<std::is_signed, int, short, long, long long>);
+  static_assert(ctl::meta::all_v<std::is_abstract>);
 
-  SAR_ASSERT(!ctl::meta::all<std::is_array, long[3], int*, const int[]>::value);
-  SAR_ASSERT(!ctl::meta::all<std::is_class, std::string, double>::value);
-  SAR_ASSERT(!ctl::meta::all_v<std::is_empty, int>);
-  SAR_ASSERT(!ctl::meta::all_v<std::is_function, int, int (*)()>);
+  static_assert(
+      !ctl::meta::all<std::is_array, long[3], int*, const int[]>::value
+  );
+  static_assert(!ctl::meta::all<std::is_class, std::string, double>::value);
+  static_assert(!ctl::meta::all_v<std::is_empty, int>);
+  static_assert(!ctl::meta::all_v<std::is_function, int, int (*)()>);
 }
 
 TEST(type_traits_test, meta_none) {
-  SAR_ASSERT(ctl::meta::none<std::is_integral, float, std::string>::value);
-  SAR_ASSERT(ctl::meta::none<std::is_signed, float*, double (*[3])()>::value);
-  SAR_ASSERT(ctl::meta::none_v<std::is_const>);
-  SAR_ASSERT(ctl::meta::none_v<std::is_volatile, float*, const char*, int()>);
+  static_assert(ctl::meta::none<std::is_integral, float, std::string>::value);
+  static_assert(ctl::meta::none<std::is_signed, float*, double (*[3])()>::value
+  );
+  static_assert(ctl::meta::none_v<std::is_const>);
+  static_assert(ctl::meta::
+                    none_v<std::is_volatile, float*, const char*, int()>);
 
-  SAR_ASSERT(!ctl::meta::none<std::is_floating_point, float, long>::value);
-  SAR_ASSERT(!ctl::meta::none<std::is_signed, float*, int, char>::value);
-  SAR_ASSERT(!ctl::meta::none_v<std::is_const, const int>);
-  SAR_ASSERT(!ctl::meta::none_v<std::is_enum, std::byte, std::string>);
+  static_assert(!ctl::meta::none<std::is_floating_point, float, long>::value);
+  static_assert(!ctl::meta::none<std::is_signed, float*, int, char>::value);
+  static_assert(!ctl::meta::none_v<std::is_const, const int>);
+  static_assert(!ctl::meta::none_v<std::is_enum, std::byte, std::string>);
 }
 
 TEST(type_traits_test, meta_any) {
-  SAR_ASSERT(ctl::meta::any<std::is_integral, int, char, long>::value);
-  SAR_ASSERT(ctl::meta::any<std::is_floating_point, float, long>::value);
-  SAR_ASSERT(ctl::meta::any_v<std::is_const, const int>);
-  SAR_ASSERT(ctl::meta::any_v<std::is_signed, int, float, long, long long>);
+  static_assert(ctl::meta::any<std::is_integral, int, char, long>::value);
+  static_assert(ctl::meta::any<std::is_floating_point, float, long>::value);
+  static_assert(ctl::meta::any_v<std::is_const, const int>);
+  static_assert(ctl::meta::any_v<std::is_signed, int, float, long, long long>);
 
-  SAR_ASSERT(!ctl::meta::any<std::is_integral, float, std::string>::value);
-  SAR_ASSERT(!ctl::meta::any<std::is_signed, float*, double (*[3])()>::value);
-  SAR_ASSERT(!ctl::meta::any_v<std::is_volatile, float*, const char*, int()>);
-  SAR_ASSERT(!ctl::meta::any_v<std::is_abstract>);
+  static_assert(!ctl::meta::any<std::is_integral, float, std::string>::value);
+  static_assert(!ctl::meta::any<std::is_signed, float*, double (*[3])()>::value
+  );
+  static_assert(!ctl::meta::
+                    any_v<std::is_volatile, float*, const char*, int()>);
+  static_assert(!ctl::meta::any_v<std::is_abstract>);
 }
 
 TEST(type_traits_test, meta_same) {
-  SAR_ASSERT(ctl::meta::same<>::value);
-  SAR_ASSERT(ctl::meta::same<
-             std::true_type,
-             std::is_signed<int>,
-             std::is_floating_point<float>>::value);
-  SAR_ASSERT(ctl::meta::same_v<long double>);
-  SAR_ASSERT(ctl::meta::same_v<
-             std::false_type,
-             std::is_class<int>,
-             std::is_const<double>>);
-  SAR_ASSERT(ctl::meta::same_v<
-             std::integral_constant<int, 3>,
-             std::integral_constant<int, 2 + 1>,
-             std::integral_constant<int, 7 - 4>,
-             std::integral_constant<int, 9 / 3>>);
+  static_assert(ctl::meta::same<>::value);
+  static_assert(ctl::meta::same<
+                std::true_type,
+                std::is_signed<int>,
+                std::is_floating_point<float>>::value);
+  static_assert(ctl::meta::same_v<long double>);
+  static_assert(ctl::meta::same_v<
+                std::false_type,
+                std::is_class<int>,
+                std::is_const<double>>);
+  static_assert(ctl::meta::same_v<
+                std::integral_constant<int, 3>,
+                std::integral_constant<int, 2 + 1>,
+                std::integral_constant<int, 7 - 4>,
+                std::integral_constant<int, 9 / 3>>);
 
-  SAR_ASSERT(!ctl::meta::same<
-             std::is_signed<int>,
-             std::is_signed<unsigned>,
-             std::is_signed<long>>::value);
-  SAR_ASSERT(!ctl::meta::same<
-             std::integral_constant<char, 'a'>,
-             std::integral_constant<char, 'b'>>::value);
-  SAR_ASSERT(!ctl::meta::same_v<
-             std::is_scalar<int>,
-             std::is_const<const long long>,
-             std::is_volatile<long>,
-             std::is_default_constructible<double>>);
-  SAR_ASSERT(!ctl::meta::same_v<
-             std::integral_constant<int, 3>,
-             std::integral_constant<int, 2>,
-             std::integral_constant<int, 7>,
-             std::integral_constant<int, 9 / 3>>);
+  static_assert(!ctl::meta::same<
+                std::is_signed<int>,
+                std::is_signed<unsigned>,
+                std::is_signed<long>>::value);
+  static_assert(!ctl::meta::same<
+                std::integral_constant<char, 'a'>,
+                std::integral_constant<char, 'b'>>::value);
+  static_assert(!ctl::meta::same_v<
+                std::is_scalar<int>,
+                std::is_const<const long long>,
+                std::is_volatile<long>,
+                std::is_default_constructible<double>>);
+  static_assert(!ctl::meta::same_v<
+                std::integral_constant<int, 3>,
+                std::integral_constant<int, 2>,
+                std::integral_constant<int, 7>,
+                std::integral_constant<int, 9 / 3>>);
 }
 
 TEST(type_traits_test, meta_apply_if) {
-  SAR_ASSERT(std::is_same_v<
-             ctl::meta::apply_if<true, std::add_const, int>::type,
-             const int>);
-  SAR_ASSERT(std::is_same_v<
-             ctl::meta::apply_if<false, std::add_const, int>::type,
-             int>);
+  static_assert(std::is_same_v<
+                ctl::meta::apply_if<true, std::add_const, int>::type,
+                const int>);
+  static_assert(std::is_same_v<
+                ctl::meta::apply_if<false, std::add_const, int>::type,
+                int>);
 
-  SAR_ASSERT(std::is_same_v<
-             ctl::meta::apply_if<true, std::make_signed, int>::type,
-             int>);
-  SAR_ASSERT(std::is_same_v<
-             ctl::meta::apply_if<false, std::make_signed, int>::type,
-             int>);
+  static_assert(std::is_same_v<
+                ctl::meta::apply_if<true, std::make_signed, int>::type,
+                int>);
+  static_assert(std::is_same_v<
+                ctl::meta::apply_if<false, std::make_signed, int>::type,
+                int>);
 
-  SAR_ASSERT(std::is_same_v<
-             ctl::meta::apply_if_t<true, std::make_unsigned, int>,
-             unsigned int>);
-  SAR_ASSERT(std::is_same_v<
-             ctl::meta::apply_if_t<false, std::make_unsigned, int>,
-             int>);
+  static_assert(std::is_same_v<
+                ctl::meta::apply_if_t<true, std::make_unsigned, int>,
+                unsigned int>);
+  static_assert(std::is_same_v<
+                ctl::meta::apply_if_t<false, std::make_unsigned, int>,
+                int>);
 
-  SAR_ASSERT(std::is_same_v<
-             ctl::meta::apply_if_t<true, std::decay, const float&>,
-             float>);
-  SAR_ASSERT(std::is_same_v<
-             ctl::meta::apply_if_t<false, std::decay, const float&>,
-             const float&>);
+  static_assert(std::is_same_v<
+                ctl::meta::apply_if_t<true, std::decay, const float&>,
+                float>);
+  static_assert(std::is_same_v<
+                ctl::meta::apply_if_t<false, std::decay, const float&>,
+                const float&>);
 
   // Not intended use case
-  SAR_ASSERT(std::is_base_of_v<
-             std::unique_ptr<int>,
-             ctl::meta::apply_if<true, std::unique_ptr, int>>);
-  SAR_ASSERT(std::is_same_v<
-             ctl::meta::apply_if_t<false, std::unique_ptr, int>,
-             int>);
+  static_assert(std::is_base_of_v<
+                std::unique_ptr<int>,
+                ctl::meta::apply_if<true, std::unique_ptr, int>>);
+  static_assert(std::is_same_v<
+                ctl::meta::apply_if_t<false, std::unique_ptr, int>,
+                int>);
 }
 
 TEST(type_traits_test, meta_wrap_if) {
-  SAR_ASSERT(std::is_same_v<
-             ctl::meta::wrap_if<true, std::unique_ptr, int>::type,
-             std::unique_ptr<int>>);
-  SAR_ASSERT(std::is_same_v<
-             ctl::meta::wrap_if<false, std::unique_ptr, int>::type,
-             int>);
+  static_assert(std::is_same_v<
+                ctl::meta::wrap_if<true, std::unique_ptr, int>::type,
+                std::unique_ptr<int>>);
+  static_assert(std::is_same_v<
+                ctl::meta::wrap_if<false, std::unique_ptr, int>::type,
+                int>);
 
-  SAR_ASSERT(std::is_same_v<
-             ctl::meta::wrap_if<true, std::vector, double>::type,
-             std::vector<double>>);
-  SAR_ASSERT(std::is_same_v<
-             ctl::meta::wrap_if<false, std::vector, double>::type,
-             double>);
+  static_assert(std::is_same_v<
+                ctl::meta::wrap_if<true, std::vector, double>::type,
+                std::vector<double>>);
+  static_assert(std::is_same_v<
+                ctl::meta::wrap_if<false, std::vector, double>::type,
+                double>);
 
-  SAR_ASSERT(std::is_same_v<
-             ctl::meta::wrap_if_t<true, std::optional, std::string_view>,
-             std::optional<std::string_view>>);
-  SAR_ASSERT(std::is_same_v<
-             ctl::meta::wrap_if_t<false, std::optional, std::string_view>,
-             std::string_view>);
+  static_assert(std::is_same_v<
+                ctl::meta::wrap_if_t<true, std::optional, std::string_view>,
+                std::optional<std::string_view>>);
+  static_assert(std::is_same_v<
+                ctl::meta::wrap_if_t<false, std::optional, std::string_view>,
+                std::string_view>);
 
-  SAR_ASSERT(std::is_same_v<
-             ctl::meta::wrap_if_t<true, std::variant, std::string>,
-             std::variant<std::string>>);
-  SAR_ASSERT(std::is_same_v<
-             ctl::meta::wrap_if_t<false, std::variant, std::string>,
-             std::string>);
+  static_assert(std::is_same_v<
+                ctl::meta::wrap_if_t<true, std::variant, std::string>,
+                std::variant<std::string>>);
+  static_assert(std::is_same_v<
+                ctl::meta::wrap_if_t<false, std::variant, std::string>,
+                std::string>);
 
   // Not intended use case
-  SAR_ASSERT(std::is_same_v<
-             ctl::meta::wrap_if_t<true, std::add_const, int>,
-             std::add_const<int>>);
-  SAR_ASSERT(std::is_same_v<
-             ctl::meta::wrap_if_t<false, std::add_const, int>,
-             int>);
+  static_assert(std::is_same_v<
+                ctl::meta::wrap_if_t<true, std::add_const, int>,
+                std::add_const<int>>);
+  static_assert(std::is_same_v<
+                ctl::meta::wrap_if_t<false, std::add_const, int>,
+                int>);
 }
 
 //===----------------------------------------------------------------------===//
@@ -188,51 +182,51 @@ TEST(type_traits_test, meta_wrap_if) {
 //===----------------------------------------------------------------------===//
 
 TEST(type_traits_test, is_sizeof_lt) {
-  SAR_ASSERT(ctl::is_sizeof_lt<int32_t, int64_t>::value);
-  SAR_ASSERT(ctl::is_sizeof_lt_v<char, std::string>);
+  static_assert(ctl::is_sizeof_lt<int32_t, int64_t>::value);
+  static_assert(ctl::is_sizeof_lt_v<char, std::string>);
 
-  SAR_ASSERT(!ctl::is_sizeof_lt<int16_t, int16_t>::value);
-  SAR_ASSERT(!ctl::is_sizeof_lt_v<double, short>);
+  static_assert(!ctl::is_sizeof_lt<int16_t, int16_t>::value);
+  static_assert(!ctl::is_sizeof_lt_v<double, short>);
 }
 
 TEST(type_traits_test, is_sizeof_le) {
-  SAR_ASSERT(ctl::is_sizeof_le<int32_t, int32_t>::value);
-  SAR_ASSERT(ctl::is_sizeof_le_v<char, std::string>);
+  static_assert(ctl::is_sizeof_le<int32_t, int32_t>::value);
+  static_assert(ctl::is_sizeof_le_v<char, std::string>);
 
-  SAR_ASSERT(!ctl::is_sizeof_le<int64_t, int16_t>::value);
-  SAR_ASSERT(!ctl::is_sizeof_le_v<double, short>);
+  static_assert(!ctl::is_sizeof_le<int64_t, int16_t>::value);
+  static_assert(!ctl::is_sizeof_le_v<double, short>);
 }
 
 TEST(type_traits_test, is_sizeof_gt) {
-  SAR_ASSERT(ctl::is_sizeof_gt<int64_t, int32_t>::value);
-  SAR_ASSERT(ctl::is_sizeof_gt_v<std::string, char>);
+  static_assert(ctl::is_sizeof_gt<int64_t, int32_t>::value);
+  static_assert(ctl::is_sizeof_gt_v<std::string, char>);
 
-  SAR_ASSERT(!ctl::is_sizeof_gt<int16_t, int16_t>::value);
-  SAR_ASSERT(!ctl::is_sizeof_gt_v<short, double>);
+  static_assert(!ctl::is_sizeof_gt<int16_t, int16_t>::value);
+  static_assert(!ctl::is_sizeof_gt_v<short, double>);
 }
 
 TEST(type_traits_test, is_sizeof_ge) {
-  SAR_ASSERT(ctl::is_sizeof_ge<int32_t, int32_t>::value);
-  SAR_ASSERT(ctl::is_sizeof_ge_v<std::string, char>);
+  static_assert(ctl::is_sizeof_ge<int32_t, int32_t>::value);
+  static_assert(ctl::is_sizeof_ge_v<std::string, char>);
 
-  SAR_ASSERT(!ctl::is_sizeof_ge<int16_t, int64_t>::value);
-  SAR_ASSERT(!ctl::is_sizeof_ge_v<short, double>);
+  static_assert(!ctl::is_sizeof_ge<int16_t, int64_t>::value);
+  static_assert(!ctl::is_sizeof_ge_v<short, double>);
 }
 
 TEST(type_traits_test, is_sizeof_eq) {
-  SAR_ASSERT(ctl::is_sizeof_eq<int16_t, int16_t>::value);
-  SAR_ASSERT(ctl::is_sizeof_eq_v<int32_t, float>);
+  static_assert(ctl::is_sizeof_eq<int16_t, int16_t>::value);
+  static_assert(ctl::is_sizeof_eq_v<int32_t, float>);
 
-  SAR_ASSERT(!ctl::is_sizeof_eq<int64_t, int32_t>::value);
-  SAR_ASSERT(!ctl::is_sizeof_eq_v<short, double>);
+  static_assert(!ctl::is_sizeof_eq<int64_t, int32_t>::value);
+  static_assert(!ctl::is_sizeof_eq_v<short, double>);
 }
 
 TEST(type_traits_test, is_sizeof_ne) {
-  SAR_ASSERT(ctl::is_sizeof_ne<int16_t, int64_t>::value);
-  SAR_ASSERT(ctl::is_sizeof_ne_v<std::string, char>);
+  static_assert(ctl::is_sizeof_ne<int16_t, int64_t>::value);
+  static_assert(ctl::is_sizeof_ne_v<std::string, char>);
 
-  SAR_ASSERT(!ctl::is_sizeof_ne<int32_t, int32_t>::value);
-  SAR_ASSERT(!ctl::is_sizeof_ne_v<int64_t, double>);
+  static_assert(!ctl::is_sizeof_ne<int32_t, int32_t>::value);
+  static_assert(!ctl::is_sizeof_ne_v<int64_t, double>);
 }
 
 //===----------------------------------------------------------------------===//
@@ -240,221 +234,227 @@ TEST(type_traits_test, is_sizeof_ne) {
 //===----------------------------------------------------------------------===//
 
 TEST(type_traits_test, is_signedness_same) {
-  SAR_ASSERT(ctl::is_signedness_same<>::value);
-  SAR_ASSERT(ctl::is_signedness_same<unsigned>::value);
+  static_assert(ctl::is_signedness_same<>::value);
+  static_assert(ctl::is_signedness_same<unsigned>::value);
 
-  SAR_ASSERT(ctl::is_signedness_same<int, long, long long>::value);
-  SAR_ASSERT(ctl::is_signedness_same<float, std::ptrdiff_t>::value);
-  SAR_ASSERT(ctl::is_signedness_same<unsigned>::value);
-  SAR_ASSERT(ctl::is_signedness_same_v<unsigned, unsigned char>);
-  SAR_ASSERT(ctl::is_signedness_same_v<long long, long long>);
-  SAR_ASSERT(ctl::is_signedness_same_v<long long int>);
-  SAR_ASSERT(ctl::is_signedness_same_v<bool, unsigned>);
+  static_assert(ctl::is_signedness_same<int, long, long long>::value);
+  static_assert(ctl::is_signedness_same<float, std::ptrdiff_t>::value);
+  static_assert(ctl::is_signedness_same<unsigned>::value);
+  static_assert(ctl::is_signedness_same_v<unsigned, unsigned char>);
+  static_assert(ctl::is_signedness_same_v<long long, long long>);
+  static_assert(ctl::is_signedness_same_v<long long int>);
+  static_assert(ctl::is_signedness_same_v<bool, unsigned>);
 
-  SAR_ASSERT(!ctl::is_signedness_same<int, unsigned>::value);
-  SAR_ASSERT(!ctl::is_signedness_same<signed char, unsigned>::value);
-  SAR_ASSERT(!ctl::is_signedness_same_v<double, std::size_t, int>);
-  SAR_ASSERT(!ctl::is_signedness_same_v<unsigned short, short>);
-  SAR_ASSERT(!ctl::is_signedness_same_v<bool, int>);
+  static_assert(!ctl::is_signedness_same<int, unsigned>::value);
+  static_assert(!ctl::is_signedness_same<signed char, unsigned>::value);
+  static_assert(!ctl::is_signedness_same_v<double, std::size_t, int>);
+  static_assert(!ctl::is_signedness_same_v<unsigned short, short>);
+  static_assert(!ctl::is_signedness_same_v<bool, int>);
 
   struct tester {};
-  SAR_ASSERT(!ctl::is_signedness_same<tester>::value);
-  SAR_ASSERT(!ctl::is_signedness_same<int, void>::value);
-  SAR_ASSERT(!ctl::is_signedness_same<tester, unsigned>::value);
-  SAR_ASSERT(!ctl::is_signedness_same_v<double, int[3]>);
-  SAR_ASSERT(!ctl::is_signedness_same_v<float*, signed char, volatile void>);
-  SAR_ASSERT(!ctl::is_signedness_same_v<long&, const char**>);
-  SAR_ASSERT(!ctl::is_signedness_same_v<tester>);
+  static_assert(!ctl::is_signedness_same<tester>::value);
+  static_assert(!ctl::is_signedness_same<int, void>::value);
+  static_assert(!ctl::is_signedness_same<tester, unsigned>::value);
+  static_assert(!ctl::is_signedness_same_v<double, int[3]>);
+  static_assert(!ctl::is_signedness_same_v<float*, signed char, volatile void>);
+  static_assert(!ctl::is_signedness_same_v<long&, const char**>);
+  static_assert(!ctl::is_signedness_same_v<tester>);
 }
 
 TEST(type_traits_test, is_arithmetic_same) {
-  SAR_ASSERT(ctl::is_arithmetic_same<>::value);
-  SAR_ASSERT(ctl::is_arithmetic_same_v<>);
-  SAR_ASSERT(ctl::is_arithmetic_same<int>::value);
-  SAR_ASSERT(ctl::is_arithmetic_same_v<long>);
-  SAR_ASSERT(ctl::is_arithmetic_same<long double>::value);
-  SAR_ASSERT(ctl::is_arithmetic_same_v<float>);
-  SAR_ASSERT(!ctl::is_arithmetic_same_v<std::string>);
+  static_assert(ctl::is_arithmetic_same<>::value);
+  static_assert(ctl::is_arithmetic_same_v<>);
+  static_assert(ctl::is_arithmetic_same<int>::value);
+  static_assert(ctl::is_arithmetic_same_v<long>);
+  static_assert(ctl::is_arithmetic_same<long double>::value);
+  static_assert(ctl::is_arithmetic_same_v<float>);
+  static_assert(!ctl::is_arithmetic_same_v<std::string>);
 
-  SAR_ASSERT(ctl::is_arithmetic_same<
-             unsigned char,
-             short,
-             unsigned int,
-             char,
-             unsigned long long,
-             long>::value);
-  SAR_ASSERT(ctl::is_arithmetic_same_v<
-             bool,
-             char,
-             short,
-             int,
-             long,
-             long long,
-             wchar_t>);
-  SAR_ASSERT(ctl::is_arithmetic_same_v<
-             unsigned char,
-             unsigned short,
-             unsigned int,
-             unsigned long,
-             unsigned long long,
-             char8_t,
-             char16_t,
-             char32_t>);
-  SAR_ASSERT(ctl::is_arithmetic_same<float, double, long double>::value);
+  static_assert(ctl::is_arithmetic_same<
+                unsigned char,
+                short,
+                unsigned int,
+                char,
+                unsigned long long,
+                long>::value);
+  static_assert(ctl::is_arithmetic_same_v<
+                bool,
+                char,
+                short,
+                int,
+                long,
+                long long,
+                wchar_t>);
+  static_assert(ctl::is_arithmetic_same_v<
+                unsigned char,
+                unsigned short,
+                unsigned int,
+                unsigned long,
+                unsigned long long,
+                char8_t,
+                char16_t,
+                char32_t>);
+  static_assert(ctl::is_arithmetic_same<float, double, long double>::value);
 
-  SAR_ASSERT(!ctl::is_arithmetic_same<float, int>::value);
-  SAR_ASSERT(!ctl::is_arithmetic_same_v<double, unsigned long>);
-  SAR_ASSERT(!ctl::is_arithmetic_same_v<double, long, int, float>);
+  static_assert(!ctl::is_arithmetic_same<float, int>::value);
+  static_assert(!ctl::is_arithmetic_same_v<double, unsigned long>);
+  static_assert(!ctl::is_arithmetic_same_v<double, long, int, float>);
 
-  SAR_ASSERT(!ctl::is_arithmetic_same_v<std::string, std::vector<int>>);
-  SAR_ASSERT(!ctl::is_arithmetic_same_v<std::string_view>);
-  SAR_ASSERT(!ctl::is_arithmetic_same_v<std::string_view, int>);
-  SAR_ASSERT(!ctl::is_arithmetic_same_v<bool, std::array<double, 3>, float>);
+  static_assert(!ctl::is_arithmetic_same_v<std::string, std::vector<int>>);
+  static_assert(!ctl::is_arithmetic_same_v<std::string_view>);
+  static_assert(!ctl::is_arithmetic_same_v<std::string_view, int>);
+  static_assert(!ctl::is_arithmetic_same_v<bool, std::array<double, 3>, float>);
 }
 
 TEST(type_traits_is_lossless_convertible_test, floating_point) {
-  SAR_ASSERT(ctl::is_lossless_convertible<long double, long double>::value);
-  SAR_ASSERT(ctl::is_lossless_convertible<double, long double>::value);
-  SAR_ASSERT(ctl::is_lossless_convertible<float, long double>::value);
-  SAR_ASSERT(ctl::is_lossless_convertible_v<double, double>);
-  SAR_ASSERT(ctl::is_lossless_convertible_v<float, double>);
-  SAR_ASSERT(ctl::is_lossless_convertible_v<float, float>);
+  static_assert(ctl::is_lossless_convertible<long double, long double>::value);
+  static_assert(ctl::is_lossless_convertible<double, long double>::value);
+  static_assert(ctl::is_lossless_convertible<float, long double>::value);
+  static_assert(ctl::is_lossless_convertible_v<double, double>);
+  static_assert(ctl::is_lossless_convertible_v<float, double>);
+  static_assert(ctl::is_lossless_convertible_v<float, float>);
 
-  SAR_ASSERT(!ctl::is_lossless_convertible<long double, double>::value);
-  SAR_ASSERT(!ctl::is_lossless_convertible<long double, float>::value);
-  SAR_ASSERT(!ctl::is_lossless_convertible_v<double, float>);
+  static_assert(!ctl::is_lossless_convertible<long double, double>::value);
+  static_assert(!ctl::is_lossless_convertible<long double, float>::value);
+  static_assert(!ctl::is_lossless_convertible_v<double, float>);
 
-  SAR_ASSERT(ctl::is_lossless_convertible<const double, long double>::value);
-  SAR_ASSERT(ctl::is_lossless_convertible<float, const long double>::value);
-  SAR_ASSERT(ctl::is_lossless_convertible<volatile double, double>::value);
-  SAR_ASSERT(ctl::is_lossless_convertible_v<float, volatile double>);
-  SAR_ASSERT(ctl::is_lossless_convertible_v<const float, volatile float>);
-  SAR_ASSERT(ctl::is_lossless_convertible_v<const volatile float, float>);
+  static_assert(ctl::is_lossless_convertible<const double, long double>::value);
+  static_assert(ctl::is_lossless_convertible<float, const long double>::value);
+  static_assert(ctl::is_lossless_convertible<volatile double, double>::value);
+  static_assert(ctl::is_lossless_convertible_v<float, volatile double>);
+  static_assert(ctl::is_lossless_convertible_v<const float, volatile float>);
+  static_assert(ctl::is_lossless_convertible_v<const volatile float, float>);
 }
 
 TEST(type_traits_is_lossless_convertible_test, signed_integral) {
-  SAR_ASSERT(ctl::is_lossless_convertible<int64_t, int64_t>::value);
-  SAR_ASSERT(ctl::is_lossless_convertible<int32_t, int64_t>::value);
-  SAR_ASSERT(ctl::is_lossless_convertible<int16_t, int64_t>::value);
-  SAR_ASSERT(ctl::is_lossless_convertible<int8_t, int64_t>::value);
-  SAR_ASSERT(ctl::is_lossless_convertible<int32_t, int32_t>::value);
-  SAR_ASSERT(ctl::is_lossless_convertible_v<int16_t, int32_t>);
-  SAR_ASSERT(ctl::is_lossless_convertible_v<int8_t, int32_t>);
-  SAR_ASSERT(ctl::is_lossless_convertible_v<int16_t, int16_t>);
-  SAR_ASSERT(ctl::is_lossless_convertible_v<int8_t, int16_t>);
-  SAR_ASSERT(ctl::is_lossless_convertible_v<int8_t, int8_t>);
+  static_assert(ctl::is_lossless_convertible<int64_t, int64_t>::value);
+  static_assert(ctl::is_lossless_convertible<int32_t, int64_t>::value);
+  static_assert(ctl::is_lossless_convertible<int16_t, int64_t>::value);
+  static_assert(ctl::is_lossless_convertible<int8_t, int64_t>::value);
+  static_assert(ctl::is_lossless_convertible<int32_t, int32_t>::value);
+  static_assert(ctl::is_lossless_convertible_v<int16_t, int32_t>);
+  static_assert(ctl::is_lossless_convertible_v<int8_t, int32_t>);
+  static_assert(ctl::is_lossless_convertible_v<int16_t, int16_t>);
+  static_assert(ctl::is_lossless_convertible_v<int8_t, int16_t>);
+  static_assert(ctl::is_lossless_convertible_v<int8_t, int8_t>);
 
-  SAR_ASSERT(!ctl::is_lossless_convertible<int64_t, int32_t>::value);
-  SAR_ASSERT(!ctl::is_lossless_convertible<int64_t, int16_t>::value);
-  SAR_ASSERT(!ctl::is_lossless_convertible<int32_t, int16_t>::value);
-  SAR_ASSERT(!ctl::is_lossless_convertible_v<int64_t, int8_t>);
-  SAR_ASSERT(!ctl::is_lossless_convertible_v<int32_t, int8_t>);
-  SAR_ASSERT(!ctl::is_lossless_convertible_v<int16_t, int8_t>);
+  static_assert(!ctl::is_lossless_convertible<int64_t, int32_t>::value);
+  static_assert(!ctl::is_lossless_convertible<int64_t, int16_t>::value);
+  static_assert(!ctl::is_lossless_convertible<int32_t, int16_t>::value);
+  static_assert(!ctl::is_lossless_convertible_v<int64_t, int8_t>);
+  static_assert(!ctl::is_lossless_convertible_v<int32_t, int8_t>);
+  static_assert(!ctl::is_lossless_convertible_v<int16_t, int8_t>);
 
-  SAR_ASSERT(ctl::is_lossless_convertible<const int16_t, int64_t>::value);
-  SAR_ASSERT(ctl::is_lossless_convertible<int8_t, const int64_t>::value);
-  SAR_ASSERT(ctl::is_lossless_convertible<volatile int32_t, int32_t>::value);
-  SAR_ASSERT(ctl::is_lossless_convertible_v<int16_t, volatile int32_t>);
-  SAR_ASSERT(ctl::is_lossless_convertible_v<const volatile int8_t, int32_t>);
-  SAR_ASSERT(ctl::is_lossless_convertible_v<const int16_t, volatile int16_t>);
+  static_assert(ctl::is_lossless_convertible<const int16_t, int64_t>::value);
+  static_assert(ctl::is_lossless_convertible<int8_t, const int64_t>::value);
+  static_assert(ctl::is_lossless_convertible<volatile int32_t, int32_t>::value);
+  static_assert(ctl::is_lossless_convertible_v<int16_t, volatile int32_t>);
+  static_assert(ctl::is_lossless_convertible_v<const volatile int8_t, int32_t>);
+  static_assert(ctl::
+                    is_lossless_convertible_v<const int16_t, volatile int16_t>);
 }
 
 TEST(type_traits_is_lossless_convertible_test, unsigned_integral) {
-  SAR_ASSERT(ctl::is_lossless_convertible<uint64_t, uint64_t>::value);
-  SAR_ASSERT(ctl::is_lossless_convertible<uint32_t, uint64_t>::value);
-  SAR_ASSERT(ctl::is_lossless_convertible<uint16_t, uint64_t>::value);
-  SAR_ASSERT(ctl::is_lossless_convertible<uint8_t, uint64_t>::value);
-  SAR_ASSERT(ctl::is_lossless_convertible<uint32_t, uint32_t>::value);
-  SAR_ASSERT(ctl::is_lossless_convertible_v<uint16_t, uint32_t>);
-  SAR_ASSERT(ctl::is_lossless_convertible_v<uint8_t, uint32_t>);
-  SAR_ASSERT(ctl::is_lossless_convertible_v<uint16_t, uint16_t>);
-  SAR_ASSERT(ctl::is_lossless_convertible_v<uint8_t, uint16_t>);
-  SAR_ASSERT(ctl::is_lossless_convertible_v<uint8_t, uint8_t>);
+  static_assert(ctl::is_lossless_convertible<uint64_t, uint64_t>::value);
+  static_assert(ctl::is_lossless_convertible<uint32_t, uint64_t>::value);
+  static_assert(ctl::is_lossless_convertible<uint16_t, uint64_t>::value);
+  static_assert(ctl::is_lossless_convertible<uint8_t, uint64_t>::value);
+  static_assert(ctl::is_lossless_convertible<uint32_t, uint32_t>::value);
+  static_assert(ctl::is_lossless_convertible_v<uint16_t, uint32_t>);
+  static_assert(ctl::is_lossless_convertible_v<uint8_t, uint32_t>);
+  static_assert(ctl::is_lossless_convertible_v<uint16_t, uint16_t>);
+  static_assert(ctl::is_lossless_convertible_v<uint8_t, uint16_t>);
+  static_assert(ctl::is_lossless_convertible_v<uint8_t, uint8_t>);
 
-  SAR_ASSERT(!ctl::is_lossless_convertible<uint64_t, uint32_t>::value);
-  SAR_ASSERT(!ctl::is_lossless_convertible<uint64_t, uint16_t>::value);
-  SAR_ASSERT(!ctl::is_lossless_convertible<uint32_t, uint16_t>::value);
-  SAR_ASSERT(!ctl::is_lossless_convertible_v<uint64_t, uint8_t>);
-  SAR_ASSERT(!ctl::is_lossless_convertible_v<uint32_t, uint8_t>);
-  SAR_ASSERT(!ctl::is_lossless_convertible_v<uint16_t, uint8_t>);
+  static_assert(!ctl::is_lossless_convertible<uint64_t, uint32_t>::value);
+  static_assert(!ctl::is_lossless_convertible<uint64_t, uint16_t>::value);
+  static_assert(!ctl::is_lossless_convertible<uint32_t, uint16_t>::value);
+  static_assert(!ctl::is_lossless_convertible_v<uint64_t, uint8_t>);
+  static_assert(!ctl::is_lossless_convertible_v<uint32_t, uint8_t>);
+  static_assert(!ctl::is_lossless_convertible_v<uint16_t, uint8_t>);
 
-  SAR_ASSERT(ctl::is_lossless_convertible<const uint16_t, uint64_t>::value);
-  SAR_ASSERT(ctl::is_lossless_convertible<uint8_t, const uint64_t>::value);
-  SAR_ASSERT(ctl::is_lossless_convertible<volatile uint32_t, uint32_t>::value);
-  SAR_ASSERT(ctl::is_lossless_convertible_v<uint16_t, volatile uint32_t>);
-  SAR_ASSERT(ctl::is_lossless_convertible_v<const volatile uint8_t, uint32_t>);
-  SAR_ASSERT(ctl::is_lossless_convertible_v<const uint16_t, volatile uint16_t>);
+  static_assert(ctl::is_lossless_convertible<const uint16_t, uint64_t>::value);
+  static_assert(ctl::is_lossless_convertible<uint8_t, const uint64_t>::value);
+  static_assert(ctl::is_lossless_convertible<volatile uint32_t, uint32_t>::value
+  );
+  static_assert(ctl::is_lossless_convertible_v<uint16_t, volatile uint32_t>);
+  static_assert(ctl::is_lossless_convertible_v<
+                const volatile uint8_t,
+                uint32_t>);
+  static_assert(ctl::is_lossless_convertible_v<
+                const uint16_t,
+                volatile uint16_t>);
 }
 
 TEST(type_traits_is_lossless_convertible_test, signedness_mixed) {
-  SAR_ASSERT(ctl::is_lossless_convertible<uint32_t, int64_t>::value);
-  SAR_ASSERT(ctl::is_lossless_convertible<uint16_t, int64_t>::value);
-  SAR_ASSERT(ctl::is_lossless_convertible<uint8_t, int64_t>::value);
-  SAR_ASSERT(ctl::is_lossless_convertible_v<uint16_t, int32_t>);
-  SAR_ASSERT(ctl::is_lossless_convertible_v<uint8_t, int32_t>);
-  SAR_ASSERT(ctl::is_lossless_convertible_v<uint8_t, int16_t>);
+  static_assert(ctl::is_lossless_convertible<uint32_t, int64_t>::value);
+  static_assert(ctl::is_lossless_convertible<uint16_t, int64_t>::value);
+  static_assert(ctl::is_lossless_convertible<uint8_t, int64_t>::value);
+  static_assert(ctl::is_lossless_convertible_v<uint16_t, int32_t>);
+  static_assert(ctl::is_lossless_convertible_v<uint8_t, int32_t>);
+  static_assert(ctl::is_lossless_convertible_v<uint8_t, int16_t>);
 
-  SAR_ASSERT(!ctl::is_lossless_convertible<uint64_t, int64_t>::value);
-  SAR_ASSERT(!ctl::is_lossless_convertible<uint64_t, int32_t>::value);
-  SAR_ASSERT(!ctl::is_lossless_convertible<uint32_t, int32_t>::value);
-  SAR_ASSERT(!ctl::is_lossless_convertible<uint64_t, int16_t>::value);
-  SAR_ASSERT(!ctl::is_lossless_convertible<uint32_t, int16_t>::value);
-  SAR_ASSERT(!ctl::is_lossless_convertible_v<uint16_t, int16_t>);
-  SAR_ASSERT(!ctl::is_lossless_convertible_v<uint64_t, int8_t>);
-  SAR_ASSERT(!ctl::is_lossless_convertible_v<uint32_t, int8_t>);
-  SAR_ASSERT(!ctl::is_lossless_convertible_v<uint16_t, int8_t>);
-  SAR_ASSERT(!ctl::is_lossless_convertible_v<uint8_t, int8_t>);
+  static_assert(!ctl::is_lossless_convertible<uint64_t, int64_t>::value);
+  static_assert(!ctl::is_lossless_convertible<uint64_t, int32_t>::value);
+  static_assert(!ctl::is_lossless_convertible<uint32_t, int32_t>::value);
+  static_assert(!ctl::is_lossless_convertible<uint64_t, int16_t>::value);
+  static_assert(!ctl::is_lossless_convertible<uint32_t, int16_t>::value);
+  static_assert(!ctl::is_lossless_convertible_v<uint16_t, int16_t>);
+  static_assert(!ctl::is_lossless_convertible_v<uint64_t, int8_t>);
+  static_assert(!ctl::is_lossless_convertible_v<uint32_t, int8_t>);
+  static_assert(!ctl::is_lossless_convertible_v<uint16_t, int8_t>);
+  static_assert(!ctl::is_lossless_convertible_v<uint8_t, int8_t>);
 
-  SAR_ASSERT(!ctl::is_lossless_convertible<int64_t, uint64_t>::value);
-  SAR_ASSERT(!ctl::is_lossless_convertible<int32_t, uint64_t>::value);
-  SAR_ASSERT(!ctl::is_lossless_convertible<int16_t, uint64_t>::value);
-  SAR_ASSERT(!ctl::is_lossless_convertible<int8_t, uint64_t>::value);
-  SAR_ASSERT(!ctl::is_lossless_convertible<int64_t, uint32_t>::value);
-  SAR_ASSERT(!ctl::is_lossless_convertible<int32_t, uint32_t>::value);
-  SAR_ASSERT(!ctl::is_lossless_convertible_v<int16_t, uint32_t>);
-  SAR_ASSERT(!ctl::is_lossless_convertible_v<int8_t, uint32_t>);
-  SAR_ASSERT(!ctl::is_lossless_convertible<int64_t, uint16_t>::value);
-  SAR_ASSERT(!ctl::is_lossless_convertible<int32_t, uint16_t>::value);
-  SAR_ASSERT(!ctl::is_lossless_convertible_v<int16_t, uint16_t>);
-  SAR_ASSERT(!ctl::is_lossless_convertible_v<int8_t, uint16_t>);
-  SAR_ASSERT(!ctl::is_lossless_convertible_v<int64_t, uint8_t>);
-  SAR_ASSERT(!ctl::is_lossless_convertible_v<int32_t, uint8_t>);
-  SAR_ASSERT(!ctl::is_lossless_convertible_v<int16_t, uint8_t>);
-  SAR_ASSERT(!ctl::is_lossless_convertible_v<int8_t, uint8_t>);
+  static_assert(!ctl::is_lossless_convertible<int64_t, uint64_t>::value);
+  static_assert(!ctl::is_lossless_convertible<int32_t, uint64_t>::value);
+  static_assert(!ctl::is_lossless_convertible<int16_t, uint64_t>::value);
+  static_assert(!ctl::is_lossless_convertible<int8_t, uint64_t>::value);
+  static_assert(!ctl::is_lossless_convertible<int64_t, uint32_t>::value);
+  static_assert(!ctl::is_lossless_convertible<int32_t, uint32_t>::value);
+  static_assert(!ctl::is_lossless_convertible_v<int16_t, uint32_t>);
+  static_assert(!ctl::is_lossless_convertible_v<int8_t, uint32_t>);
+  static_assert(!ctl::is_lossless_convertible<int64_t, uint16_t>::value);
+  static_assert(!ctl::is_lossless_convertible<int32_t, uint16_t>::value);
+  static_assert(!ctl::is_lossless_convertible_v<int16_t, uint16_t>);
+  static_assert(!ctl::is_lossless_convertible_v<int8_t, uint16_t>);
+  static_assert(!ctl::is_lossless_convertible_v<int64_t, uint8_t>);
+  static_assert(!ctl::is_lossless_convertible_v<int32_t, uint8_t>);
+  static_assert(!ctl::is_lossless_convertible_v<int16_t, uint8_t>);
+  static_assert(!ctl::is_lossless_convertible_v<int8_t, uint8_t>);
 }
 
 TEST(type_traits_is_lossless_convertible_test, arithmetic_mixed) {
-  SAR_ASSERT(ctl::is_lossless_convertible_v<uint64_t, long double>);
-  SAR_ASSERT(ctl::is_lossless_convertible_v<int64_t, long double>);
-  SAR_ASSERT(ctl::is_lossless_convertible_v<uint32_t, long double>);
-  SAR_ASSERT(ctl::is_lossless_convertible_v<int32_t, long double>);
-  SAR_ASSERT(ctl::is_lossless_convertible_v<uint16_t, long double>);
-  SAR_ASSERT(ctl::is_lossless_convertible_v<int16_t, long double>);
-  SAR_ASSERT(ctl::is_lossless_convertible_v<uint8_t, long double>);
-  SAR_ASSERT(ctl::is_lossless_convertible_v<int8_t, long double>);
+  static_assert(ctl::is_lossless_convertible_v<uint64_t, long double>);
+  static_assert(ctl::is_lossless_convertible_v<int64_t, long double>);
+  static_assert(ctl::is_lossless_convertible_v<uint32_t, long double>);
+  static_assert(ctl::is_lossless_convertible_v<int32_t, long double>);
+  static_assert(ctl::is_lossless_convertible_v<uint16_t, long double>);
+  static_assert(ctl::is_lossless_convertible_v<int16_t, long double>);
+  static_assert(ctl::is_lossless_convertible_v<uint8_t, long double>);
+  static_assert(ctl::is_lossless_convertible_v<int8_t, long double>);
 
-  SAR_ASSERT(!ctl::is_lossless_convertible_v<uint64_t, double>);
-  SAR_ASSERT(!ctl::is_lossless_convertible_v<int64_t, double>);
-  SAR_ASSERT(ctl::is_lossless_convertible_v<uint32_t, double>);
-  SAR_ASSERT(ctl::is_lossless_convertible_v<int32_t, double>);
-  SAR_ASSERT(ctl::is_lossless_convertible_v<uint16_t, double>);
-  SAR_ASSERT(ctl::is_lossless_convertible_v<int16_t, double>);
-  SAR_ASSERT(ctl::is_lossless_convertible_v<uint8_t, double>);
-  SAR_ASSERT(ctl::is_lossless_convertible_v<int8_t, double>);
+  static_assert(!ctl::is_lossless_convertible_v<uint64_t, double>);
+  static_assert(!ctl::is_lossless_convertible_v<int64_t, double>);
+  static_assert(ctl::is_lossless_convertible_v<uint32_t, double>);
+  static_assert(ctl::is_lossless_convertible_v<int32_t, double>);
+  static_assert(ctl::is_lossless_convertible_v<uint16_t, double>);
+  static_assert(ctl::is_lossless_convertible_v<int16_t, double>);
+  static_assert(ctl::is_lossless_convertible_v<uint8_t, double>);
+  static_assert(ctl::is_lossless_convertible_v<int8_t, double>);
 
-  SAR_ASSERT(!ctl::is_lossless_convertible_v<uint64_t, float>);
-  SAR_ASSERT(!ctl::is_lossless_convertible_v<int64_t, float>);
-  SAR_ASSERT(!ctl::is_lossless_convertible_v<uint32_t, float>);
-  SAR_ASSERT(!ctl::is_lossless_convertible_v<int32_t, float>);
-  SAR_ASSERT(ctl::is_lossless_convertible_v<uint16_t, float>);
-  SAR_ASSERT(ctl::is_lossless_convertible_v<int16_t, float>);
-  SAR_ASSERT(ctl::is_lossless_convertible_v<uint8_t, float>);
-  SAR_ASSERT(ctl::is_lossless_convertible_v<int8_t, float>);
+  static_assert(!ctl::is_lossless_convertible_v<uint64_t, float>);
+  static_assert(!ctl::is_lossless_convertible_v<int64_t, float>);
+  static_assert(!ctl::is_lossless_convertible_v<uint32_t, float>);
+  static_assert(!ctl::is_lossless_convertible_v<int32_t, float>);
+  static_assert(ctl::is_lossless_convertible_v<uint16_t, float>);
+  static_assert(ctl::is_lossless_convertible_v<int16_t, float>);
+  static_assert(ctl::is_lossless_convertible_v<uint8_t, float>);
+  static_assert(ctl::is_lossless_convertible_v<int8_t, float>);
 
-  SAR_ASSERT(!ctl::is_lossless_convertible<float, int>::value);
-  SAR_ASSERT(!ctl::is_lossless_convertible<float, long long>::value);
-  SAR_ASSERT(!ctl::is_lossless_convertible<double, unsigned>::value);
-  SAR_ASSERT(!ctl::is_lossless_convertible<long double, char>::value);
+  static_assert(!ctl::is_lossless_convertible<float, int>::value);
+  static_assert(!ctl::is_lossless_convertible<float, long long>::value);
+  static_assert(!ctl::is_lossless_convertible<double, unsigned>::value);
+  static_assert(!ctl::is_lossless_convertible<long double, char>::value);
 }
 
 TEST(type_traits_is_lossless_convertible_test, non_arithmetic) {
@@ -462,17 +462,17 @@ TEST(type_traits_is_lossless_convertible_test, non_arithmetic) {
     int i;
     s_int(int i_) : i(i_) {}
   };
-  SAR_ASSERT(std::is_convertible_v<int, s_int>);
+  static_assert(std::is_convertible_v<int, s_int>);
 
-  SAR_ASSERT(!ctl::is_lossless_convertible<int, s_int>::value);
-  SAR_ASSERT(!ctl::is_lossless_convertible_v<s_int, int>);
+  static_assert(!ctl::is_lossless_convertible<int, s_int>::value);
+  static_assert(!ctl::is_lossless_convertible_v<s_int, int>);
 
-  SAR_ASSERT(!ctl::is_lossless_convertible_v<float, std::string>);
-  SAR_ASSERT(!ctl::is_lossless_convertible_v<int, std::string>);
-  SAR_ASSERT(!ctl::is_lossless_convertible_v<char, std::string>);
+  static_assert(!ctl::is_lossless_convertible_v<float, std::string>);
+  static_assert(!ctl::is_lossless_convertible_v<int, std::string>);
+  static_assert(!ctl::is_lossless_convertible_v<char, std::string>);
 
-  SAR_ASSERT(!ctl::is_lossless_convertible_v<std::array<long, 1>, long>);
-  SAR_ASSERT(!ctl::is_lossless_convertible_v<long, std::array<long, 1>>);
+  static_assert(!ctl::is_lossless_convertible_v<std::array<long, 1>, long>);
+  static_assert(!ctl::is_lossless_convertible_v<long, std::array<long, 1>>);
 }
 
 //===----------------------------------------------------------------------===//
@@ -480,32 +480,32 @@ TEST(type_traits_is_lossless_convertible_test, non_arithmetic) {
 //===----------------------------------------------------------------------===//
 
 TEST(type_traits_test, enable_same) {
-  SAR_ASSERT(has_type<ctl::enable_same<int, int>>);
-  SAR_ASSERT(has_type<ctl::enable_same<bool, bool, long long>>);
-  SAR_ASSERT(!has_type<ctl::enable_same<int, float>>);
-  SAR_ASSERT(!has_type<ctl::enable_same<unsigned, bool, int>>);
+  static_assert(has_type<ctl::enable_same<int, int>>);
+  static_assert(has_type<ctl::enable_same<bool, bool, long long>>);
+  static_assert(!has_type<ctl::enable_same<int, float>>);
+  static_assert(!has_type<ctl::enable_same<unsigned, bool, int>>);
 
-  SAR_ASSERT(std::is_same_v<ctl::enable_same_t<double, double>, void>);
+  static_assert(std::is_same_v<ctl::enable_same_t<double, double>, void>);
   ASSERT_EQ((ctl::enable_same_t<double, double, long>{2}), long{2});
 }
 
 TEST(type_traits_test, enable_not_same) {
-  SAR_ASSERT(!has_type<ctl::enable_not_same<int, int>>);
-  SAR_ASSERT(!has_type<ctl::enable_not_same<bool, bool, long long>>);
-  SAR_ASSERT(has_type<ctl::enable_not_same<int, float>>);
-  SAR_ASSERT(has_type<ctl::enable_not_same<unsigned, bool, int>>);
+  static_assert(!has_type<ctl::enable_not_same<int, int>>);
+  static_assert(!has_type<ctl::enable_not_same<bool, bool, long long>>);
+  static_assert(has_type<ctl::enable_not_same<int, float>>);
+  static_assert(has_type<ctl::enable_not_same<unsigned, bool, int>>);
 
-  SAR_ASSERT(std::is_same_v<ctl::enable_not_same_t<double, char>, void>);
+  static_assert(std::is_same_v<ctl::enable_not_same_t<double, char>, void>);
   ASSERT_EQ((ctl::enable_not_same_t<double, float, long>{2}), long{2});
 }
 
 TEST(type_traits_test, enable_same_decay) {
-  SAR_ASSERT(has_type<ctl::enable_same_decay<int, const int&>>);
-  SAR_ASSERT(has_type<ctl::enable_same_decay<bool&&, const bool, long>>);
-  SAR_ASSERT(!has_type<ctl::enable_same_decay<const int, float&>>);
-  SAR_ASSERT(!has_type<ctl::enable_same_decay<unsigned, const bool, int>>);
+  static_assert(has_type<ctl::enable_same_decay<int, const int&>>);
+  static_assert(has_type<ctl::enable_same_decay<bool&&, const bool, long>>);
+  static_assert(!has_type<ctl::enable_same_decay<const int, float&>>);
+  static_assert(!has_type<ctl::enable_same_decay<unsigned, const bool, int>>);
 
-  SAR_ASSERT(std::is_same_v<ctl::enable_same_decay_t<int&&, int&&>, void>);
+  static_assert(std::is_same_v<ctl::enable_same_decay_t<int&&, int&&>, void>);
   ASSERT_EQ((ctl::enable_same_decay_t<int&&, const int, long>{2}), long{2});
 }
 
