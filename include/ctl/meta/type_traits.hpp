@@ -401,11 +401,23 @@ using enable_same_decay_t = typename enable_same_decay<T, U, R>::type;
 
 /// \brief Checks for the existence of a type alias named \c type.
 ///
+/// Useful to convert a SFINAE-based meta function to a boolean value.
+///
 /// Example usage:
 /// \code
-/// bool would_work = ctl::has_type_v<std::enable_it<...>>
+/// bool would_work = ctl::has_type_v<std::enable_it<...>>;
 /// \endcode
 CTL_GENERATE_TYPE_ALIAS_CHECK(type);
+
+/// \brief Checks for the existence of a type alias named \c value_type.
+///
+/// Useful for checking the conformance of abstract data types.
+///
+/// Example usage:
+/// \code
+/// bool provides_alias = ctl::has_value_type_v<some_custom_container>;
+/// \endcode
+CTL_GENERATE_TYPE_ALIAS_CHECK(value_type);
 
 CTL_END_NAMESPACE
 

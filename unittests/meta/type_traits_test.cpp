@@ -42,6 +42,9 @@ TEST(type_traits_test, generated_has_alias_macro) {
 struct wrong_type {
   static constexpr bool type = 0;
 };
+struct wrong_fn_type {
+  static void type(){};
+};
 TEST(type_traits_test, has_type) {
   static_assert(!ctl::has_type<void>::value);
   static_assert(!ctl::has_type<bool>::value);
@@ -55,6 +58,7 @@ TEST(type_traits_test, has_type) {
   static_assert(!ctl::has_type_v<no_type>);
   static_assert(ctl::has_type_v<yes_type>);
   static_assert(!ctl::has_type_v<wrong_type>);
+  static_assert(!ctl::has_type_v<wrong_fn_type>);
 
   static_assert(!ctl::has_type<std::enable_if<false>>::value);
   static_assert(ctl::has_type<std::enable_if<true>>::value);
@@ -553,6 +557,38 @@ TEST(type_traits_test, enable_same_decay) {
 
   static_assert(std::is_same_v<ctl::enable_same_decay_t<int&&, int&&>, void>);
   ASSERT_EQ((ctl::enable_same_decay_t<int&&, const int, long>{2}), long{2});
+}
+
+//===----------------------------------------------------------------------===//
+// Tests for meta functions on abstract data types.
+//===----------------------------------------------------------------------===//
+
+struct wrong_value_type {
+  static constexpr bool value_type = 0;
+};
+struct wrong_fn_value_type {
+  static void value_type(){};
+};
+TEST(type_traits_test, has_value_type) {
+  static_assert(!ctl::has_value_type<void>::value);
+  static_assert(!ctl::has_value_type<bool>::value);
+  static_assert(!ctl::has_value_type<int>::value);
+  static_assert(!ctl::has_value_type<double>::value);
+
+  struct no_value_type {};
+  struct yes_value_type {
+    using value_type = int;
+  };
+  static_assert(!ctl::has_value_type_v<no_value_type>);
+  static_assert(ctl::has_value_type_v<yes_value_type>);
+  static_assert(!ctl::has_value_type_v<wrong_value_type>);
+  static_assert(!ctl::has_value_type_v<wrong_fn_value_type>);
+
+  static_assert(ctl::has_value_type<std::vector<double>>::value);
+  static_assert(ctl::has_value_type<std::optional<std::string>>::value);
+  static_assert(ctl::has_value_type_v<std::string>);
+  static_assert(!ctl::has_value_type_v<std::ios_base>);
+  static_assert(!ctl::has_value_type_v<std::remove_all_extents<int>>);
 }
 
 } // namespace
