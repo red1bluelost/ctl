@@ -17,6 +17,28 @@ namespace {
 // Testing has_type first since it is used to verify the other tests.
 //===----------------------------------------------------------------------===//
 
+CTL_GENERATE_TYPE_ALIAS_CHECK(testing);
+
+struct wrong_testing {
+  static constexpr bool testing = 0;
+};
+struct wrong_fn_testing {
+  static void testing(){};
+};
+TEST(type_traits_test, generated_has_alias_macro) {
+  static_assert(!has_testing<int>::value);
+  static_assert(!has_testing_v<void>);
+
+  struct no_testing {};
+  struct yes_testing {
+    using testing = int;
+  };
+  static_assert(!has_testing_v<no_testing>);
+  static_assert(has_testing_v<yes_testing>);
+  static_assert(!has_testing_v<wrong_testing>);
+  static_assert(!has_testing_v<wrong_fn_testing>);
+}
+
 struct wrong_type {
   static constexpr bool type = 0;
 };
