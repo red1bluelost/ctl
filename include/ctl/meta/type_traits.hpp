@@ -161,17 +161,32 @@ using wrap_if_t = typename wrap_if<condition, Wrapper, T>::type;
 //===----------------------------------------------------------------------===//
 
 namespace detail {
+
+/// \brief The catch all case for \c has_type which is false.
 template<typename T, typename = void>
 struct has_type_impl : std::false_type {};
 
+/// \brief The true case for \c has_type that succeeds if the type alias exists.
 template<typename T>
 struct has_type_impl<T, std::void_t<typename T::type>> : std::true_type {};
 
 } // namespace detail
 
+/// \brief True iff the type passed in has a type alias named 'type'.
+///
+/// Mostly useful for tests or converting a SFINAE meta template to a boolean
+/// value.
+///
+/// Example usage:
+/// \code
+/// bool would_work = ctl::has_type_v<std::enable_it<...>>
+/// \endcode
+///
+/// \tparam T The type to check for an alias named 'type'
 template<typename T>
 struct has_type : detail::has_type_impl<T> {};
 
+/// \brief Alias template for \c has_type.
 template<typename T>
 inline constexpr bool has_type_v = has_type<T>::value;
 
