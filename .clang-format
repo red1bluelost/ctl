@@ -108,7 +108,7 @@ IndentCaseBlocks:                          false
 IndentGotoLabels:                          true
 IndentPPDirectives:                        AfterHash
 IndentExternBlock:                         AfterExternBlock
-IndentRequires:                            false
+IndentRequires:                            true
 IndentWidth:                               2
 IndentWrappedFunctionNames:                false
 KeepEmptyLinesAtTheStartOfBlocks:          false
