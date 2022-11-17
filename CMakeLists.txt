@@ -5,6 +5,13 @@ project(
   DESCRIPTION "The Clown Template Library for C++ utilities"
   HOMEPAGE_URL "http://github.com/red1bluelost/ctl")
 
+# TODO: TEMPORARY AND REMOVE FOR A BETTER SYSTEM
+set(CMAKE_VERBOSE_MAKEFILE
+    ON
+    CACHE BOOL "THIS IS TEMPORARY" FORCE)
+add_compile_options(-Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion
+                    -Wshadow)
+
 # Global variable for all components
 set_property(GLOBAL PROPERTY CTL_COMPONENTS)
 
