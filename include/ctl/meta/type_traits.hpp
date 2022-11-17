@@ -1,12 +1,11 @@
-//===- ctl/meta/type_traits.hpp - Metaprogamming type traits ----*- C++ -*-===//
+//===- ctl/meta/type_traits.hpp - Metaprogramming type traits ---*- C++ -*-===//
 //
 // TODO: License
 //
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file contains useful metaprogramming type traits beyond the
-/// regular standard library.
+/// Useful metaprogramming type traits beyond the regular standard library.
 ///
 //===----------------------------------------------------------------------===//
 #ifndef CTL_META_TYPE_TRAITS_HPP
@@ -408,16 +407,6 @@ using enable_same_decay_t = typename enable_same_decay<T, U, R>::type;
 /// bool would_work = ctl::has_type_v<std::enable_it<...>>;
 /// \endcode
 CTL_GENERATE_TYPE_ALIAS_CHECK(type);
-
-/// \brief Checks for the existence of a type alias named \c value_type.
-///
-/// Useful for checking the conformance of abstract data types.
-///
-/// Example usage:
-/// \code
-/// bool provides_alias = ctl::has_value_type_v<some_custom_container>;
-/// \endcode
-CTL_GENERATE_TYPE_ALIAS_CHECK(value_type);
 
 CTL_END_NAMESPACE
 
