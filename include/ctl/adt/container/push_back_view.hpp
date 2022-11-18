@@ -24,6 +24,26 @@ namespace container {
 
 namespace detail {
 
+/// \brief Empty base class for containers which cannot pass \c value_type to \c
+/// push_back. It just deletes the \c push_back method to give better error
+/// messages if used.
+///
+/// \tparam Base The base class which will have the \c container_handle pointer
+/// \tparam T The value_type of the container being viewed
+template<typename Base, typename T>
+struct pbv_copy_delete {
+  /// \brief Empty constructor since now \c call_back is used.
+  ///
+  /// \tparam Container The type of the container being viewed
+  template<typename Container>
+  explicit pbv_copy_delete(construction_tag<Container>) {}
+
+  /// \brief Empty constructor since now \c call_back is used.
+  ///
+  /// \tparam Container The type of the container being viewed
+  void push_back(const T& val) = delete;
+};
+
 /// TODO: Migrate to a macro for making these CRTP classes
 
 /// \brief CRTP class that will add \c push_back of const references as a method
@@ -60,17 +80,27 @@ struct pbv_copy_impl {
 /// \tparam Base The base class which will have the \c container_handle pointer
 /// \tparam T The value_type of the container being viewed
 template<typename Base, typename T>
-struct pbv_copy_impl<Base, T, false> {
+struct pbv_copy_impl<Base, T, false> : private pbv_copy_delete<Base, T> {
+  using pbv_copy_delete<Base, T>::pbv_copy_delete;
+  using pbv_copy_delete<Base, T>::push_back;
+};
+
+/// \brief Empty base class for containers which cannot pass \c value_type to \c
+/// push_back. It just deletes the \c push_back method to give better error
+/// messages if used.
+///
+/// \tparam Base The base class which will have the \c container_handle pointer
+/// \tparam T The value_type of the container being viewed
+template<typename Base, typename T>
+struct pbv_move_delete {
   /// \brief Empty constructor since now \c call_back is used.
   ///
   /// \tparam Container The type of the container being viewed
   template<typename Container>
-  explicit pbv_copy_impl(construction_tag<Container>) {}
+  explicit pbv_move_delete(construction_tag<Container>) {}
 
-  /// \brief Empty constructor since now \c call_back is used.
-  ///
-  /// \tparam Container The type of the container being viewed
-  void push_back(const T& val) = delete;
+  /// \brief Method does not exist for container so this is deleted.
+  void push_back(T&& val) = delete;
 };
 
 /// \brief CRTP class that will add \c push_back of rvalue references as a
@@ -113,15 +143,9 @@ struct pbv_move_impl {
 /// \tparam Base The base class which will have the \c container_handle pointer
 /// \tparam T The value_type of the container being viewed
 template<typename Base, typename T>
-struct pbv_move_impl<Base, T, false> {
-  /// \brief Empty constructor since now \c call_back is used.
-  ///
-  /// \tparam Container The type of the container being viewed
-  template<typename Container>
-  explicit pbv_move_impl(construction_tag<Container>) {}
-
-  /// \brief Method does not exist for container so this is deleted.
-  void push_back(T&& val) = delete;
+struct pbv_move_impl<Base, T, false> : private pbv_move_delete<Base, T> {
+  using pbv_move_delete<Base, T>::pbv_copy_delete;
+  using pbv_move_delete<Base, T>::push_back;
 };
 
 } // namespace detail
@@ -176,9 +200,9 @@ class push_back_view
   // TODO: add SFINAE to ensure that push_back exists
   template<typename Container>
   push_back_view(Container& container)
-      : container_handle(&container)
-      , copy_base(detail::construction_tag<Container>{})
-      , move_base(detail::construction_tag<Container>{}) {}
+      : copy_base(detail::construction_tag<Container>{})
+      , move_base(detail::construction_tag<Container>{})
+      , container_handle(&container) {}
 
   /// \brief Inheriting either copy push back or it is deleted.
   using copy_base::push_back;

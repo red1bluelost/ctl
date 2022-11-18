@@ -406,6 +406,8 @@ using enable_same_decay_t = typename enable_same_decay<T, U, R>::type;
 /// \code
 /// bool would_work = ctl::has_type_v<std::enable_it<...>>;
 /// \endcode
+///
+/// \note This serves as a pre-C++20 concepts approach. Concepts
 CTL_GENERATE_TYPE_ALIAS_CHECK(type);
 
 CTL_END_NAMESPACE

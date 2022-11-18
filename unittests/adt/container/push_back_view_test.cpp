@@ -11,6 +11,8 @@
 
 #include "ctl/adt/container/push_back_view.hpp"
 
+#include "ctl/adt/container/view.hpp"
+
 #include <gmock/gmock-matchers.h>
 #include <gmock/gmock-more-matchers.h>
 #include <gtest/gtest.h>
@@ -67,10 +69,11 @@ TEST(push_back_view_test, vector) {
   {
     std::vector<int> v;
     {
-      ctl::container::push_back_view<int> pv{v};
+      ctl::container::view<int>::of<ctl::cvt::push_back> pv{v};
       static_assert(sizeof(pv) == sizeof(void*) * 3);
       pv.push_back(0);
-      pv.push_back((const int){1});
+      const int i = 1;
+      pv.push_back(i);
       pv.push_back(2);
     }
     ASSERT_THAT(v, ElementsAre(0, 1, 2));
@@ -80,7 +83,8 @@ TEST(push_back_view_test, vector) {
     {
       ctl::container::push_back_view<std::string> pv{v};
       static_assert(sizeof(pv) == sizeof(void*) * 3);
-      pv.push_back((const std::string){"hello"});
+      const std::string s = "hello";
+      pv.push_back(s);
       pv.push_back("this is a test");
     }
     ASSERT_THAT(v, ElementsAre("hello", "this is a test"));
@@ -113,7 +117,8 @@ TEST(push_back_view_test, deque) {
     {
       ctl::container::push_back_view<int> pv{v};
       pv.push_back(0);
-      pv.push_back((const int){1});
+      const int i = 1;
+      pv.push_back(i);
       pv.push_back(2);
     }
     ASSERT_THAT(v, ElementsAre(0, 1, 2));
@@ -122,7 +127,8 @@ TEST(push_back_view_test, deque) {
     std::deque<std::string> v;
     {
       ctl::container::push_back_view<std::string> pv{v};
-      pv.push_back((const std::string){"hello"});
+      const std::string s = "hello";
+      pv.push_back(s);
       pv.push_back("this is a test");
     }
     ASSERT_THAT(v, ElementsAre("hello", "this is a test"));
