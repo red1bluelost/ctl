@@ -46,6 +46,14 @@ TEST(push_back_view_test, intented_usage_example) {
 
     ASSERT_THAT(output, ElementsAre(2, 4, 6, 8));
   }
+  {
+    std::vector<int> input{1, 2, 3, 4, 5, 6, 7, 8};
+    std::vector<int> output{};
+
+    tester::find_values(input, ctl::out_var(output));
+
+    ASSERT_THAT(output, ElementsAre(2, 4, 6, 8));
+  }
 }
 
 //===----------------------------------------------------------------------===//

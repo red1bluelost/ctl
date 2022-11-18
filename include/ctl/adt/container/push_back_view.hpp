@@ -14,6 +14,7 @@
 
 #include "ctl/adt/container/view_base.hpp"
 #include "ctl/config.h"
+#include "ctl/object/parameter.hpp"
 
 #include <type_traits>
 #include <utility>
@@ -197,12 +198,20 @@ class push_back_view
   ///
   /// \tparam Container The type of container that will be viewed
   /// \param container The container object that will be viewed
-  // TODO: add SFINAE to ensure that push_back exists
+  // TODO: add Concepts to ensure that push_back exists
   template<typename Container>
   push_back_view(Container& container)
       : copy_base(detail::construction_tag<Container>{})
       , move_base(detail::construction_tag<Container>{})
       , container_handle(&container) {}
+
+  /// \brief Deferring constructor that supports \c ctl::out_var.
+  ///
+  /// \tparam Container The type of container which will be viewed
+  /// \param container An \c out_var wrapper of the container to be viewed
+  template<typename Container>
+  push_back_view(::ctl::out_var<Container> container)
+      : push_back_view(*container.variable) {}
 
   /// \brief Inheriting either copy push back or it is deleted.
   using copy_base::push_back;

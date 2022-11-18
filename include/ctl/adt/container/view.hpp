@@ -90,6 +90,15 @@ class view_impl
       , push_back_move_base(detail::construction_tag<Container>{})
       , container_handle(&container) {}
 
+  /// \brief Deferring constructor that supports \c ctl::out_var.
+  ///
+  /// \tparam Container The type of container which will be viewed
+  /// \param container An \c out_var wrapper of the container to be viewed
+  template<typename Container>
+  view_impl(::ctl::out_var<Container> container)
+      : view_impl(*container.variable) {}
+
+
   using push_back_copy_base::push_back;
   using push_back_move_base::push_back;
 
