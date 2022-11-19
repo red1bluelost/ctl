@@ -40,6 +40,8 @@ add_subdirectory(lib)
 enable_testing()
 add_subdirectory(unittests)
 
+add_subdirectory(docs)
+
 install(
   EXPORT ${PROJECT_NAME}_targets
   FILE ${PROJECT_NAME}Targets.cmake
