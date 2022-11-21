@@ -18,10 +18,14 @@ namespace {
 struct wrong_type {
   static constexpr bool type = 0;
 };
-struct wrong_fn_type {
-  static void type(){};
-};
 TEST(concept_adt_test, aliasing_type) {
+  struct wrong_enum_type {
+    enum { type = 0 };
+  };
+  struct wrong_fn_type {
+    static void type(){};
+  };
+
   static_assert(!ctl::aliasing_type<void>);
   static_assert(!ctl::aliasing_type<bool>);
   static_assert(!ctl::aliasing_type<int>);
@@ -34,6 +38,7 @@ TEST(concept_adt_test, aliasing_type) {
   static_assert(!ctl::aliasing_type<no_type>);
   static_assert(ctl::aliasing_type<yes_type>);
   static_assert(!ctl::aliasing_type<wrong_type>);
+  static_assert(!ctl::aliasing_type<wrong_enum_type>);
   static_assert(!ctl::aliasing_type<wrong_fn_type>);
 
   static_assert(!ctl::aliasing_type<std::enable_if<false>>);
