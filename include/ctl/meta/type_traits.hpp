@@ -372,32 +372,6 @@ struct enable_same_decay : enable_same<std::decay_t<T>, std::decay_t<U>, R> {};
 template<typename T, typename U, typename R = void>
 using enable_same_decay_t = typename enable_same_decay<T, U, R>::type;
 
-//===----------------------------------------------------------------------===//
-// Meta functions for abstract data types.
-//===----------------------------------------------------------------------===//
-
-/// \brief Generate the definition of a meta function that checks for the
-/// existence of a given name being used as a type alias within a class.
-///
-/// For a given name \c NAME, the naming convention is \c has_NAME<T>::value and
-/// \c has_NAME_v<T> for the generated meta function. The actual implementation
-/// is isolated to the \c detail namespace.
-///
-/// \param _name_ The name of the type alias which will be checked for by the
-/// generated meta function
-#define CTL_GENERATE_TYPE_ALIAS_CHECK(_name_)                                  \
-  namespace detail {                                                           \
-  template<typename T, typename = void>                                        \
-  struct has_##_name_##_impl : std::false_type {};                             \
-  template<typename T>                                                         \
-  struct has_##_name_##_impl<T, std::void_t<typename T::_name_>>               \
-      : std::true_type {};                                                     \
-  }                                                                            \
-  template<typename T>                                                         \
-  struct has_##_name_ : detail::has_##_name_##_impl<T> {};                     \
-  template<typename T>                                                         \
-  inline constexpr bool has_##_name_##_v = has_##_name_<T>::value
-
 CTL_END_NAMESPACE
 
 #endif // CTL_META_TYPE_TRAITS_HPP
