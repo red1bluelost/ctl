@@ -41,10 +41,8 @@ CTL_BEGIN_NAMESPACE
 /// \tparam T Type of variable which will be addressed for the out variable
 template<typename T>
 struct out_var {
-  /// Type aliases common to abstract data types.
+  /// \brief The type which \c out_var wraps.
   using value_type = T;
-  using pointer    = value_type*;
-  using reference  = value_type&;
 
   /// \brief Constructs \c out_var by taking the address of the variable that
   /// will be used.
@@ -55,12 +53,12 @@ struct out_var {
   /// \brief Overloads conversion for pointer based out variables.
   ///
   /// \return The address of the variable
-  constexpr operator pointer() const noexcept { return variable; }
+  constexpr operator value_type*() const noexcept { return variable; }
 
   /// \brief Overloads conversion for reference based out variables.
   ///
   /// \return Reference to the variable
-  constexpr operator reference() const noexcept { return *variable; }
+  constexpr operator value_type&() const noexcept { return *variable; }
 
   /// \brief Pointer to allow copy and move assignment to automatically
   /// generate. Public so that abstract data types can provide constructors
