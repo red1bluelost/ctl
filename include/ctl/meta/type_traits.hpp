@@ -398,18 +398,6 @@ using enable_same_decay_t = typename enable_same_decay<T, U, R>::type;
   template<typename T>                                                         \
   inline constexpr bool has_##_name_##_v = has_##_name_<T>::value
 
-/// \brief Checks for the existence of a type alias named \c type.
-///
-/// Useful to convert a SFINAE-based meta function to a boolean value.
-///
-/// Example usage:
-/// \code
-/// bool would_work = ctl::has_type_v<std::enable_it<...>>;
-/// \endcode
-///
-/// \note This serves as a pre-C++20 concepts approach. Concepts
-CTL_GENERATE_TYPE_ALIAS_CHECK(type);
-
 CTL_END_NAMESPACE
 
 #endif // CTL_META_TYPE_TRAITS_HPP

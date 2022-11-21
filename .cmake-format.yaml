@@ -13,6 +13,7 @@ parse:
     ctl_add_test:
       kwargs:
         TEST_FILES: '*'
+        CTL_TEST_DEPENDENCIES: '*'
   _help_override_spec:
     - Override configurations per-command where available
   override_spec: { }
