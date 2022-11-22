@@ -414,6 +414,22 @@ struct match_volatile
 template<typename Matching, typename Changing>
 using match_volatile_t = typename match_volatile<Matching, Changing>::type;
 
+/// \brief Matches the const and volatile qualifier of the first type by
+/// modifying the second type.
+///
+/// This could be useful inside of a deducing-this methods, templates, and other
+/// situations.
+///
+/// \tparam Matching Type being referenced for const volatile qualification
+/// \tparam Changing Type to change const volatile qualification
+template<typename Matching, typename Changing>
+struct match_cv
+    : match_const<Matching, match_volatile_t<Matching, Changing>> {};
+
+/// \brief Alias template for \c match_cv.
+template<typename Matching, typename Changing>
+using match_cv_t = typename match_cv<Matching, Changing>::type;
+
 CTL_END_NAMESPACE
 
 #endif // CTL_META_TYPE_TRAITS_HPP

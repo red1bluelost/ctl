@@ -564,4 +564,53 @@ TEST(type_traits_test, match_volatile) {
                 volatile int* volatile>);
 }
 
+TEST(type_traits_test, match_cv) {
+  static_assert(std::is_same_v<ctl::match_cv<double, int>::type, int>);
+  static_assert(std::is_same_v<ctl::match_cv<long, const int>::type, int>);
+  static_assert(std::is_same_v<ctl::match_cv<double, int>::type, int>);
+  static_assert(std::is_same_v<ctl::match_cv<long, volatile int>::type, int>);
+
+  static_assert(std::is_same_v<ctl::match_cv_t<const long, int>, const int>);
+  static_assert(std::is_same_v<
+                ctl::match_cv_t<const char, const int>,
+                const int>);
+  static_assert(std::is_same_v<
+                ctl::match_cv_t<volatile long, int>,
+                volatile int>);
+  static_assert(std::is_same_v<
+                ctl::match_cv_t<volatile char, volatile int>,
+                volatile int>);
+
+  static_assert(std::is_same_v<ctl::match_cv_t<long, const volatile int>, int>);
+  static_assert(std::is_same_v<
+                ctl::match_cv_t<const char, volatile int>,
+                const int>);
+  static_assert(std::is_same_v<
+                ctl::match_cv_t<volatile char, const int>,
+                volatile int>);
+  static_assert(std::is_same_v<
+                ctl::match_cv_t<volatile long, const volatile int>,
+                volatile int>);
+
+  static_assert(std::is_same_v<ctl::match_cv_t<float, const int*>, const int*>);
+  static_assert(std::is_same_v<
+                ctl::match_cv_t<const float, const int*>,
+                const int* const>);
+  static_assert(std::is_same_v<
+                ctl::match_cv_t<float, volatile int*>,
+                volatile int*>);
+  static_assert(std::is_same_v<
+                ctl::match_cv_t<volatile float, volatile int*>,
+                volatile int* volatile>);
+  static_assert(std::is_same_v<
+                ctl::match_cv_t<const float, const volatile int*>,
+                const volatile int* const>);
+  static_assert(std::is_same_v<
+                ctl::match_cv_t<volatile float, const volatile int*>,
+                const volatile int* volatile>);
+  static_assert(std::is_same_v<
+                ctl::match_cv_t<const volatile float, const volatile int*>,
+                const volatile int* const volatile>);
+}
+
 } // namespace
