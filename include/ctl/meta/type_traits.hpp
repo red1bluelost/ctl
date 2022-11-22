@@ -430,6 +430,27 @@ struct match_cv
 template<typename Matching, typename Changing>
 using match_cv_t = typename match_cv<Matching, Changing>::type;
 
+/// \brief Matches the signedness of integral types by changing the second type
+/// to be the same as the first.
+///
+/// This could be useful inside of templates.
+///
+/// \warning Program behavior is undefined if either type is not an integral
+/// type.
+///
+/// \tparam Matching Type being referenced for signedness
+/// \tparam Changing Type to change integral sign
+template<typename Matching, typename Changing>
+struct match_sign
+    : std::conditional_t<
+          std::is_signed_v<Matching>,
+          std::make_signed<Changing>,
+          std::make_unsigned<Changing>> {};
+
+/// \brief Alias template for \c match_sign.
+template<typename Matching, typename Changing>
+using match_sign_t = typename match_sign<Matching, Changing>::type;
+
 CTL_END_NAMESPACE
 
 #endif // CTL_META_TYPE_TRAITS_HPP

@@ -613,4 +613,27 @@ TEST(type_traits_test, match_cv) {
                 const volatile int* const volatile>);
 }
 
+TEST(type_traits_test, match_sign) {
+  static_assert(std::is_same_v<ctl::match_sign<double, int>::type, int>);
+  static_assert(std::is_same_v<ctl::match_sign<long, unsigned int>::type, int>);
+
+  static_assert(std::is_same_v<ctl::match_sign_t<unsigned, int>, unsigned>);
+  static_assert(std::is_same_v<
+                ctl::match_sign_t<unsigned char, unsigned>,
+                unsigned>);
+
+  static_assert(std::is_same_v<
+                ctl::match_sign_t<long, const volatile int>,
+                const volatile int>);
+  static_assert(std::is_same_v<
+                ctl::match_sign_t<long, const volatile unsigned int>,
+                const volatile int>);
+  static_assert(std::is_same_v<
+                ctl::match_sign_t<unsigned long, const volatile int>,
+                const volatile unsigned int>);
+  static_assert(std::is_same_v<
+                ctl::match_sign_t<unsigned long, const volatile unsigned int>,
+                const volatile unsigned int>);
+}
+
 } // namespace
