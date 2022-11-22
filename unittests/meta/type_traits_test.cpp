@@ -508,4 +508,32 @@ TEST(type_traits_test, enable_same_decay) {
   ASSERT_EQ((ctl::enable_same_decay_t<int&&, const int, long>{2}), long{2});
 }
 
+//===----------------------------------------------------------------------===//
+// Tests for meta functions that modify the qualifiers of a type.
+//===----------------------------------------------------------------------===//
+
+TEST(type_traits_test, match_const) {
+  static_assert(std::is_same_v<int, ctl::match_const<double, int>::type>);
+  static_assert(std::is_same_v<int, ctl::match_const<long, const int>::type>);
+
+  static_assert(std::is_same_v<const int, ctl::match_const_t<const long, int>>);
+  static_assert(std::is_same_v<
+                const int,
+                ctl::match_const_t<const char, const int>>);
+
+  static_assert(std::is_same_v<
+                volatile int,
+                ctl::match_const_t<long, const volatile int>>);
+  static_assert(std::is_same_v<
+                const volatile int,
+                ctl::match_const_t<const char, volatile int>>);
+
+  static_assert(std::is_same_v<
+                const int*,
+                ctl::match_const_t<float, const int*>>);
+  static_assert(std::is_same_v<
+                const int* const,
+                ctl::match_const_t<const float, const int*>>);
+}
+
 } // namespace

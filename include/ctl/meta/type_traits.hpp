@@ -372,6 +372,28 @@ struct enable_same_decay : enable_same<std::decay_t<T>, std::decay_t<U>, R> {};
 template<typename T, typename U, typename R = void>
 using enable_same_decay_t = typename enable_same_decay<T, U, R>::type;
 
+//===----------------------------------------------------------------------===//
+// Meta functions to modify the qualifiers on a type.
+//===----------------------------------------------------------------------===//
+
+/// \brief Matches the const qualifier of the first type by modifying the second
+/// type.
+///
+/// This could be useful inside of a deducing this method and other situations.
+///
+/// \tparam Matching Type being referenced for const qualification
+/// \tparam Changing Type to change const qualification
+template<typename Matching, typename Changing>
+struct match_const
+    : std::conditional_t<
+          std::is_const_v<Matching>,
+          std::add_const<Changing>,
+          std::remove_const<Changing>> {};
+
+/// \brief Alias template for \c match_const.
+template<typename Matching, typename Changing>
+using match_const_t = typename match_const<Matching, Changing>::type;
+
 CTL_END_NAMESPACE
 
 #endif // CTL_META_TYPE_TRAITS_HPP
