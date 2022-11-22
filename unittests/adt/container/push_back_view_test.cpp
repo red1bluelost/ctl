@@ -62,46 +62,33 @@ TEST(push_back_view_test, intented_usage_example) {
 //===----------------------------------------------------------------------===//
 
 TEST(push_back_view_test, view_size) {
-  static_assert(
-      sizeof(ctl::container::push_back_view<int>) == sizeof(void*) * 3
-  );
-  static_assert(
-      sizeof(ctl::container::push_back_view<std::string>) == sizeof(void*) * 3
-  );
-  static_assert(
-      sizeof(ctl::container::push_back_view<std::unique_ptr<int>>) ==
-      sizeof(void*) * 2
-  );
+  assert_num_ptrs<ctl::container::push_back_view<int>, 3>();
+  assert_num_ptrs<ctl::container::push_back_view<std::string>, 3>();
+  assert_num_ptrs<ctl::container::push_back_view<std::unique_ptr<int>>, 2>();
 
   // Both copy and move operations
-  static_assert(
-      sizeof(ctl::container::push_back_view<
-             ctl::with_copy_move<true, true, true, true>>) == sizeof(void*) * 3
-  );
+  assert_num_ptrs<
+      ctl::container::push_back_view<
+          ctl::with_copy_move<true, true, true, true>>,
+      3>();
   // Only move operations
-  static_assert(
-      sizeof(ctl::container::push_back_view<
-             ctl::with_copy_move<false, true, false, true>>) ==
-      sizeof(void*) * 2
-  );
+  assert_num_ptrs<
+      ctl::container::push_back_view<
+          ctl::with_copy_move<false, true, false, true>>,
+      2>();
   // Only copy operations
-  static_assert(
-      sizeof(ctl::container::push_back_view<
-             ctl::with_copy_move<true, false, true, false>>) ==
-      sizeof(void*) * 2
-  );
+  assert_num_ptrs<
+      ctl::container::push_back_view<
+          ctl::with_copy_move<true, false, true, false>>,
+      2>();
   // Neither copy nor move operations
-  static_assert(
-      sizeof(ctl::container::push_back_view<
-             ctl::with_copy_move<false, false, false, false>>) ==
-      sizeof(void*) * 1
-  );
+  assert_num_ptrs<
+      ctl::container::push_back_view<
+          ctl::with_copy_move<false, false, false, false>>,
+      1>();
 
   // Only copy defaulted operations
-  static_assert(
-      sizeof(ctl::container::push_back_view<copy_default_type>) ==
-      sizeof(void*) * 3
-  );
+  assert_num_ptrs<ctl::container::push_back_view<copy_default_type>, 3>();
 }
 
 TEST(push_back_view_test, view_tester) {

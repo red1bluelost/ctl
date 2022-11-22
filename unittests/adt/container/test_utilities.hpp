@@ -98,4 +98,9 @@ class push_back_view_tester {
   const char* file;
 };
 
+template<typename T, std::size_t num_pointers>
+consteval void assert_num_ptrs() {
+  static_assert(sizeof(T) == sizeof(void*) * num_pointers);
+}
+
 #endif // UNITTESTS_ADT_CONTAINER_TEST_UTILITIES_HPP

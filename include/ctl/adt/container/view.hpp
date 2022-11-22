@@ -12,6 +12,7 @@
 #ifndef CTL_ADT_CONTAINER_VIEW_HPP
 #define CTL_ADT_CONTAINER_VIEW_HPP
 
+#include "ctl/adt/container/push_back_view.hpp"
 #include "ctl/config.h"
 
 #include <type_traits>
