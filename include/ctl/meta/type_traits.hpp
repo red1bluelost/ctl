@@ -379,7 +379,8 @@ using enable_same_decay_t = typename enable_same_decay<T, U, R>::type;
 /// \brief Matches the const qualifier of the first type by modifying the second
 /// type.
 ///
-/// This could be useful inside of a deducing this method and other situations.
+/// This could be useful inside of a deducing-this methods, templates, and other
+/// situations.
 ///
 /// \tparam Matching Type being referenced for const qualification
 /// \tparam Changing Type to change const qualification
@@ -393,6 +394,25 @@ struct match_const
 /// \brief Alias template for \c match_const.
 template<typename Matching, typename Changing>
 using match_const_t = typename match_const<Matching, Changing>::type;
+
+/// \brief Matches the volatile qualifier of the first type by modifying the
+/// second type.
+///
+/// This could be useful inside of a deducing-this methods, templates, and other
+/// situations.
+///
+/// \tparam Matching Type being referenced for volatile qualification
+/// \tparam Changing Type to change volatile qualification
+template<typename Matching, typename Changing>
+struct match_volatile
+    : std::conditional_t<
+          std::is_volatile_v<Matching>,
+          std::add_volatile<Changing>,
+          std::remove_volatile<Changing>> {};
+
+/// \brief Alias template for \c match_volatile.
+template<typename Matching, typename Changing>
+using match_volatile_t = typename match_volatile<Matching, Changing>::type;
 
 CTL_END_NAMESPACE
 
