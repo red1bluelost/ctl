@@ -98,7 +98,6 @@ class view_impl
   view_impl(::ctl::out_var<Container> container)
       : view_impl(*container.variable) {}
 
-
   using push_back_copy_base::push_back;
   using push_back_move_base::push_back;
 

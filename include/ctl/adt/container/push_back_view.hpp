@@ -145,7 +145,7 @@ struct pbv_move_impl {
 /// \tparam T The value_type of the container being viewed
 template<typename Base, typename T>
 struct pbv_move_impl<Base, T, false> : private pbv_move_delete<Base, T> {
-  using pbv_move_delete<Base, T>::pbv_copy_delete;
+  using pbv_move_delete<Base, T>::pbv_move_delete;
   using pbv_move_delete<Base, T>::push_back;
 };
 

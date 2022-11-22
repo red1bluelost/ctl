@@ -11,17 +11,18 @@
 
 #include "ctl/adt/container/push_back_view.hpp"
 
-#include "ctl/adt/container/view.hpp"
+#include "ctl/meta/special_members.hpp"
+#include "test_utilities.hpp"
 
 #include <gmock/gmock-matchers.h>
-#include <gmock/gmock-more-matchers.h>
 #include <gtest/gtest.h>
 
 #include <deque>
+#include <list>
 
 namespace {
 
-using ::testing::ElementsAre, ::testing::IsEmpty, ::testing::Pointee;
+using ::testing::ElementsAre;
 
 //===----------------------------------------------------------------------===//
 // Test to show an intended use case for push_back_view.
@@ -60,97 +61,55 @@ TEST(push_back_view_test, intented_usage_example) {
 // Tests relating to the specific details of push_back_view.
 //===----------------------------------------------------------------------===//
 
-// TODO: improve testing approach probably by using a fixture
+TEST(push_back_view_test, view_size) {
+  static_assert(
+      sizeof(ctl::container::push_back_view<int>) == sizeof(void*) * 3
+  );
+  static_assert(
+      sizeof(ctl::container::push_back_view<std::string>) == sizeof(void*) * 3
+  );
+  static_assert(
+      sizeof(ctl::container::push_back_view<std::unique_ptr<int>>) ==
+      sizeof(void*) * 2
+  );
 
-TEST(push_back_view_test, vector) {
-  {
-    std::vector<int> v;
-    {
-      ctl::container::push_back_view<int> pv{v};
-      static_assert(sizeof(pv) == sizeof(void*) * 3);
-      (void)pv;
-    }
-    ASSERT_THAT(v, IsEmpty());
-    ASSERT_THAT(v, ElementsAre());
-  }
+  // Both copy and move operations
+  static_assert(
+      sizeof(ctl::container::push_back_view<
+             ctl::with_copy_move<true, true, true, true>>) == sizeof(void*) * 3
+  );
+  // Only move operations
+  static_assert(
+      sizeof(ctl::container::push_back_view<
+             ctl::with_copy_move<false, true, false, true>>) ==
+      sizeof(void*) * 2
+  );
+  // Only copy operations
+  static_assert(
+      sizeof(ctl::container::push_back_view<
+             ctl::with_copy_move<true, false, true, false>>) ==
+      sizeof(void*) * 2
+  );
+  // Neither copy nor move operations
+  static_assert(
+      sizeof(ctl::container::push_back_view<
+             ctl::with_copy_move<false, false, false, false>>) ==
+      sizeof(void*) * 1
+  );
 
-  {
-    std::vector<int> v;
-    {
-      ctl::container::view<int>::of<ctl::cvt::push_back> pv{v};
-      static_assert(sizeof(pv) == sizeof(void*) * 3);
-      pv.push_back(0);
-      const int i = 1;
-      pv.push_back(i);
-      pv.push_back(2);
-    }
-    ASSERT_THAT(v, ElementsAre(0, 1, 2));
-  }
-  {
-    std::vector<std::string> v;
-    {
-      ctl::container::push_back_view<std::string> pv{v};
-      static_assert(sizeof(pv) == sizeof(void*) * 3);
-      const std::string s = "hello";
-      pv.push_back(s);
-      pv.push_back("this is a test");
-    }
-    ASSERT_THAT(v, ElementsAre("hello", "this is a test"));
-  }
-  {
-    std::vector<std::unique_ptr<char>> v;
-    {
-      ctl::container::push_back_view<std::unique_ptr<char>> pv{v};
-      static_assert(sizeof(pv) == sizeof(void*) * 2);
-      pv.push_back(std::make_unique<char>('a'));
-      pv.push_back(std::make_unique<char>('b'));
-    }
-    ASSERT_THAT(v, ElementsAre(Pointee('a'), Pointee('b')));
-  }
+  // Only copy defaulted operations
+  static_assert(
+      sizeof(ctl::container::push_back_view<copy_default_type>) ==
+      sizeof(void*) * 3
+  );
 }
 
-TEST(push_back_view_test, deque) {
-  {
-    std::deque<int> v;
-    {
-      ctl::container::push_back_view<int> pv{v};
-      (void)pv;
-    }
-    ASSERT_THAT(v, IsEmpty());
-    ASSERT_THAT(v, ElementsAre());
-  }
-
-  {
-    std::deque<int> v;
-    {
-      ctl::container::push_back_view<int> pv{v};
-      pv.push_back(0);
-      const int i = 1;
-      pv.push_back(i);
-      pv.push_back(2);
-    }
-    ASSERT_THAT(v, ElementsAre(0, 1, 2));
-  }
-  {
-    std::deque<std::string> v;
-    {
-      ctl::container::push_back_view<std::string> pv{v};
-      const std::string s = "hello";
-      pv.push_back(s);
-      pv.push_back("this is a test");
-    }
-    ASSERT_THAT(v, ElementsAre("hello", "this is a test"));
-  }
-  {
-    std::deque<std::unique_ptr<char>> v;
-    {
-      ctl::container::push_back_view<std::unique_ptr<char>> pv{v};
-      static_assert(sizeof(pv) == sizeof(void*) * 2);
-      pv.push_back(std::make_unique<char>('a'));
-      pv.push_back(std::make_unique<char>('b'));
-    }
-    ASSERT_THAT(v, ElementsAre(Pointee('a'), Pointee('b')));
-  }
+TEST(push_back_view_test, view_tester) {
+  push_back_view_tester<ctl::container::push_back_view> tester(__FILE__);
+  tester.run<std::vector>(__LINE__);
+  tester.run<std::deque>(__LINE__);
+  tester.run<std::list>(__LINE__);
+  tester.run<std::list>(__LINE__);
 }
 
 } // namespace
