@@ -18,10 +18,37 @@
 
 namespace {
 
+template<typename Nullable, typename TypeForRebind>
+struct rebind_tester;
+template<typename T, typename TypeForRebind>
+struct rebind_tester<T*, TypeForRebind> : std::type_identity<TypeForRebind*> {};
+template<
+    typename ValueType,
+    template<typename, typename...>
+    class SmartPtrLike,
+    typename TypeForRebind>
+struct rebind_tester<SmartPtrLike<ValueType>, TypeForRebind>
+    : std::type_identity<SmartPtrLike<TypeForRebind>> {};
+
 template<typename T>
 consteval void assert_proper_nullable_type() {
-  using null_ret = decltype(ctl::null_traits<T>::null());
-  static_assert(std::same_as<null_ret, std::remove_cv_t<T>>);
+  using tcv = std::remove_cv_t<T>;
+
+  using nt = ctl::null_traits<T>;
+  static_assert(std::same_as<typename nt::nullable_type, tcv>);
+
+  // We rely on all the supported types having a * operator that exposes
+  // value_type.
+  using value_type = std::remove_reference_t<decltype(*std::declval<tcv>())>;
+  static_assert(std::same_as<typename nt::element_type, value_type>);
+
+  struct tester_type {};
+  static_assert(std::same_as<
+                typename nt::template rebind<tester_type>,
+                typename rebind_tester<tcv, tester_type>::type>);
+
+  using null_ret = decltype(nt::null());
+  static_assert(std::same_as<null_ret, tcv>);
   static_assert(!std::is_const_v<null_ret>);
   static_assert(!std::is_volatile_v<null_ret>);
 }

@@ -30,7 +30,13 @@ CTL_BEGIN_NAMESPACE
 ///
 /// In order to be a valid \c null_traits specialization. The implementation
 /// must provide the following:
-///   1. A \c null static function which returns the "null" representation of
+///   1. An alias \c nullable_type that should match \c T with const and
+///      volatile removed.
+///   2. An alias \c element_type which should match the value type of the
+///      pointer or optional like \c T.
+///   3. A template alias \c rebind which changes the element type of the
+///      nullable type.
+///   4. A \c null static function which returns the "null" representation of
 ///      the type being specialized. The return type should be the type being
 ///      specialized.
 ///
@@ -59,6 +65,12 @@ struct null_traits<const volatile T> : null_traits<T> {};
 /// \tparam T Type being pointed to
 template<typename T>
 struct null_traits<T*> {
+  using nullable_type = T*;
+  using element_type  = T;
+
+  template<typename U>
+  using rebind = U*;
+
   static constexpr T* null() { return nullptr; }
 };
 
@@ -68,11 +80,16 @@ struct null_traits<T*> {
 /// \tparam T The \c value_type of the \c std::optional
 template<typename T>
 struct null_traits<std::optional<T>> {
+  using nullable_type = std::optional<T>;
+  using element_type  = T;
+
+  template<typename U>
+  using rebind = std::optional<U>;
+
   static constexpr std::optional<T> null() { return std::nullopt; }
 };
 
 /// TODO: add unique_ptr, shared_ptr
-/// TODO: add element_type, nullable_type
 
 CTL_END_NAMESPACE
 
