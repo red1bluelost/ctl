@@ -13,6 +13,8 @@
 
 #include <gtest/gtest.h>
 
+#include <source_location>
+
 namespace {
 
 consteval void test_out_var_consteval(int& i) { i = 3; }
@@ -46,8 +48,12 @@ TEST(parameter_test, out_var_constexpr) {
 class out_var_test : public ::testing::Test {
  protected:
   template<typename Tester>
-  void _run(Tester, const char* file, int line) {
-    testing::ScopedTrace t(file, line, "running tests for ctl::out_var");
+  void run(std::source_location call_loc = std::source_location::current()) {
+    testing::ScopedTrace _t(
+        call_loc.file_name(),
+        static_cast<int>(call_loc.line()),
+        "running tests for ctl::out_var"
+    );
     {
       std::string s;
       ASSERT_EQ(s, "");
@@ -75,9 +81,14 @@ class out_var_test : public ::testing::Test {
       ASSERT_EQ(*ip, 34);
     }
   }
-};
 
-#define run(...) _run(__VA_ARGS__, __FILE__, __LINE__)
+ private:
+  std::source_location tester_loc = std::source_location::current();
+  testing::ScopedTrace _ttr{
+      tester_loc.file_name(),
+      static_cast<int>(tester_loc.line()),
+      "fixture for testing out_var"};
+};
 
 TEST_F(out_var_test, function_out_by_ref) {
   struct ref_tester {
@@ -89,7 +100,7 @@ TEST_F(out_var_test, function_out_by_ref) {
       ip           = &i;
     }
   };
-  run(ref_tester{});
+  run<ref_tester>();
 }
 
 TEST_F(out_var_test, function_out_by_ptr) {
@@ -102,7 +113,7 @@ TEST_F(out_var_test, function_out_by_ptr) {
       *ip          = &i;
     }
   };
-  run(ptr_tester{});
+  run<ptr_tester>();
 }
 
 template<typename T>
@@ -122,7 +133,7 @@ TEST_F(out_var_test, function_out_by_view) {
       ip.value     = &i;
     }
   };
-  run(view_tester{});
+  run<view_tester>();
 }
 
 } // namespace

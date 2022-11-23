@@ -60,11 +60,11 @@ TEST(composition_view_test, push_back_only_size) {
   assert_num_ptrs<push_back_only_composition<copy_default_type>, 3>();
 }
 TEST(composition_view_test, push_back_only_view) {
-  push_back_view_tester<push_back_only_composition> tester(__FILE__);
-  tester.run<std::vector>(__LINE__);
-  tester.run<std::deque>(__LINE__);
-  tester.run<std::list>(__LINE__);
-  tester.run<std::list>(__LINE__);
+  push_back_view_tester<push_back_only_composition> tester;
+  tester.run<std::vector>();
+  tester.run<std::deque>();
+  tester.run<std::list>();
+  tester.run<std::list>();
 }
 
 } // namespace

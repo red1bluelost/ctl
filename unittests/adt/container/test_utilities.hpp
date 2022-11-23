@@ -16,6 +16,8 @@
 #include <gmock/gmock-more-matchers.h>
 #include <gtest/gtest.h>
 
+#include <source_location>
+
 struct copy_default_type {
   copy_default_type()                                    = default;
   copy_default_type(const copy_default_type&)            = default;
@@ -25,14 +27,15 @@ struct copy_default_type {
 template<template<typename> class View>
 class push_back_view_tester {
  public:
-  constexpr push_back_view_tester(const char* file_) noexcept : file(file_) {}
-
   template<template<typename> class Container>
-  void run(int line) {
+  void run(std::source_location call_loc = std::source_location::current()) {
     using ::testing::ElementsAre, ::testing::IsEmpty, ::testing::SizeIs,
         ::testing::Pointee;
-
-    testing::ScopedTrace _tr(file, line, "running tests for a push_back view");
+    testing::ScopedTrace _tr(
+        call_loc.file_name(),
+        static_cast<int>(call_loc.line()),
+        "running tests for a push_back view"
+    );
     {
       Container<int> v;
       {
@@ -95,7 +98,11 @@ class push_back_view_tester {
   }
 
  private:
-  const char* file;
+  std::source_location tester_loc = std::source_location::current();
+  testing::ScopedTrace _ttr{
+      tester_loc.file_name(),
+      static_cast<int>(tester_loc.line()),
+      "tester for push_back view"};
 };
 
 template<typename T, std::size_t num_pointers>

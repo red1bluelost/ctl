@@ -92,11 +92,11 @@ TEST(push_back_view_test, view_size) {
 }
 
 TEST(push_back_view_test, view_tester) {
-  push_back_view_tester<ctl::container::push_back_view> tester(__FILE__);
-  tester.run<std::vector>(__LINE__);
-  tester.run<std::deque>(__LINE__);
-  tester.run<std::list>(__LINE__);
-  tester.run<std::list>(__LINE__);
+  push_back_view_tester<ctl::container::push_back_view> tester;
+  tester.run<std::vector>();
+  tester.run<std::deque>();
+  tester.run<std::list>();
+  tester.run<std::list>();
 }
 
 } // namespace
