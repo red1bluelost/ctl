@@ -153,6 +153,54 @@ struct wrap_if : std::conditional<condition, Wrapper<T>, T> {};
 template<bool condition, template<typename> class Wrapper, typename T>
 using wrap_if_t = typename wrap_if<condition, Wrapper, T>::type;
 
+namespace detail {
+
+/// \brief Default implementation of \c replace_first that does not contain a \c
+/// type alias.
+///
+/// \tparam TemplateType Non template type or zero arguments template
+/// \tparam ForReplace Type which would have replaced the first
+template<typename TemplateType, typename ForReplace>
+struct replace_first_impl {};
+
+/// \brief Implements \c replace_first by providing a specialization for
+/// template types with one or more template arguments.
+///
+/// \tparam FirstTArg Type which will be replaced
+/// \tparam RestTArg Remaining types to leave unchanged
+/// \tparam TemplateType Templated type which will have first argument replaced
+/// \tparam ForReplace Type to be used in the replacement
+template<
+    typename FirstTArg,
+    typename... RestTArg,
+    template<typename, typename...>
+    class TemplateType,
+    typename ForReplace>
+struct replace_first_impl<TemplateType<FirstTArg, RestTArg...>, ForReplace>
+    : std::type_identity<TemplateType<ForReplace, RestTArg...>> {};
+
+} // namespace detail
+
+/// \brief Replaces the first type argument of a templated type.
+///
+/// This might not have the intended effects when using with STL types like \c
+/// std::vector or \c std::unique_ptr. They have default template arguments
+/// depending on that first argument which won't make sense if the first is
+/// replaced.
+///
+/// \note If \c TemplateType is not a template type with one or more arguments
+/// then \c replace_first will not have a type alias.
+///
+/// \tparam TemplateType Template type which will have its first template
+/// argument replaced
+/// \tparam ForReplace Type to replace as the first argument
+template<typename TemplateType, typename ForReplace>
+struct replace_first : detail::replace_first_impl<TemplateType, ForReplace> {};
+
+/// \brief Alias template for \c meta::replace_first.
+template<typename TemplateType, typename ForReplace>
+using replace_first_t = typename replace_first<TemplateType, ForReplace>::type;
+
 } // namespace meta
 
 //===----------------------------------------------------------------------===//

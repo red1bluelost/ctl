@@ -173,6 +173,45 @@ TEST(type_traits_test, meta_wrap_if) {
                 int>);
 }
 
+template<typename...>
+struct replace_tester {};
+TEST(type_traits_test, meta_rebind_first) {
+  static_assert(std::is_same_v<
+                ctl::meta::replace_first<std::optional<int>, double>::type,
+                std::optional<double>>);
+  static_assert(std::is_same_v<
+                ctl::meta::replace_first<std::unique_ptr<int>, float>::type,
+                std::unique_ptr<float, std::default_delete<int>>>);
+  static_assert(std::is_same_v<
+                ctl::meta::replace_first_t<std::vector<long>, char>,
+                std::vector<char, std::allocator<long>>>);
+
+  static_assert(std::is_same_v<
+                ctl::meta::replace_first<
+                    replace_tester<std::string, long, float>,
+                    std::vector<int>>::type,
+                replace_tester<std::vector<int>, long, float>>);
+  static_assert(std::is_same_v<
+                ctl::meta::
+                    replace_first_t<replace_tester<unsigned>, long double>,
+                replace_tester<long double>>);
+  static_assert(std::is_same_v<
+                ctl::meta::
+                    replace_first_t<replace_tester<int, int, int, int>, int>,
+                replace_tester<int, int, int, int>>);
+  static_assert(std::is_same_v<
+                ctl::meta::replace_first_t<replace_tester<int>, int>,
+                replace_tester<int>>);
+
+  struct not_template {};
+  static_assert(!ctl::aliasing_type<
+                ctl::meta::replace_first<not_template, int>>);
+  static_assert(!ctl::aliasing_type<ctl::meta::replace_first<double, int>>);
+  static_assert(!ctl::aliasing_type<ctl::meta::replace_first<void, int>>);
+  static_assert(!ctl::aliasing_type<
+                ctl::meta::replace_first<replace_tester<>, int>>);
+}
+
 //===----------------------------------------------------------------------===//
 // Tests for meta functions on any type.
 //===----------------------------------------------------------------------===//
