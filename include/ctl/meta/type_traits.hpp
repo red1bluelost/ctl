@@ -183,13 +183,13 @@ struct replace_first_impl<TemplateType<FirstTArg, RestTArg...>, ForReplace>
 
 /// \brief Replaces the first type argument of a templated type.
 ///
-/// This might not have the intended effects when using with STL types like \c
-/// std::vector or \c std::unique_ptr. They have default template arguments
-/// depending on that first argument which won't make sense if the first is
-/// replaced.
+/// If \c TemplateType is not a template type with one or more arguments then \c
+/// replace_first will not have a \c type alias.
 ///
-/// \note If \c TemplateType is not a template type with one or more arguments
-/// then \c replace_first will not have a type alias.
+/// \note This might not have the intended effects when using with STL types
+/// like \c std::vector or \c std::unique_ptr. They have default template
+/// arguments depending on that first argument which won't make sense if the
+/// first is replaced. For this, use \c meta::rebind.
 ///
 /// \tparam TemplateType Template type which will have its first template
 /// argument replaced
@@ -200,6 +200,65 @@ struct replace_first : detail::replace_first_impl<TemplateType, ForReplace> {};
 /// \brief Alias template for \c meta::replace_first.
 template<typename TemplateType, typename ForReplace>
 using replace_first_t = typename replace_first<TemplateType, ForReplace>::type;
+
+namespace detail {
+
+/// \brief Default implementation of \c rebind that does not contain a \c type
+/// alias.
+///
+/// \tparam TemplateType Non template type
+/// \tparam NewArgs Types which would have rebound
+template<typename TemplateType, typename... NewArgs>
+struct rebind_impl {};
+
+/// \brief Implements \c rebind by providing a specialization for template types
+/// with one or more template arguments.
+///
+/// \tparam OldArgs Original type arguments in the template
+/// \tparam TemplateType Template type whose arguments will be rebound
+/// \tparam NewArgs New types to bind with the template
+template<
+    typename... OldArgs,
+    template<typename...>
+    class TemplateType,
+    typename... NewArgs>
+struct rebind_impl<TemplateType<OldArgs...>, NewArgs...>
+    : std::type_identity<TemplateType<NewArgs...>> {};
+
+} // namespace detail
+
+/// \brief Rebinds all type arguments for the passed \c TemplateType with given
+/// new arguments.
+///
+/// If \c TemplateType is not a template type then \c rebind will not have a \c
+/// type alias.
+///
+/// Useful for creating traits objects that use rebind and other templated
+/// types.
+///
+/// Example usage:
+/// \code
+/// template<typename T>
+/// struct SomeWrapper {
+///   template<typename U>
+///   using rebind = ctl::meta::rebind_t<SomeWrapper<T>, U>;
+/// };
+/// \endcode
+///
+/// \note For STL types like \c std::vector or \c std::unique_ptr which have
+/// defaulted type arguments depending on the provide type, this \c rebind will
+/// not take those into account. For example, rebinding \c std::pmr::vector<int>
+/// with \c double will become \c std::vector<double> and not \c
+/// std::pmr::vector<double>.
+///
+/// \tparam TemplateType Template type which will have arguments rebound
+/// \tparam NewArgs Types for replacements in rebound
+template<typename TemplateType, typename... NewArgs>
+struct rebind : detail::rebind_impl<TemplateType, NewArgs...> {};
+
+/// \brief Alias template for \c meta::rebind.
+template<typename TemplateType, typename... NewArgs>
+using rebind_t = typename rebind<TemplateType, NewArgs...>::type;
 
 } // namespace meta
 

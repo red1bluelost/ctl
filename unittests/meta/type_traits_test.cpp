@@ -175,7 +175,7 @@ TEST(type_traits_test, meta_wrap_if) {
 
 template<typename...>
 struct replace_tester {};
-TEST(type_traits_test, meta_rebind_first) {
+TEST(type_traits_test, meta_replace_first) {
   static_assert(std::same_as<
                 ctl::meta::replace_first<std::optional<int>, double>::type,
                 std::optional<double>>);
@@ -210,6 +210,55 @@ TEST(type_traits_test, meta_rebind_first) {
   static_assert(!ctl::aliasing_type<ctl::meta::replace_first<void, int>>);
   static_assert(!ctl::aliasing_type<
                 ctl::meta::replace_first<replace_tester<>, int>>);
+}
+
+template<typename...>
+struct rebind_tester {};
+TEST(type_traits_test, meta_rebind) {
+  static_assert(std::same_as<
+                ctl::meta::rebind<std::optional<int>, double>::type,
+                std::optional<double>>);
+  static_assert(std::same_as<
+                ctl::meta::rebind<std::unique_ptr<int>, float>::type,
+                std::unique_ptr<float>>);
+  static_assert(std::same_as<
+                ctl::meta::rebind_t<std::vector<long>, char>,
+                std::vector<char>>);
+  static_assert(std::same_as<
+                ctl::meta::rebind_t<std::string, wchar_t>,
+                std::wstring>);
+  {
+    using fdel = decltype([](float*) {});
+    static_assert(std::same_as<
+                  ctl::meta::rebind<std::unique_ptr<int>, float, fdel>::type,
+                  std::unique_ptr<float, fdel>>);
+  }
+
+  static_assert(std::same_as<
+                ctl::meta::rebind<
+                    rebind_tester<std::string, long, float>,
+                    std::vector<int>>::type,
+                rebind_tester<std::vector<int>>>);
+  static_assert(std::same_as<
+                ctl::meta::rebind_t<rebind_tester<unsigned>, long double>,
+                rebind_tester<long double>>);
+  static_assert(std::same_as<
+                ctl::meta::rebind_t<rebind_tester<int, int, int, int>, int>,
+                rebind_tester<int>>);
+  static_assert(std::same_as<
+                ctl::meta::rebind_t<rebind_tester<int>, int>,
+                rebind_tester<int>>);
+  static_assert(std::same_as<
+                ctl::meta::rebind_t<rebind_tester<>, int, long, long long>,
+                rebind_tester<int, long, long long>>);
+  static_assert(std::same_as<
+                ctl::meta::rebind_t<rebind_tester<double, double, double>>,
+                rebind_tester<>>);
+
+  struct not_template {};
+  static_assert(!ctl::aliasing_type<ctl::meta::rebind<not_template, int>>);
+  static_assert(!ctl::aliasing_type<ctl::meta::rebind<double, int>>);
+  static_assert(!ctl::aliasing_type<ctl::meta::rebind<void, int>>);
 }
 
 //===----------------------------------------------------------------------===//
