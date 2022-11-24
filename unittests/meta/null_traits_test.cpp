@@ -11,6 +11,8 @@
 
 #include "ctl/meta/null_traits.hpp"
 
+#include "ctl/meta/type_traits.hpp"
+
 #include <gtest/gtest.h>
 
 #include <concepts>
@@ -19,16 +21,9 @@
 namespace {
 
 template<typename Nullable, typename TypeForRebind>
-struct rebind_tester;
+struct rebind_tester : ctl::meta::rebind_adt<Nullable, TypeForRebind> {};
 template<typename T, typename TypeForRebind>
 struct rebind_tester<T*, TypeForRebind> : std::type_identity<TypeForRebind*> {};
-template<
-    typename ValueType,
-    template<typename, typename...>
-    class SmartPtrLike,
-    typename TypeForRebind>
-struct rebind_tester<SmartPtrLike<ValueType>, TypeForRebind>
-    : std::type_identity<SmartPtrLike<TypeForRebind>> {};
 
 template<typename T>
 consteval void assert_proper_nullable_type() {
@@ -56,12 +51,18 @@ consteval void assert_proper_nullable_type() {
 TEST(null_traits_test, nullable_cv_qualification) {
   assert_proper_nullable_type<int* const>();
   assert_proper_nullable_type<const std::optional<double>>();
+  assert_proper_nullable_type<const std::unique_ptr<long>>();
+  assert_proper_nullable_type<const std::shared_ptr<char>>();
 
   assert_proper_nullable_type<int* volatile>();
   assert_proper_nullable_type<volatile std::optional<double>>();
+  assert_proper_nullable_type<volatile std::unique_ptr<long>>();
+  assert_proper_nullable_type<volatile std::shared_ptr<char>>();
 
   assert_proper_nullable_type<int* const volatile>();
   assert_proper_nullable_type<const volatile std::optional<double>>();
+  assert_proper_nullable_type<const volatile std::unique_ptr<long>>();
+  assert_proper_nullable_type<const volatile std::shared_ptr<char>>();
 }
 
 TEST(null_traits_test, nullable_pointers) {
@@ -93,6 +94,56 @@ TEST(null_traits_test, nullable_optional) {
   ASSERT_EQ(ctl::null_traits<std::optional<double>>::null(), std::nullopt);
   ASSERT_EQ(
       ctl::null_traits<std::optional<std::string_view>>::null(), std::nullopt
+  );
+}
+
+template<typename T>
+struct no_deleter {
+  constexpr void operator()(T*) noexcept {}
+};
+template<typename T>
+struct no_deleter_rebind {
+  constexpr void operator()(T*) noexcept {}
+
+  template<typename U>
+  using rebind = no_deleter_rebind<U>;
+};
+TEST(null_traits_test, nullable_unique_ptr) {
+  assert_proper_nullable_type<std::unique_ptr<const char>>();
+  assert_proper_nullable_type<std::unique_ptr<long>>();
+  assert_proper_nullable_type<std::unique_ptr<std::string>>();
+
+  assert_proper_nullable_type<std::unique_ptr<int, no_deleter<int>>>();
+  static_assert(std::same_as<
+                ctl::null_traits<std::unique_ptr<int, no_deleter<int>>>::rebind<
+                    double>,
+                std::unique_ptr<double, no_deleter<double>>>);
+  assert_proper_nullable_type<std::unique_ptr<int, no_deleter_rebind<int>>>();
+  static_assert(std::same_as<
+                ctl::null_traits<std::unique_ptr<int, no_deleter_rebind<int>>>::
+                    rebind<double>,
+                std::unique_ptr<double, no_deleter_rebind<double>>>);
+
+  // comparison is not yet constexpr
+
+  ASSERT_EQ(ctl::null_traits<std::unique_ptr<unsigned>>::null(), nullptr);
+  ASSERT_EQ(ctl::null_traits<std::unique_ptr<double>>::null(), nullptr);
+  ASSERT_EQ(
+      ctl::null_traits<std::unique_ptr<std::string_view>>::null(), nullptr
+  );
+}
+
+TEST(null_traits_test, nullable_shared_ptr) {
+  assert_proper_nullable_type<std::shared_ptr<const char>>();
+  assert_proper_nullable_type<std::shared_ptr<long>>();
+  assert_proper_nullable_type<std::shared_ptr<std::string>>();
+
+  // comparison is not yet constexpr
+
+  ASSERT_EQ(ctl::null_traits<std::shared_ptr<unsigned>>::null(), nullptr);
+  ASSERT_EQ(ctl::null_traits<std::shared_ptr<double>>::null(), nullptr);
+  ASSERT_EQ(
+      ctl::null_traits<std::shared_ptr<std::string_view>>::null(), nullptr
   );
 }
 

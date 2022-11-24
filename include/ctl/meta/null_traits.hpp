@@ -8,18 +8,13 @@
 /// Meta programming utilities for null: either null pointers, empty objects, or
 /// any other null representation.
 ///
-/// This file only adds specifics for built-in pointers and members of \c std.
-/// Any third-party types being supported are implemented in \c
-/// null_traits_extended.hpp to avoid pulling in extra headers.
-///
 //===----------------------------------------------------------------------===//
 
 #ifndef CTL_META_NULL_TRAITS_HPP
 #define CTL_META_NULL_TRAITS_HPP
 
 #include "ctl/config.h"
-
-#include <optional>
+#include "ctl/meta/type_traits.hpp"
 
 CTL_BEGIN_NAMESPACE
 
@@ -74,19 +69,41 @@ struct null_traits<T*> {
   static constexpr T* null() { return nullptr; }
 };
 
-/// \breif Specialization of \c null_traits for any \c std::optional
-/// instantiation.
+/// \breif Specialization of \c null_traits for any type that has either \c
+/// value_type or \c element_type as an alias.
 ///
-/// \tparam T The \c value_type of the \c std::optional
+/// - \c rebind defers to \c meta::rebind_adt
+/// - \c null uses the default constructor
+///
+/// This catches many types that may not be intended such as \c std::vector. It
+/// does serve its purpose in catching \c std::optional, \c std::unique_ptr, and
+/// \c std::shared_ptr. It can catch user-defined types if they either of type
+/// aliases.
+///
+/// \tparam T Nullable type with proper alias
 template<typename T>
-struct null_traits<std::optional<T>> {
-  using nullable_type = std::optional<T>;
-  using element_type  = T;
+requires requires { typename T::value_type; } ||
+         requires { typename T::element_type; }
+struct null_traits<T> {
+ private:
+  // Helpers for extracting the correct element_type
+  template<typename U>
+  struct get_value_type {};
+  template<typename U>
+  requires requires { typename U::value_type; }
+  struct get_value_type<U> : std::type_identity<typename U::value_type> {};
+  template<typename U>
+  requires requires { typename U::element_type; }
+  struct get_value_type<U> : std::type_identity<typename U::element_type> {};
+
+ public:
+  using nullable_type = T;
+  using element_type  = typename get_value_type<T>::type;
 
   template<typename U>
-  using rebind = std::optional<U>;
+  using rebind = ctl::meta::rebind_adt_t<T, U>;
 
-  static constexpr std::optional<T> null() { return std::nullopt; }
+  static constexpr nullable_type null() { return T(); }
 };
 
 /// TODO: add unique_ptr, shared_ptr
