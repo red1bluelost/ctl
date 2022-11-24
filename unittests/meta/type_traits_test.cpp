@@ -98,31 +98,31 @@ TEST(type_traits_test, meta_same) {
 }
 
 TEST(type_traits_test, meta_apply_if) {
-  static_assert(std::is_same_v<
+  static_assert(std::same_as<
                 ctl::meta::apply_if<true, std::add_const, int>::type,
                 const int>);
-  static_assert(std::is_same_v<
+  static_assert(std::same_as<
                 ctl::meta::apply_if<false, std::add_const, int>::type,
                 int>);
 
-  static_assert(std::is_same_v<
+  static_assert(std::same_as<
                 ctl::meta::apply_if<true, std::make_signed, int>::type,
                 int>);
-  static_assert(std::is_same_v<
+  static_assert(std::same_as<
                 ctl::meta::apply_if<false, std::make_signed, int>::type,
                 int>);
 
-  static_assert(std::is_same_v<
+  static_assert(std::same_as<
                 ctl::meta::apply_if_t<true, std::make_unsigned, int>,
                 unsigned int>);
-  static_assert(std::is_same_v<
+  static_assert(std::same_as<
                 ctl::meta::apply_if_t<false, std::make_unsigned, int>,
                 int>);
 
-  static_assert(std::is_same_v<
+  static_assert(std::same_as<
                 ctl::meta::apply_if_t<true, std::decay, const float&>,
                 float>);
-  static_assert(std::is_same_v<
+  static_assert(std::same_as<
                 ctl::meta::apply_if_t<false, std::decay, const float&>,
                 const float&>);
 
@@ -130,45 +130,45 @@ TEST(type_traits_test, meta_apply_if) {
   static_assert(std::is_base_of_v<
                 std::unique_ptr<int>,
                 ctl::meta::apply_if<true, std::unique_ptr, int>>);
-  static_assert(std::is_same_v<
+  static_assert(std::same_as<
                 ctl::meta::apply_if_t<false, std::unique_ptr, int>,
                 int>);
 }
 
 TEST(type_traits_test, meta_wrap_if) {
-  static_assert(std::is_same_v<
+  static_assert(std::same_as<
                 ctl::meta::wrap_if<true, std::unique_ptr, int>::type,
                 std::unique_ptr<int>>);
-  static_assert(std::is_same_v<
+  static_assert(std::same_as<
                 ctl::meta::wrap_if<false, std::unique_ptr, int>::type,
                 int>);
 
-  static_assert(std::is_same_v<
+  static_assert(std::same_as<
                 ctl::meta::wrap_if<true, std::vector, double>::type,
                 std::vector<double>>);
-  static_assert(std::is_same_v<
+  static_assert(std::same_as<
                 ctl::meta::wrap_if<false, std::vector, double>::type,
                 double>);
 
-  static_assert(std::is_same_v<
+  static_assert(std::same_as<
                 ctl::meta::wrap_if_t<true, std::optional, std::string_view>,
                 std::optional<std::string_view>>);
-  static_assert(std::is_same_v<
+  static_assert(std::same_as<
                 ctl::meta::wrap_if_t<false, std::optional, std::string_view>,
                 std::string_view>);
 
-  static_assert(std::is_same_v<
+  static_assert(std::same_as<
                 ctl::meta::wrap_if_t<true, std::variant, std::string>,
                 std::variant<std::string>>);
-  static_assert(std::is_same_v<
+  static_assert(std::same_as<
                 ctl::meta::wrap_if_t<false, std::variant, std::string>,
                 std::string>);
 
   // Not intended use case
-  static_assert(std::is_same_v<
+  static_assert(std::same_as<
                 ctl::meta::wrap_if_t<true, std::add_const, int>,
                 std::add_const<int>>);
-  static_assert(std::is_same_v<
+  static_assert(std::same_as<
                 ctl::meta::wrap_if_t<false, std::add_const, int>,
                 int>);
 }
@@ -176,30 +176,30 @@ TEST(type_traits_test, meta_wrap_if) {
 template<typename...>
 struct replace_tester {};
 TEST(type_traits_test, meta_rebind_first) {
-  static_assert(std::is_same_v<
+  static_assert(std::same_as<
                 ctl::meta::replace_first<std::optional<int>, double>::type,
                 std::optional<double>>);
-  static_assert(std::is_same_v<
+  static_assert(std::same_as<
                 ctl::meta::replace_first<std::unique_ptr<int>, float>::type,
                 std::unique_ptr<float, std::default_delete<int>>>);
-  static_assert(std::is_same_v<
+  static_assert(std::same_as<
                 ctl::meta::replace_first_t<std::vector<long>, char>,
                 std::vector<char, std::allocator<long>>>);
 
-  static_assert(std::is_same_v<
+  static_assert(std::same_as<
                 ctl::meta::replace_first<
                     replace_tester<std::string, long, float>,
                     std::vector<int>>::type,
                 replace_tester<std::vector<int>, long, float>>);
-  static_assert(std::is_same_v<
+  static_assert(std::same_as<
                 ctl::meta::
                     replace_first_t<replace_tester<unsigned>, long double>,
                 replace_tester<long double>>);
-  static_assert(std::is_same_v<
+  static_assert(std::same_as<
                 ctl::meta::
                     replace_first_t<replace_tester<int, int, int, int>, int>,
                 replace_tester<int, int, int, int>>);
-  static_assert(std::is_same_v<
+  static_assert(std::same_as<
                 ctl::meta::replace_first_t<replace_tester<int>, int>,
                 replace_tester<int>>);
 
@@ -520,7 +520,7 @@ TEST(type_traits_test, enable_same) {
   static_assert(!ctl::aliasing_type<ctl::enable_same<int, float>>);
   static_assert(!ctl::aliasing_type<ctl::enable_same<unsigned, bool, int>>);
 
-  static_assert(std::is_same_v<ctl::enable_same_t<double, double>, void>);
+  static_assert(std::same_as<ctl::enable_same_t<double, double>, void>);
   ASSERT_EQ((ctl::enable_same_t<double, double, long>{2}), long{2});
 }
 
@@ -531,7 +531,7 @@ TEST(type_traits_test, enable_not_same) {
   static_assert(ctl::aliasing_type<ctl::enable_not_same<int, float>>);
   static_assert(ctl::aliasing_type<ctl::enable_not_same<unsigned, bool, int>>);
 
-  static_assert(std::is_same_v<ctl::enable_not_same_t<double, char>, void>);
+  static_assert(std::same_as<ctl::enable_not_same_t<double, char>, void>);
   ASSERT_EQ((ctl::enable_not_same_t<double, float, long>{2}), long{2});
 }
 
@@ -543,7 +543,7 @@ TEST(type_traits_test, enable_same_decay) {
   static_assert(!ctl::aliasing_type<
                 ctl::enable_same_decay<unsigned, const bool, int>>);
 
-  static_assert(std::is_same_v<ctl::enable_same_decay_t<int&&, int&&>, void>);
+  static_assert(std::same_as<ctl::enable_same_decay_t<int&&, int&&>, void>);
   ASSERT_EQ((ctl::enable_same_decay_t<int&&, const int, long>{2}), long{2});
 }
 
@@ -552,125 +552,122 @@ TEST(type_traits_test, enable_same_decay) {
 //===----------------------------------------------------------------------===//
 
 TEST(type_traits_test, match_const) {
-  static_assert(std::is_same_v<ctl::match_const<double, int>::type, int>);
-  static_assert(std::is_same_v<ctl::match_const<long, const int>::type, int>);
+  static_assert(std::same_as<ctl::match_const<double, int>::type, int>);
+  static_assert(std::same_as<ctl::match_const<long, const int>::type, int>);
 
-  static_assert(std::is_same_v<ctl::match_const_t<const long, int>, const int>);
-  static_assert(std::is_same_v<
+  static_assert(std::same_as<ctl::match_const_t<const long, int>, const int>);
+  static_assert(std::same_as<
                 ctl::match_const_t<const char, const int>,
                 const int>);
 
-  static_assert(std::is_same_v<
+  static_assert(std::same_as<
                 ctl::match_const_t<long, const volatile int>,
                 volatile int>);
-  static_assert(std::is_same_v<
+  static_assert(std::same_as<
                 ctl::match_const_t<const char, volatile int>,
                 const volatile int>);
 
-  static_assert(std::is_same_v<
-                ctl::match_const_t<float, const int*>,
-                const int*>);
-  static_assert(std::is_same_v<
+  static_assert(std::
+                    same_as<ctl::match_const_t<float, const int*>, const int*>);
+  static_assert(std::same_as<
                 ctl::match_const_t<const float, const int*>,
                 const int* const>);
 }
 
 TEST(type_traits_test, match_volatile) {
-  static_assert(std::is_same_v<ctl::match_volatile<double, int>::type, int>);
-  static_assert(std::is_same_v<
+  static_assert(std::same_as<ctl::match_volatile<double, int>::type, int>);
+  static_assert(std::same_as<
                 ctl::match_volatile<long, volatile int>::type,
                 int>);
 
-  static_assert(std::is_same_v<
+  static_assert(std::same_as<
                 ctl::match_volatile_t<volatile long, int>,
                 volatile int>);
-  static_assert(std::is_same_v<
+  static_assert(std::same_as<
                 ctl::match_volatile_t<volatile char, volatile int>,
                 volatile int>);
 
-  static_assert(std::is_same_v<
+  static_assert(std::same_as<
                 ctl::match_volatile_t<long, const volatile int>,
                 const int>);
-  static_assert(std::is_same_v<
+  static_assert(std::same_as<
                 ctl::match_volatile_t<volatile char, const int>,
                 const volatile int>);
 
-  static_assert(std::is_same_v<
+  static_assert(std::same_as<
                 ctl::match_volatile_t<float, volatile int*>,
                 volatile int*>);
-  static_assert(std::is_same_v<
+  static_assert(std::same_as<
                 ctl::match_volatile_t<volatile float, volatile int*>,
                 volatile int* volatile>);
 }
 
 TEST(type_traits_test, match_cv) {
-  static_assert(std::is_same_v<ctl::match_cv<double, int>::type, int>);
-  static_assert(std::is_same_v<ctl::match_cv<long, const int>::type, int>);
-  static_assert(std::is_same_v<ctl::match_cv<double, int>::type, int>);
-  static_assert(std::is_same_v<ctl::match_cv<long, volatile int>::type, int>);
+  static_assert(std::same_as<ctl::match_cv<double, int>::type, int>);
+  static_assert(std::same_as<ctl::match_cv<long, const int>::type, int>);
+  static_assert(std::same_as<ctl::match_cv<double, int>::type, int>);
+  static_assert(std::same_as<ctl::match_cv<long, volatile int>::type, int>);
 
-  static_assert(std::is_same_v<ctl::match_cv_t<const long, int>, const int>);
-  static_assert(std::is_same_v<
-                ctl::match_cv_t<const char, const int>,
-                const int>);
-  static_assert(std::is_same_v<
-                ctl::match_cv_t<volatile long, int>,
-                volatile int>);
-  static_assert(std::is_same_v<
+  static_assert(std::same_as<ctl::match_cv_t<const long, int>, const int>);
+  static_assert(std::
+                    same_as<ctl::match_cv_t<const char, const int>, const int>);
+  static_assert(std::
+                    same_as<ctl::match_cv_t<volatile long, int>, volatile int>);
+  static_assert(std::same_as<
                 ctl::match_cv_t<volatile char, volatile int>,
                 volatile int>);
 
-  static_assert(std::is_same_v<ctl::match_cv_t<long, const volatile int>, int>);
-  static_assert(std::is_same_v<
+  static_assert(std::same_as<ctl::match_cv_t<long, const volatile int>, int>);
+  static_assert(std::same_as<
                 ctl::match_cv_t<const char, volatile int>,
                 const int>);
-  static_assert(std::is_same_v<
+  static_assert(std::same_as<
                 ctl::match_cv_t<volatile char, const int>,
                 volatile int>);
-  static_assert(std::is_same_v<
+  static_assert(std::same_as<
                 ctl::match_cv_t<volatile long, const volatile int>,
                 volatile int>);
 
-  static_assert(std::is_same_v<ctl::match_cv_t<float, const int*>, const int*>);
-  static_assert(std::is_same_v<
+  static_assert(std::same_as<ctl::match_cv_t<float, const int*>, const int*>);
+  static_assert(std::same_as<
                 ctl::match_cv_t<const float, const int*>,
                 const int* const>);
-  static_assert(std::is_same_v<
+  static_assert(std::same_as<
                 ctl::match_cv_t<float, volatile int*>,
                 volatile int*>);
-  static_assert(std::is_same_v<
+  static_assert(std::same_as<
                 ctl::match_cv_t<volatile float, volatile int*>,
                 volatile int* volatile>);
-  static_assert(std::is_same_v<
+  static_assert(std::same_as<
                 ctl::match_cv_t<const float, const volatile int*>,
                 const volatile int* const>);
-  static_assert(std::is_same_v<
+  static_assert(std::same_as<
                 ctl::match_cv_t<volatile float, const volatile int*>,
                 const volatile int* volatile>);
-  static_assert(std::is_same_v<
+  static_assert(std::same_as<
                 ctl::match_cv_t<const volatile float, const volatile int*>,
                 const volatile int* const volatile>);
 }
 
 TEST(type_traits_test, match_sign) {
-  static_assert(std::is_same_v<ctl::match_sign<double, int>::type, int>);
-  static_assert(std::is_same_v<ctl::match_sign<long, unsigned int>::type, int>);
+  static_assert(std::same_as<ctl::match_sign<double, int>::type, int>);
+  static_assert(std::same_as<ctl::match_sign<long, unsigned int>::type, int>);
 
-  static_assert(std::is_same_v<ctl::match_sign_t<unsigned, int>, unsigned>);
-  static_assert(std::is_same_v<
+  static_assert(std::same_as<ctl::match_sign_t<unsigned, int>, unsigned>);
+  static_assert(std::same_as<
                 ctl::match_sign_t<unsigned char, unsigned>,
                 unsigned>);
 
-  static_assert(std::is_same_v<
+  static_assert(std::same_as<
                 ctl::match_sign_t<long, const volatile int>,
                 const volatile int>);
-  static_assert(std::is_same_v<
+  static_assert(std::same_as<
                 ctl::match_sign_t<long, const volatile unsigned int>,
                 const volatile int>);
-  static_assert(std::is_same_v<
+  static_assert(std::same_as<
                 ctl::match_sign_t<unsigned long, const volatile int>,
                 const volatile unsigned int>);
-  static_assert(std::is_same_v<
+  static_assert(std::same_as<
                 ctl::match_sign_t<unsigned long, const volatile unsigned int>,
                 const volatile unsigned int>);
 }
