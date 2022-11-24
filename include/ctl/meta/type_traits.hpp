@@ -13,6 +13,7 @@
 
 #include "ctl/config.h"
 
+#include <concepts>
 #include <limits>
 #include <type_traits>
 
@@ -259,6 +260,96 @@ struct rebind : detail::rebind_impl<TemplateType, NewArgs...> {};
 /// \brief Alias template for \c meta::rebind.
 template<typename TemplateType, typename... NewArgs>
 using rebind_t = typename rebind<TemplateType, NewArgs...>::type;
+
+namespace detail {
+
+/// \brief Handles non-ADT types so there is no \c type alias.
+template<typename TemplateType, typename NewValueType>
+struct rebind_adt_impl {};
+
+/// \brief When a type argument does not match the original value type, it is
+/// preserved. This is also the catch-all case.
+template<typename OldValueType, typename ArgType, typename NewValueType>
+struct rebind_adt_arg : std::type_identity<ArgType> {};
+
+/// \brief When a type argument does match the original value type, the new
+/// value type is used.
+template<
+    typename OldValueType,
+    std::same_as<OldValueType> ArgType,
+    typename NewValueType>
+struct rebind_adt_arg<OldValueType, ArgType, NewValueType>
+    : std::type_identity<NewValueType> {};
+
+/// \brief When a type argument has a rebind alias, then use the rebind while
+/// recursing down its template arguments.
+template<typename OldValueType, typename ArgType, typename NewValueType>
+requires requires { typename ArgType::template rebind<NewValueType>; }
+struct rebind_adt_arg<OldValueType, ArgType, NewValueType>
+    : std::type_identity<typename ArgType::template rebind<
+          typename rebind_adt_impl<ArgType, NewValueType>::type>> {};
+
+/// \brief When a type argument does not have a rebind but the first template
+/// argument matches the original value type, rebind with new value type and
+/// recurse down its template arguments.
+template<
+    typename OldValueType,
+    std::same_as<OldValueType> FirstInner,
+    typename... RestInner,
+    template<typename, typename...>
+    class ArgType,
+    typename NewValueType>
+struct rebind_adt_arg<
+    OldValueType,
+    ArgType<FirstInner, RestInner...>,
+    NewValueType>
+    : std::type_identity<ArgType<
+          NewValueType,
+          typename rebind_adt_arg<OldValueType, RestInner, NewValueType>::
+              type...>> {};
+
+/// \brief Dispatches rebinding for a templated type.
+///
+/// \tparam OldValueType Original value type which is being rebound
+/// \tparam RestOld Other template parameters that will be rebound as well
+/// \tparam TemplateType Type being rebound with a new value type
+/// \tparam NewValueType New value type that is used for rebinding
+template<
+    typename OldValueType,
+    typename... RestOld,
+    template<typename, typename...>
+    class TemplateType,
+    typename NewValueType>
+struct rebind_adt_impl<TemplateType<OldValueType, RestOld...>, NewValueType>
+    : std::type_identity<TemplateType<
+          NewValueType,
+          typename rebind_adt_arg<OldValueType, RestOld, NewValueType>::
+              type...>> {};
+
+} // namespace detail
+
+/// \brief Rebinds an abstract data type by recursively swapping the main type
+/// parameter with the new provided one. This attempts to recurse down dependent
+/// template parameters as well. For example, this preserves the same type of
+/// allocator, deleter, or comparator but using the new value type provided.
+///
+/// If the \c TemplateType is not a templated type then \c type alias will not
+/// exist.
+///
+/// \warning This only works for single type abstract data types like vector,
+/// optional, and more. Multi-type like map do not work properly. Also,
+/// non-straight forward usages may have bugs in the implementation. For the
+/// time, it serves its purpose and those edge cases can be handled when
+/// encountered.
+///
+/// \tparam TemplateType Type which will be rebound
+/// \tparam NewValueType New value type to use when rebinding
+template<typename TemplateType, typename NewValueType>
+struct rebind_adt : detail::rebind_adt_impl<TemplateType, NewValueType> {};
+
+/// \brief Alias template for \c meta::rebind_adt.
+template<typename TemplateType, typename NewValueType>
+using rebind_adt_t = typename rebind_adt<TemplateType, NewValueType>::type;
 
 } // namespace meta
 

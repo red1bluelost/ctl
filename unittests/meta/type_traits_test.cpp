@@ -14,6 +14,10 @@
 
 #include <gtest/gtest.h>
 
+#include <set>
+#include <stack>
+#include <vector>
+
 namespace {
 //===----------------------------------------------------------------------===//
 // Tests for meta functions on meta functions.
@@ -259,6 +263,57 @@ TEST(type_traits_test, meta_rebind) {
   static_assert(!ctl::aliasing_type<ctl::meta::rebind<not_template, int>>);
   static_assert(!ctl::aliasing_type<ctl::meta::rebind<double, int>>);
   static_assert(!ctl::aliasing_type<ctl::meta::rebind<void, int>>);
+}
+
+TEST(type_traits_test, meta_rebind_adt) {
+  static_assert(std::same_as<
+                ctl::meta::rebind_adt<std::unique_ptr<int>, double>::type,
+                std::unique_ptr<double>>);
+  static_assert(std::same_as<
+                ctl::meta::rebind_adt<std::shared_ptr<int>, double>::type,
+                std::shared_ptr<double>>);
+  static_assert(std::same_as<
+                ctl::meta::rebind_adt<std::optional<int>, double>::type,
+                std::optional<double>>);
+  static_assert(std::same_as<
+                ctl::meta::rebind_adt<std::vector<std::string>, float>::type,
+                std::vector<float>>);
+  static_assert(std::same_as<
+                ctl::meta::rebind_adt<std::vector<float>, float>::type,
+                std::vector<float>>);
+  static_assert(std::same_as<
+                ctl::meta::rebind_adt_t<std::pmr::vector<std::string>, float>,
+                std::pmr::vector<float>>);
+  static_assert(std::same_as<
+                ctl::meta::rebind_adt<std::stack<std::string>, float>::type,
+                std::stack<float>>);
+
+  static_assert(std::same_as<
+                ctl::meta::rebind_adt_t<std::set<std::string>, float>,
+                std::set<float>>);
+  static_assert(std::same_as<
+                ctl::meta::rebind_adt_t<std::set<const std::string>, float>,
+                std::set<float>>);
+  static_assert(std::same_as<
+                ctl::meta::rebind_adt_t<std::set<volatile std::string>, float>,
+                std::set<float>>);
+  static_assert(std::same_as<
+                ctl::meta::
+                    rebind_adt_t<std::set<const volatile std::string>, float>,
+                std::set<float>>);
+  static_assert(std::same_as<
+                ctl::meta::rebind_adt_t<std::set<std::string>, float>,
+                std::set<float>>);
+  static_assert(std::same_as<
+                ctl::meta::rebind_adt_t<std::set<std::string>, const float>,
+                std::set<const float>>);
+  static_assert(std::same_as<
+                ctl::meta::rebind_adt_t<std::set<std::string>, volatile float>,
+                std::set<volatile float>>);
+  static_assert(std::same_as<
+                ctl::meta::
+                    rebind_adt_t<std::set<std::string>, const volatile float>,
+                std::set<const volatile float>>);
 }
 
 //===----------------------------------------------------------------------===//
