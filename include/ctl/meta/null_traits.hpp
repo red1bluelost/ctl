@@ -70,7 +70,7 @@ struct null_traits<T*> {
 };
 
 /// \breif Specialization of \c null_traits for any type that has either \c
-/// value_type or \c element_type as an alias.
+/// value_type or \c element_type as an alias and is default constructible.
 ///
 /// - \c rebind defers to \c meta::rebind_adt
 /// - \c null uses the default constructor
@@ -81,7 +81,7 @@ struct null_traits<T*> {
 /// aliases.
 ///
 /// \tparam T Nullable type with proper alias
-template<typename T>
+template<std::default_initializable T>
 requires requires { typename T::value_type; } ||
          requires { typename T::element_type; }
 struct null_traits<T> {
@@ -103,7 +103,7 @@ struct null_traits<T> {
   template<typename U>
   using rebind = ctl::meta::rebind_adt_t<T, U>;
 
-  static constexpr nullable_type null() { return T(); }
+  static constexpr nullable_type null() { return T{}; }
 };
 
 /// TODO: add unique_ptr, shared_ptr
