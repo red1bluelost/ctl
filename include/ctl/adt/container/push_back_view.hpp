@@ -215,7 +215,6 @@ class push_back_view
 
   /// \brief Inheriting either copy push back or it is deleted.
   using copy_base::push_back;
-
   /// \brief Inheriting either move push back or it is deleted.
   using move_base::push_back;
 
