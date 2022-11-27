@@ -23,7 +23,7 @@
 
 CTL_BEGIN_NAMESPACE
 
-namespace detail {
+namespace detail_llc {
 
 /// \brief Internal helper for \c lossless_cast which is enabled for conversions
 /// that are impossible to change the underlying value. Avoids unnecessary
@@ -174,7 +174,7 @@ struct llc_impl<To, From, false> {
   }
 };
 
-} // namespace detail
+} // namespace detail_llc
 
 /// \brief Converts one number type to another while checking to ensure that no
 /// loss happens.
@@ -199,7 +199,7 @@ template<
         std::conjunction_v<std::is_arithmetic<To>, std::is_arithmetic<From>>,
         int> = 0>
 [[nodiscard]] constexpr To lossless_cast(From f) {
-  return detail::llc_impl<std::decay_t<To>, std::decay_t<From>>::apply(f);
+  return detail_llc::llc_impl<std::decay_t<To>, std::decay_t<From>>::apply(f);
 }
 
 CTL_END_NAMESPACE

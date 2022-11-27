@@ -154,7 +154,7 @@ struct wrap_if : std::conditional<condition, Wrapper<T>, T> {};
 template<bool condition, template<typename> class Wrapper, typename T>
 using wrap_if_t = typename wrap_if<condition, Wrapper, T>::type;
 
-namespace detail {
+namespace detail_replace_first {
 
 /// \brief Default implementation of \c replace_first that does not contain a \c
 /// type alias.
@@ -180,7 +180,7 @@ template<
 struct replace_first_impl<TemplateType<FirstTArg, RestTArg...>, ForReplace>
     : std::type_identity<TemplateType<ForReplace, RestTArg...>> {};
 
-} // namespace detail
+} // namespace detail_replace_first
 
 /// \brief Replaces the first type argument of a templated type.
 ///
@@ -196,13 +196,14 @@ struct replace_first_impl<TemplateType<FirstTArg, RestTArg...>, ForReplace>
 /// argument replaced
 /// \tparam ForReplace Type to replace as the first argument
 template<typename TemplateType, typename ForReplace>
-struct replace_first : detail::replace_first_impl<TemplateType, ForReplace> {};
+struct replace_first
+    : detail_replace_first::replace_first_impl<TemplateType, ForReplace> {};
 
 /// \brief Alias template for \c meta::replace_first.
 template<typename TemplateType, typename ForReplace>
 using replace_first_t = typename replace_first<TemplateType, ForReplace>::type;
 
-namespace detail {
+namespace detail_rebind {
 
 /// \brief Default implementation of \c rebind that does not contain a \c type
 /// alias.
@@ -226,7 +227,7 @@ template<
 struct rebind_impl<TemplateType<OldArgs...>, NewArgs...>
     : std::type_identity<TemplateType<NewArgs...>> {};
 
-} // namespace detail
+} // namespace detail_rebind
 
 /// \brief Rebinds all type arguments for the passed \c TemplateType with given
 /// new arguments.
@@ -255,13 +256,13 @@ struct rebind_impl<TemplateType<OldArgs...>, NewArgs...>
 /// \tparam TemplateType Template type which will have arguments rebound
 /// \tparam NewArgs Types for replacements in rebound
 template<typename TemplateType, typename... NewArgs>
-struct rebind : detail::rebind_impl<TemplateType, NewArgs...> {};
+struct rebind : detail_rebind::rebind_impl<TemplateType, NewArgs...> {};
 
 /// \brief Alias template for \c meta::rebind.
 template<typename TemplateType, typename... NewArgs>
 using rebind_t = typename rebind<TemplateType, NewArgs...>::type;
 
-namespace detail {
+namespace detail_rebind_adt {
 
 /// \brief Handles non-ADT types so there is no \c type alias.
 template<typename TemplateType, typename NewValueType>
@@ -326,7 +327,7 @@ struct rebind_adt_impl<TemplateType<OldValueType, RestOld...>, NewValueType>
           typename rebind_adt_arg<OldValueType, RestOld, NewValueType>::
               type...>> {};
 
-} // namespace detail
+} // namespace detail_rebind_adt
 
 /// \brief Rebinds an abstract data type by recursively swapping the main type
 /// parameter with the new provided one. This attempts to recurse down dependent
@@ -345,7 +346,8 @@ struct rebind_adt_impl<TemplateType<OldValueType, RestOld...>, NewValueType>
 /// \tparam TemplateType Type which will be rebound
 /// \tparam NewValueType New value type to use when rebinding
 template<typename TemplateType, typename NewValueType>
-struct rebind_adt : detail::rebind_adt_impl<TemplateType, NewValueType> {};
+struct rebind_adt
+    : detail_rebind_adt::rebind_adt_impl<TemplateType, NewValueType> {};
 
 /// \brief Alias template for \c meta::rebind_adt.
 template<typename TemplateType, typename NewValueType>
@@ -465,7 +467,7 @@ struct is_arithmetic_same
 template<typename... T>
 inline constexpr bool is_arithmetic_same_v = is_arithmetic_same<T...>::value;
 
-namespace detail {
+namespace detail_ilc {
 
 /// \brief Helper for \c is_lossless_convertible that checks when the types are
 /// both integral or both floating point.
@@ -499,7 +501,7 @@ struct ilc_helper<From, To, false>
               (std::numeric_limits<From>::digits <=
                std::numeric_limits<To>::digits)>> {};
 
-} // namespace detail
+} // namespace detail_ilc
 
 /// \brief True iff the From type can be converted to the To type without the
 /// actual number value changing.
@@ -517,7 +519,7 @@ template<typename From, typename To>
 struct is_lossless_convertible
     : std::conjunction<
           std::is_convertible<From, To>,
-          detail::ilc_helper<From, To>> {};
+          detail_ilc::ilc_helper<From, To>> {};
 
 /// \brief Alias template for \c is_lossless_convertible.
 template<typename From, typename To>
