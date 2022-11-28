@@ -37,18 +37,15 @@ TEST(composition_view_test, push_back_only_size) {
 
   // Both copy and move operations
   assert_num_ptrs<
-      push_back_only_composition<
-          ctl::with_copy_move<true, true, true, true>>,
+      push_back_only_composition<ctl::with_copy_move<true, true, true, true>>,
       3>();
   // Only move operations
   assert_num_ptrs<
-      push_back_only_composition<
-          ctl::with_copy_move<false, true, false, true>>,
+      push_back_only_composition<ctl::with_copy_move<false, true, false, true>>,
       2>();
   // Only copy operations
   assert_num_ptrs<
-      push_back_only_composition<
-          ctl::with_copy_move<true, false, true, false>>,
+      push_back_only_composition<ctl::with_copy_move<true, false, true, false>>,
       2>();
   // Neither copy nor move operations
   assert_num_ptrs<

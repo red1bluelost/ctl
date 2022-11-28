@@ -31,7 +31,7 @@ using usize = std::size_t;
 using isize = std::ptrdiff_t;
 
 /// \brief Aliases for fixed size unsigned 8 bit integral.
-using u8  = std::uint8_t;
+using u8 = std::uint8_t;
 /// \brief Aliases for fixed size unsigned 16 bit integral.
 using u16 = std::uint16_t;
 /// \brief Aliases for fixed size unsigned 32 bit integral.
@@ -41,7 +41,7 @@ using u64 = std::uint64_t;
 // TODO: add optional support for u128
 
 /// \brief Aliases for fixed size signed 8 bit twos-complement integral.
-using i8  = std::int8_t;
+using i8 = std::int8_t;
 /// \brief Aliases for fixed size signed 16 bit twos-complement integral.
 using i16 = std::int16_t;
 /// \brief Aliases for fixed size signed 32 bit twos-complement integral.
@@ -51,9 +51,9 @@ using i64 = std::int64_t;
 // TODO: add optional support for i128
 
 /// \brief Aliases for fixed size 32-bit floating point type.
-using f32  = float;
+using f32 = float;
 /// \brief Aliases for fixed size 64-bit floating point type.
-using f64  = double;
+using f64 = double;
 /// \brief Aliases for fixed size 128-bit floating point type.
 using f128 = long double;
 // TODO: disable f128 if long double is not supported
