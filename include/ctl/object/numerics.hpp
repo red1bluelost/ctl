@@ -56,14 +56,12 @@ requires std::is_arithmetic_v<To> && std::is_arithmetic_v<From> &&
     return static_cast<To>(f);
 
   // Handles case of float to integral or float to float. This checks the
-  // value by comparing the before and after. Treats NaN to NaN as valid
+  // value by comparing the before and after. Treats NaN to NaN as invalid
   // TODO: maybe don't allow NaN?
   else if constexpr (std::floating_point<From>) {
     const To t = static_cast<To>(f);
-    // f == f to ignore NaN values
     TEMP_ASSERT(
-        (f == static_cast<From>(t) || !(f == f)),
-        "float to float conversion lost precision"
+        f == static_cast<From>(t), "float to float conversion lost precision"
     );
     return t;
   }

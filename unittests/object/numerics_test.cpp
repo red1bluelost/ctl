@@ -15,6 +15,7 @@
 #include <gtest/gtest.h>
 
 #include <random>
+#include <ranges>
 
 namespace {
 
@@ -310,13 +311,6 @@ TEST(numerics_lossless_cast_test, maybe_loss_floating_point) {
         _type1_, _type2_, std::numeric_limits<_type2_>::infinity()             \
     );                                                                         \
                                                                                \
-    CHECK_CONV_NAN(                                                            \
-        _type1_, _type2_, std::numeric_limits<_type2_>::quiet_NaN()            \
-    );                                                                         \
-    CHECK_CONV_NAN(                                                            \
-        _type1_, _type2_, std::numeric_limits<_type2_>::signaling_NaN()        \
-    );                                                                         \
-                                                                               \
     std::normal_distribution<_type2_> dist(                                    \
         0.0, std::numeric_limits<_type2_>::max() / 4                           \
     );                                                                         \
@@ -514,6 +508,12 @@ TEST(numerics_lossless_cast_test, maybe_loss_floating_point_fail) {
                                                                                \
     check_failure<_type1_, _type2_>(std::numeric_limits<_type1_>::min());      \
     check_failure<_type1_, _type2_>(std::numeric_limits<_type1_>::max());      \
+                                                                               \
+    check_failure<_type1_, _type2_>(std::numeric_limits<_type2_>::quiet_NaN()  \
+    );                                                                         \
+    check_failure<_type1_, _type2_>(                                           \
+        std::numeric_limits<_type2_>::signaling_NaN()                          \
+    );                                                                         \
                                                                                \
     for (int i = 0; i < test_repeats; ++i) {                                   \
       check_failure<_type1_, _type2_>(                                         \
