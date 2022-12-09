@@ -1,15 +1,15 @@
-//===- push_back_view_test.cpp - Tests for push_back_view -------*- C++ -*-===//
+//===- push_back_test.cpp - Tests for push_back view ------------*- C++ -*-===//
 //
 // TODO: License
 //
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// Tests for 'ctl/adt/container/push_back_view.hpp'.
+/// Tests for 'ctl/container/view/push_back.hpp'.
 ///
 //===----------------------------------------------------------------------===//
 
-#include "ctl/adt/container/push_back_view.hpp"
+#include "ctl/container/view/push_back.hpp"
 
 #include "ctl/meta/special_members.hpp"
 #include "test_utilities.hpp"

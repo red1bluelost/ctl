@@ -1,5 +1,4 @@
-//===- view_test.cpp - TODO: description -------------------------*- C++
-//-*-===//
+//===- view_test.cpp - Tests for combining view -----------------*- C++ -*-===//
 //
 // TODO: License
 //
@@ -10,7 +9,7 @@
 ///
 //===----------------------------------------------------------------------===//
 
-#include "ctl/adt/container/view.hpp"
+#include "ctl/container/view/view.hpp"
 
 #include "ctl/meta/special_members.hpp"
 #include "test_utilities.hpp"

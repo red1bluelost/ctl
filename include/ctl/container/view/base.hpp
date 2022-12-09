@@ -1,4 +1,4 @@
-//===- ctl/adt/container/view_base.hpp - Common base for views --*- C++ -*-===//
+//===- ctl/container/view/base.hpp - Common base for views ------*- C++ -*-===//
 //
 // TODO: License
 //
@@ -9,8 +9,8 @@
 ///
 //===----------------------------------------------------------------------===//
 
-#ifndef CTL_ADT_CONTAINER_VIEW_BASE_HPP
-#define CTL_ADT_CONTAINER_VIEW_BASE_HPP
+#ifndef CTL_CONTAINER_VIEW_BASE_HPP
+#define CTL_CONTAINER_VIEW_BASE_HPP
 
 #include "ctl/config.h"
 
@@ -30,4 +30,4 @@ struct construction_tag {};
 
 CTL_END_NAMESPACE
 
-#endif // CTL_ADT_CONTAINER_VIEW_BASE_HPP
+#endif // CTL_CONTAINER_VIEW_BASE_HPP

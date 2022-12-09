@@ -1,4 +1,4 @@
-//===- view.hpp - Combining views of containers -----------------*- C++ -*-===//
+//===- ctl/container/view/view.hpp - Combining container views --*- C++ -*-===//
 //
 // TODO: License
 //
@@ -9,11 +9,11 @@
 ///
 //===----------------------------------------------------------------------===//
 
-#ifndef CTL_ADT_CONTAINER_VIEW_HPP
-#define CTL_ADT_CONTAINER_VIEW_HPP
+#ifndef CTL_CONTAINER_VIEW_VIEW_HPP
+#define CTL_CONTAINER_VIEW_VIEW_HPP
 
-#include "ctl/adt/container/push_back_view.hpp"
 #include "ctl/config.h"
+#include "ctl/container/view/push_back.hpp"
 
 #include <type_traits>
 
@@ -174,4 +174,4 @@ struct view {
 
 CTL_END_NAMESPACE
 
-#endif // CTL_ADT_CONTAINER_VIEW_HPP
+#endif // CTL_CONTAINER_VIEW_VIEW_HPP

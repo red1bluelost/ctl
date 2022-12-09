@@ -9,8 +9,8 @@
 ///
 //===----------------------------------------------------------------------===//
 
-#ifndef UNITTESTS_ADT_CONTAINER_TEST_UTILITIES_HPP
-#define UNITTESTS_ADT_CONTAINER_TEST_UTILITIES_HPP
+#ifndef UNITTESTS_CONTAINER_VIEW_TEST_UTILITIES_HPP
+#define UNITTESTS_CONTAINER_VIEW_TEST_UTILITIES_HPP
 
 #include <gmock/gmock-matchers.h>
 #include <gmock/gmock-more-matchers.h>
@@ -110,4 +110,4 @@ consteval void assert_num_ptrs() {
   static_assert(sizeof(T) == sizeof(void*) * num_pointers);
 }
 
-#endif // UNITTESTS_ADT_CONTAINER_TEST_UTILITIES_HPP
+#endif // UNITTESTS_CONTAINER_VIEW_TEST_UTILITIES_HPP
