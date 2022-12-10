@@ -211,7 +211,7 @@ class push_back_view
   /// \tparam Container The type of container which will be viewed
   /// \param container An \c out_var wrapper of the container to be viewed
   template<typename Container>
-  push_back_view(::ctl::out_var<Container> container)
+  push_back_view(CTL::out_var<Container> container)
       : push_back_view(*container.variable) {}
 
   /// \brief Inheriting either copy push back or it is deleted.

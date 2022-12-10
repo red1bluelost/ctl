@@ -131,7 +131,7 @@ class view_of
   /// \tparam Container The type of container which will be viewed
   /// \param container An \c out_var wrapper of the container to be viewed
   template<typename Container>
-  view_of(::ctl::out_var<Container> container) : view_of(*container.variable) {}
+  view_of(CTL::out_var<Container> container) : view_of(*container.variable) {}
 
   /// \brief Inheriting either copy push back or it is deleted.
   using push_back_copy_base::push_back;

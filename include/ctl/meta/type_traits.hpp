@@ -444,7 +444,7 @@ template<typename... T>
 struct is_signedness_same
     : std::conjunction<
           std::is_arithmetic<T>...,
-          ctl::meta::same<std::is_signed<T>...>> {};
+          CTL::meta::same<std::is_signed<T>...>> {};
 
 /// \brief Alias template for \c is_signedness_same.
 template<typename... T>
@@ -460,8 +460,8 @@ inline constexpr bool is_signedness_same_v = is_signedness_same<T...>::value;
 template<typename... T>
 struct is_arithmetic_same
     : std::disjunction<
-          ctl::meta::all<std::is_integral, T...>,
-          ctl::meta::all<std::is_floating_point, T...>> {};
+          CTL::meta::all<std::is_integral, T...>,
+          CTL::meta::all<std::is_floating_point, T...>> {};
 
 /// \brief Alias template for \c is_arithmetic_same.
 template<typename... T>

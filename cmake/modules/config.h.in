@@ -1,3 +1,16 @@
+//===- @PROJECT_NAME@/config.h - Base configurations for @PROJECT_NAME_UPPER@ ---------------*- C++ -*-===//
+//
+// TODO: License
+//
+//===----------------------------------------------------------------------===//
+///
+/// \file
+/// Provides configurations for the library and macros for namespace usage.
+///
+//===----------------------------------------------------------------------===//
+
+#ifndef CTL_CONFIG_H
+#define CTL_CONFIG_H
 
 #define @PROJECT_NAME_UPPER@_BEGIN_NAMESPACE                                   \
     namespace @PROJECT_NAME@ {                                                 \
@@ -6,3 +19,7 @@
 #define @PROJECT_NAME_UPPER@_END_NAMESPACE                                     \
     }                                                                          \
     }
+
+#define @PROJECT_NAME_UPPER@ ::@PROJECT_NAME@
+
+#endif // CTL_CONFIG_H

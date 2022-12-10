@@ -52,7 +52,7 @@ requires std::is_arithmetic_v<To> && std::is_arithmetic_v<From> &&
          std::same_as<std::decay_t<To>, To>
 [[nodiscard]] constexpr To lossless_cast(From f) {
   // Impossible to change underlying value so no checks performed
-  if constexpr (::ctl::is_lossless_convertible_v<From, To>)
+  if constexpr (CTL::is_lossless_convertible_v<From, To>)
     return static_cast<To>(f);
 
   // Handles case of float to integral or float to float. This checks the
@@ -92,7 +92,7 @@ requires std::is_arithmetic_v<To> && std::is_arithmetic_v<From> &&
   else if constexpr (std::signed_integral<From> && std::unsigned_integral<To>) {
     TEMP_ASSERT(
         (f >= static_cast<From>(std::numeric_limits<To>::min()) &&
-         (::ctl::is_sizeof_le_v<From, To> ||
+         (CTL::is_sizeof_le_v<From, To> ||
           f <= static_cast<From>(std::numeric_limits<To>::max()))),
         "signed integral out of range of unsigned integral"
     );

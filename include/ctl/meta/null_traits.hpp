@@ -101,7 +101,7 @@ struct null_traits<T> {
   using element_type  = typename get_value_type<T>::type;
 
   template<typename U>
-  using rebind = ctl::meta::rebind_adt_t<T, U>;
+  using rebind = CTL::meta::rebind_adt_t<T, U>;
 
   static constexpr nullable_type null() { return T{}; }
 };
