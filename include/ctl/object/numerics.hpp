@@ -28,7 +28,7 @@ CTL_BEGIN_NAMESPACE
 /// implemented.
 #define TEMP_ASSERT(_expr_, _msg_)                                             \
   do {                                                                         \
-    if (!(_expr_)) throw ::std::range_error((_msg_));                          \
+    if (!(_expr_)) throw std::range_error((_msg_));                          \
   } while (false)
 
 /// \brief Converts one number type to another while checking to ensure that no

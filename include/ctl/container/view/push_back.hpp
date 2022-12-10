@@ -131,7 +131,7 @@ struct pbv_move_impl<Base, T> {
   template<typename Container>
   explicit pbv_move_impl(construction_tag<Container>)
       : call_back([](void* container, T&& val) -> void {
-        return static_cast<Container*>(container)->push_back(::std::move(val));
+        return static_cast<Container*>(container)->push_back(std::move(val));
       }) {}
 
   /// \brief Defers to \c call_back by passing through the container handle and
@@ -140,7 +140,7 @@ struct pbv_move_impl<Base, T> {
   /// \param val The value being pushed back into the container
   void push_back(T&& val) {
     return call_back(
-        static_cast<Base*>(this)->container_handle, ::std::move(val)
+        static_cast<Base*>(this)->container_handle, std::move(val)
     );
   }
 
