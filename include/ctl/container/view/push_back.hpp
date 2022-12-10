@@ -47,13 +47,26 @@ struct pbv_copy_delete {
 
 /// TODO: Migrate to a macro for making these CRTP classes
 
+/// \brief Empty base class for containers which cannot pass \c value_type to \c
+/// push_back. It just deletes the \c push_back method to give better error
+/// messages if used.
+///
+/// \tparam Base The base class which will have the \c container_handle pointer
+/// \tparam T The value_type of the container being viewed
+template<typename Base, typename T>
+struct pbv_copy_impl : private pbv_copy_delete<Base, T> {
+  using pbv_copy_delete<Base, T>::pbv_copy_delete;
+  using pbv_copy_delete<Base, T>::push_back;
+};
+
 /// \brief CRTP class that will add \c push_back of const references as a method
 /// if the viewed container has that method.
 ///
 /// \tparam Base The class which inherits from CRTP and has \c container_handle
 /// \tparam T The \c value_type of the container being viewed
-template<typename Base, typename T, bool = ::std::is_copy_constructible_v<T>>
-struct pbv_copy_impl {
+template<typename Base, typename T>
+requires std::is_copy_constructible_v<T>
+struct pbv_copy_impl<Base, T> {
   template<typename Container>
   explicit pbv_copy_impl(construction_tag<Container>)
       : call_back([](void* container, const T& val) -> void {
@@ -81,18 +94,6 @@ struct pbv_copy_impl {
 /// \tparam Base The base class which will have the \c container_handle pointer
 /// \tparam T The value_type of the container being viewed
 template<typename Base, typename T>
-struct pbv_copy_impl<Base, T, false> : private pbv_copy_delete<Base, T> {
-  using pbv_copy_delete<Base, T>::pbv_copy_delete;
-  using pbv_copy_delete<Base, T>::push_back;
-};
-
-/// \brief Empty base class for containers which cannot pass \c value_type to \c
-/// push_back. It just deletes the \c push_back method to give better error
-/// messages if used.
-///
-/// \tparam Base The base class which will have the \c container_handle pointer
-/// \tparam T The value_type of the container being viewed
-template<typename Base, typename T>
 struct pbv_move_delete {
   /// \brief Empty constructor since now \c call_back is used.
   ///
@@ -104,13 +105,25 @@ struct pbv_move_delete {
   void push_back(T&& val) = delete;
 };
 
+/// \brief Empty base class for containers which cannot pass \c value_type to \c
+/// push_back. It just deletes the \c push_back method to give better error
+/// messages if used.
+///
+/// \tparam Base The base class which will have the \c container_handle pointer
+/// \tparam T The value_type of the container being viewed
+template<typename Base, typename T>
+struct pbv_move_impl : private pbv_move_delete<Base, T> {
+  using pbv_move_delete<Base, T>::pbv_move_delete;
+  using pbv_move_delete<Base, T>::push_back;
+};
+
 /// \brief CRTP class that will add \c push_back of rvalue references as a
 /// method if the viewed container has that method.
 ///
 /// \tparam Base The class which inherits from CRTP and has \c container_handle
 /// \tparam T The \c value_type of the container being viewed
-template<typename Base, typename T, bool = ::std::is_move_constructible_v<T>>
-struct pbv_move_impl {
+template<typename Base, std::move_constructible T>
+struct pbv_move_impl<Base, T> {
   /// \brief Constructs a view of the passed in container. Generates a static
   /// function that is used as the callback.
   ///
@@ -135,18 +148,6 @@ struct pbv_move_impl {
   /// \brief Pointer to a generated static function that calls \c push_back on
   /// the container in the handle.
   void (*call_back)(void*, T&&);
-};
-
-/// \brief Empty base class for containers which cannot pass \c value_type to \c
-/// push_back. It just deletes the \c push_back method to give better error
-/// messages if used.
-///
-/// \tparam Base The base class which will have the \c container_handle pointer
-/// \tparam T The value_type of the container being viewed
-template<typename Base, typename T>
-struct pbv_move_impl<Base, T, false> : private pbv_move_delete<Base, T> {
-  using pbv_move_delete<Base, T>::pbv_move_delete;
-  using pbv_move_delete<Base, T>::push_back;
 };
 
 } // namespace detail

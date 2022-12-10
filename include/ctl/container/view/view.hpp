@@ -36,6 +36,26 @@ namespace container {
 namespace detail {
 
 /// \brief Defers base construction for \c view_of to determine which methods to
+/// support. This case deletes the given method.
+///
+/// \tparam individual Enum for method which will be selected
+/// \tparam collection Bitmask for all methods to support
+/// \tparam base_with CRTP class which implements the method and pointer
+/// \tparam base_delete CRTP class which deletes the method
+template<
+    cvt individual,
+    cvt collection,
+    template<typename, typename>
+    class /*base_with*/,
+    template<typename, typename>
+    class base_delete>
+struct with_view {
+  /// \brief Instantiates the base class which is chosen.
+  template<typename Base, typename T>
+  using type = base_delete<Base, T>;
+};
+
+/// \brief Defers base construction for \c view_of to determine which methods to
 /// support. This case includes the method and pointer in the base.
 ///
 /// \tparam individual Enum for method which will be selected
@@ -47,32 +67,12 @@ template<
     template<typename, typename>
     class base_with,
     template<typename, typename>
-    class /*base_delete*/,
-    bool = (individual & collection) != cvt::none>
-struct with_view {
+    class base_delete>
+requires((individual & collection) != cvt::none)
+struct with_view<individual, collection, base_with, base_delete> {
   /// \brief Instantiates the base class which is chosen.
   template<typename Base, typename T>
   using type = base_with<Base, T>;
-};
-
-/// \brief Defers base construction for \c view_of to determine which methods to
-/// support. This case deletes the given method.
-///
-/// \tparam individual Enum for method which will be selected
-/// \tparam collection Bitmask for all methods to support
-/// \tparam base_with CRTP class which implements the method and pointer
-/// \tparam base_delete CRTP class which deletes the method
-template<
-    cvt individual,
-    cvt collection,
-    template<typename, typename>
-    class base_with,
-    template<typename, typename>
-    class base_delete>
-struct with_view<individual, collection, base_with, base_delete, false> {
-  /// \brief Instantiates the base class which is chosen.
-  template<typename Base, typename T>
-  using type = base_delete<Base, T>;
 };
 
 } // namespace detail

@@ -60,7 +60,6 @@ TEST(composition_view_test, push_back_only_view) {
   tester.run<std::vector>();
   tester.run<std::deque>();
   tester.run<std::list>();
-  tester.run<std::list>();
 }
 
 } // namespace

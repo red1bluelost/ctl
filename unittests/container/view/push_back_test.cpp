@@ -96,7 +96,6 @@ TEST(push_back_view_test, view_tester) {
   tester.run<std::vector>();
   tester.run<std::deque>();
   tester.run<std::list>();
-  tester.run<std::list>();
 }
 
 } // namespace
