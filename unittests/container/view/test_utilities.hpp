@@ -12,11 +12,11 @@
 #ifndef UNITTESTS_CONTAINER_VIEW_TEST_UTILITIES_HPP
 #define UNITTESTS_CONTAINER_VIEW_TEST_UTILITIES_HPP
 
+#include "ctl_test_util/scoped_trace.hpp"
+
 #include <gmock/gmock-matchers.h>
 #include <gmock/gmock-more-matchers.h>
 #include <gtest/gtest.h>
-
-#include <source_location>
 
 struct copy_default_type {
   copy_default_type()                                    = default;
@@ -28,13 +28,11 @@ template<template<typename> class View>
 class push_back_view_tester {
  public:
   template<template<typename> class Container>
-  void run(std::source_location call_loc = std::source_location::current()) {
+  void run(ctl_tu::src_loc call_loc = ctl_tu::src_loc::current()) {
     using ::testing::ElementsAre, ::testing::IsEmpty, ::testing::SizeIs,
         ::testing::Pointee;
-    testing::ScopedTrace _tr(
-        call_loc.file_name(),
-        static_cast<int>(call_loc.line()),
-        "running tests for a push_back view"
+    auto run_scoped_trace = ctl_tu::make_scoped_trace(
+        call_loc, "running tests for a push_back view"
     );
     {
       Container<int> v;
@@ -98,11 +96,9 @@ class push_back_view_tester {
   }
 
  private:
-  std::source_location tester_loc = std::source_location::current();
-  testing::ScopedTrace _ttr{
-      tester_loc.file_name(),
-      static_cast<int>(tester_loc.line()),
-      "tester for push_back view"};
+  testing::ScopedTrace tester_scoped_trace = ctl_tu::make_scoped_trace(
+      ctl_tu::src_loc::current(), "tester for push_back view"
+  );
 };
 
 template<typename T, std::size_t num_pointers>

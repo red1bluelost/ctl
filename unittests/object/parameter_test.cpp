@@ -11,9 +11,9 @@
 
 #include "ctl/object/parameter.hpp"
 
-#include <gtest/gtest.h>
+#include "ctl_test_util/scoped_trace.hpp"
 
-#include <source_location>
+#include <gtest/gtest.h>
 
 namespace {
 
@@ -82,12 +82,9 @@ TEST(parameter_test, out_var_constexpr) {
 class out_var_test : public ::testing::Test {
  protected:
   template<typename Tester>
-  void run(std::source_location call_loc = std::source_location::current()) {
-    testing::ScopedTrace tester_func_scope_trace(
-        call_loc.file_name(),
-        static_cast<int>(call_loc.line()),
-        "running tests for ctl::out_var"
-    );
+  void run(ctl_tu::src_loc call_loc = ctl_tu::src_loc::current()) {
+    auto run_scope_trace =
+        ctl_tu::make_scoped_trace(call_loc, "running tests for ctl::out_var");
     {
       std::string s;
       ASSERT_EQ(s, "");
@@ -123,11 +120,9 @@ class out_var_test : public ::testing::Test {
   }
 
  private:
-  std::source_location tester_loc = std::source_location::current();
-  testing::ScopedTrace tester_scope_trace{
-      tester_loc.file_name(),
-      static_cast<int>(tester_loc.line()),
-      "fixture for testing out_var"};
+  testing::ScopedTrace tester_scope_trace = ctl_tu::make_scoped_trace(
+      ctl_tu::src_loc::current(), "fixture for testing out_var"
+  );
 };
 
 TEST_F(out_var_test, function_out_by_ref) {
